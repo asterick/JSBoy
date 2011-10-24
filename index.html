@@ -22,7 +22,7 @@
         
             function resize(div)
             {
-                const change = {
+                var change = {
                     'double': 'regular',
                     'regular': 'double'
                 };
@@ -135,9 +135,9 @@
                 updateRegs('cpu',runtime.cpu);
                 updateRegs('gpu',runtime.cpu.gpu);
                                 
-                const addr = document.getElementById('address');
-                const hex = document.getElementById('hex');
-                const inst = document.getElementById('instruction');
+                var addr = document.getElementById('address');
+                var hex = document.getElementById('hex');
+                var inst = document.getElementById('instruction');
             
                 var dis = new disassembler(runtime.cpu)
                 var pc = runtime.cpu.pc

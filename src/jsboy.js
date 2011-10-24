@@ -5,7 +5,7 @@ include('src/debugger/disassemble.js')
 
 function jsboy(canvas)
 {
-    const context = canvas.getContext("2d");
+    var context = canvas.getContext("2d");
     
     // Bios will auto reset when the system initializes
     this.cpu = new jsboyCPU(context);

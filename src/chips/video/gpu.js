@@ -5,14 +5,14 @@ include('src/chips/video/palette.js');
 // These clocks are in GBC machine instruction cycles (Double speed)
 // IE: 4MHZ / 4 * 2
 
-const SCANLINES      = 154;
-const DRAWLINES      = 144;
-const MODE_0_TIME    = 102;
-const MODE_2_TIME    = 40;
-const MODE_3_TIME    = 86;
-const TICKS_PER_LINE = MODE_0_TIME + MODE_2_TIME + MODE_3_TIME;
-const DRAW_PHASE     = DRAWLINES * TICKS_PER_LINE;
-const TICKS_PER_FRAME = SCANLINES * TICKS_PER_LINE;
+var SCANLINES      = 154;
+var DRAWLINES      = 144;
+var MODE_0_TIME    = 102;
+var MODE_2_TIME    = 40;
+var MODE_3_TIME    = 86;
+var TICKS_PER_LINE = MODE_0_TIME + MODE_2_TIME + MODE_3_TIME;
+var DRAW_PHASE     = DRAWLINES * TICKS_PER_LINE;
+var TICKS_PER_FRAME = SCANLINES * TICKS_PER_LINE;
 
 function jsboyGPU(context, cpu)
 {    

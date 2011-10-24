@@ -9,11 +9,11 @@ include('src/chips/joypad.js');
 include('src/chips/timer.js');
 include('src/chips/workram.js');
 
-const IRQ_VBLANK = 1;
-const IRQ_LCD_STAT = 2;
-const IRQ_TIMER = 4;
-const IRQ_SERIAL = 8;
-const IRQ_JOYSTICK = 16;
+var IRQ_VBLANK = 1;
+var IRQ_LCD_STAT = 2;
+var IRQ_TIMER = 4;
+var IRQ_SERIAL = 8;
+var IRQ_JOYSTICK = 16;
 
 function jsboyCPU(context)
 {

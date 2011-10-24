@@ -1,11 +1,11 @@
 // --- How the scanline buffer is encoded
-const PRIORITY      = 0x80;
-const WHITEOUT      = 0x40;
-const SPRITE_FLAG   = 0x20;
-const PALETTE       = 0x1C;
-const PIXELS        = 0x03;
-const COLOR         = PIXELS | WHITEOUT | PALETTE | SPRITE_FLAG;
-const PALETTE_SHIFT = 2;
+var PRIORITY      = 0x80;
+var WHITEOUT      = 0x40;
+var SPRITE_FLAG   = 0x20;
+var PALETTE       = 0x1C;
+var PIXELS        = 0x03;
+var COLOR         = PIXELS | WHITEOUT | PALETTE | SPRITE_FLAG;
+var PALETTE_SHIFT = 2;
 
 function jsboyLCD(context, palette)
 {
@@ -123,11 +123,11 @@ jsboyLCD.prototype.tileDecodeForward = new Array(0x10000);
 jsboyLCD.prototype.tileDecodeReverse = new Array(0x10000);
 jsboyLCD.prototype.colorTable = new Array(0x10000);
 
-const COLOR_TABLE = new Array(32);
+var COLOR_TABLE = new Array(32);
 for( var i = 0; i < 0x20; i++ )
 {
-    const BLACK_LEVEL = 0x29;
-    const WHITE_LEVEL = 0xE7;
+    var BLACK_LEVEL = 0x29;
+    var WHITE_LEVEL = 0xE7;
     var level = (1-Math.cos(3.1415926 * i / 0x1F))/2;
 
     COLOR_TABLE[i] = Math.ceil(level * (WHITE_LEVEL - BLACK_LEVEL) + BLACK_LEVEL);

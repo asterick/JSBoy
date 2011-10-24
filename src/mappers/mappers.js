@@ -10,21 +10,21 @@ include("src/mappers/mbc5.js");
 //include("src/mappers/huc3.js");
 //include("src/mappers/huc1.js");
 
-const NONE = 0;
-const RAM = 1;
-const BATTERY = 2;
-const TIMER = 4;
-const RUMBLE = 8;
+var NONE = 0;
+var RAM = 1;
+var BATTERY = 2;
+var TIMER = 4;
+var RUMBLE = 8;
 
 function mapper( name, cpu, rom )
 {
-    const description = {
+    var description = {
         mapper: rom[0x0147],
         romSize: rom.length, //rom[0x0148],
         ramSize: [0,2048,8192,32768][rom[0x0149]]
     };
     
-    const setups = {
+    var setups = {
           '1': { call:   mapperMBC1, flags:               NONE }, 
           '2': { call:   mapperMBC1, flags:                RAM }, 
           '3': { call:   mapperMBC1, flags:        RAM|BATTERY }, 
@@ -65,8 +65,8 @@ function mapper( name, cpu, rom )
     // Convert rom into data delegates (padded out to 32k, or next highest power of 2)
     rom = romBlock(rom, byteAlignment(rom.length, 0x4000) );
     
-    const code = description.mapper;
-    const setup = setups[code];
+    var code = description.mapper;
+    var setup = setups[code];
 
     if( setups[code] === undefined )
     {
