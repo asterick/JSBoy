@@ -1,0 +1,194 @@
+body {
+    font-family: helvetica; /* Eat it hipsters */
+    background: rgb(212,244,148)
+}
+
+.center {
+    width: 950px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* --- Information column style --- */
+.main_col {
+    width: 600px;
+    display:inline-block;
+}
+
+.main_col #block {
+    background: rgb(255,255,255);
+    border: solid 1px black;
+    margin-bottom: 4px;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.main_col #block .group {
+    padding: 10px;
+}
+
+#filename {
+    width: 570px;
+    margin: 4px;
+    border: 1px dashed;
+    border-color: gray;
+}
+
+#suggestions {
+    border: dashed black 1px;
+    margin: 4px;
+    padding: 4px;
+}
+
+/* --- REGISTER VIEWER --- */
+#registers .flag {
+    width: 8px;
+    display: inline-block;
+    background: rgb(220,220,220)
+}
+
+#registers .name {
+    width: 20px;
+    display: inline-block
+}
+
+#registers .value {
+    width: 40px;
+    display: inline-block;
+    text-align: right;
+    background: rgb(220,220,220)
+}
+
+#registers .column {
+    display: inline-block;
+}
+
+#registers {
+    padding: 5px;
+    border: 1px dashed;
+    float: right;
+    margin: 4px 4px;
+    font-family:monospace;
+    color: black;
+}
+
+/* --- DISASSEMBLY VIEWER --- */
+.disassembly {
+    display:inline-block;
+    font-family:monospace;
+    color: black;
+}
+
+.disassembly .address {
+    width: 40px;
+    height: 100%;
+    display:inline-block;
+    text-align: right;
+}
+
+.disassembly .instruction {
+    display:inline-block;
+    text-align: left;
+}
+
+.disassembly .hex {
+    width: 70px;
+    display:inline-block;
+    text-align: left;
+    background: rgb(220,220,220)
+}
+
+/* --- ERROR LOG --- */
+#messageLog {
+    background-color: white;
+    border-top: solid rgb(0,0,0);
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    padding: 4px;
+    max-height: 100px;
+    overflow-y: auto
+}
+
+#messageLog span {
+    padding-right: 6px;
+}
+
+#messageLog .number {
+    font-weight: bold;
+}
+#messageLog .object {
+    font-style: italic;
+}
+
+/* ------ Gameboy display objects ------- */
+#screenHolder {
+    background: no-repeat url('gameboy.jpg') white;
+    border: dashed 1px black;
+    margin-right: 4px;
+
+    width: 340px;
+    height: 560px;
+    display:inline-block;
+    vertical-align: top;
+    position: relative;
+}
+
+.double {
+    position: relative;
+    width: 320px;
+    height: 288px;
+    left: 10px;
+    top: 10px;
+}
+
+.regular {
+    position: relative;
+    left: 90px;
+    top: 67px;
+}
+
+#Button_A {
+    font-size: 8pt;
+    width: 80px;
+    text-align: center;
+    vertical-align: middle;
+    
+    position: absolute;
+    top: 380px;
+    left: 247px;
+}
+
+#Button_B {
+    font-size: 8pt;
+    width: 80px;
+    text-align: center;
+    vertical-align: middle;
+    
+    position: absolute;
+    top: 400px;
+    left: 190px;
+}
+
+#Button_Select {
+    font-size: 8pt;
+    width: 80px;
+    text-align: center;
+    vertical-align: middle;
+    
+    position: absolute;
+    top: 470px;
+    left: 108px;
+}
+
+#Button_Start {
+    font-size: 8pt;
+    width: 80px;
+    text-align: center;
+    vertical-align: middle;
+    
+    position: absolute;
+    top: 470px;
+    left: 156px;
+}

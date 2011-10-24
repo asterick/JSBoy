@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>JSBoy</title>
+        <link rel="shortcut icon" href="favicon.ico" />
+        <link rel="stylesheet" type="text/css" href="media/style.css" />
+        <script type="text/javascript" src="scripts/util/helper.js" charset="utf-8"></script>
+        <script type="text/javascript" src="scripts/jsboy.js" charset="utf-8"></script>
+
+        <script type='text/javascript'>
+            var games, runtime;
+        
+            function shorten(fn)
+            {
+                // Trim extension
+                var parts = fn.split(".")
+                parts.pop();
+                
+                // Clear out path
+                return parts.join(".").split("/").pop();
+            }
+        
+            function resize(div)
+            {
+                const change = {
+                    'double': 'regular',
+                    'regular': 'double'
+                };
+                
+                div.setAttribute('class', change[div.getAttribute('class')] );
+            }            
+
+            function onUnload()
+            {
+                runtime.close();
+            }
+
+            function start()
+            {
+                runtime = new jsboy(document.getElementById('screen'));
+                window.onbeforeunload = onUnload;
+
+                update();
+
+                asyncLoad("roms/gamelist", function(data) {
+                    games = data.split('\n');
+                    document.getElementById('filename').style.visibility = 'visible';
+                } );
+            }
+            
+            function run(div, rom)
+            {
+                var url = shorten(rom);
+
+                var field = document.getElementById('filename');
+                field.value = url;
+
+                asyncLoad( rom, function(data) {
+                    document.title = "JSBoy - " + url;
+
+                    runtime.reset(rom, base64decode(data));
+                    runtime.run(true);
+
+                    update();
+                } );
+            }
+            
+            function updateRegs( device, state )
+            {
+                for( var k in state )
+                {
+                    var e = document.getElementById(device+'_'+k);
+                    if( !e )
+                        continue;
+                    
+                    switch( e.getAttribute('class') )
+                    {
+                        case 'value':
+                            e.innerHTML = state[k].toString(16);
+                            break ;
+                        case 'flag':
+                            e.innerHTML = (state[k] ? 'X' : '&nbsp;')
+                            break ;
+                        default:
+                            e.innerHTML = state[k];
+                    }
+                }
+            }
+            
+            function update()
+            {
+                updateRegs('cpu',runtime.cpu);
+                updateRegs('gpu',runtime.cpu.gpu);
+                                
+                const addr = document.getElementById('address');
+                const hex = document.getElementById('hex');
+                const inst = document.getElementById('instruction');
+            
+                var dis = new disassembler(runtime.cpu)
+                var pc = runtime.cpu.pc
+            
+                addr.innerHTML = '';
+                hex.innerHTML = '';
+                inst.innerHTML = '';
+            
+                for( var i = 0; i < 25; i++ )
+                {
+                    var o = dis.disassemble(pc);                    
+                    if(!o)
+                        break ;
+                    
+                    var a = pc.toString(16);
+                    addr.innerHTML += "<a href='#' onclick='runTo("+pc+")'>" + a + "</a><br/>";
+                    hex.innerHTML += o.hex + "<br/>";
+                    inst.innerHTML += o.op + "<br/>";
+                    
+                    pc = o.next;
+                }
+            }
+            
+            function runTo( addr )
+            {
+                // Limit number of executions (This is enough to boot the system)
+                for( var i = 0; i < 1250000; i++ )
+                {
+                    if( runtime.cpu.pc == addr )
+                        break ;
+                    runtime.cpu.singleStep();
+                }
+                
+                update();
+            }
+            
+            function find(field, screen, suggest)
+            {
+                var suggestions = document.getElementById(suggest);
+                var name = field.value.toLowerCase();
+                
+                var list = [];
+            
+                for( var i = 0; i < games.length && list.length < 10; i++ )
+                {
+                    if( games[i].toLowerCase().indexOf(name) < 0 )
+                        continue ;
+                    
+                    var url = encodeURI(games[i].split("'").join("\\'"));
+                    var link = '<a href="javascript:run(\''+screen+'\',\'' + url + '\')">' + shorten(games[i]) + "</a>"
+                    list.push(link);
+                }
+                
+                document.getElementById(suggest).style.visibility = (list.length > 0) ? 'visible' : 'hidden';
+                
+                suggestions.innerHTML = list.join("<br/>");
+            }
+        </script>
+    </head>
+    
+    <body>
+        <div class='center'>
+            <div id='screenHolder'>
+                <canvas id='screen' class='regular' width='160' height='144' onclick="resize(this)">
+                </canvas>
+                
+                <div id='Button_A'>X</div>
+                <div id='Button_B'>Z</div>
+                <div id='Button_Select'>Shift</div>
+                <div id='Button_Start'>Return</div>
+            </div>
+            
+            <div class='main_col'>
+                <div id='block'>
+                    <div class='group'>
+                        <p style='text-align: center; font: larger bold; font-family: helvetica;'>
+                            <img src='media/kirby.png'> JSBoy demo page
+                        </p>
+                        
+                        <p style='text-align: justify'>
+                            To load a cartridge image, simply type a partial name in the field below and
+                            clicking the respective name.  Once a game finishes loading you should see
+                            the gameboy color boot up screen.
+                        </p>
+
+                        <input type="text" id='filename' style="visibility: hidden;" onfocus="this.value = '';" onkeyup="find(this,'screen','suggestions')" value="... type here to load a rom ..."></input>
+                        <div id='suggestions' style="visibility: hidden;"></div>
+                    </div>
+                </div>
+    
+                <div id='block' class='disassembly'>
+                    <div id='registers'>
+                        <div>
+                            <div style='text-align:center; padding-bottom: 4px'>CPU Flags</div>
+                            <div class='column'>
+                                <div class='name'>B</div>
+                                <div class='value' id='cpu_b'></div>
+                                <div class='name'>C</div>
+                                <div class='value' id='cpu_c'></div><br/>
+                                <div class='name'>D</div>
+                                <div class='value' id='cpu_d'></div>
+                                <div class='name'>E</div>
+                                <div class='value' id='cpu_e'></div><br/>
+                                <div class='name'>H</div>
+                                <div class='value' id='cpu_h'></div>
+                                <div class='name'>L</div>
+                                <div class='value' id='cpu_l'></div><br/>
+                                <div class='name'>A</div>
+                                <div class='value' id='cpu_a'></div><br/>
+                                <div class='name'>PC</div>
+                                <div class='value' id='cpu_pc'></div>
+                                <div class='name'>SP</div>
+                                <div class='value' id='cpu_sp'></div><br/>
+                                <div class='name'>IF</div>
+                                <div class='value' id='cpu_irq_request'></div>
+                                <div class='name'>IE</div>
+                                <div class='value' id='cpu_irq_enable'></div><br/>
+                            </div>
+                            <div class='column'>
+                                <div class='name'>C</div>
+                                <div class='flag' id='cpu_cf'></div><br/>
+                                <div class='name'>H</div>
+                                <div class='flag' id='cpu_hf'></div><br/>
+                                <div class='name'>N</div>
+                                <div class='flag' id='cpu_nf'></div><br/>
+                                <div class='name'>Z</div>
+                                <div class='flag' id='cpu_zf'></div><br/>
+                                <div class='name'>I</div>
+                                <div class='flag' id='cpu_irq_master'></div><br/>
+                                <div class='name'>S</div>
+                                <div class='flag' id='cpu_halted'></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style='text-align:center; padding-bottom: 4px'>GPU Flags</div>
+                            <div class='column'>
+                                <div class='name'>VBK</div>
+                                <div class='value' id='gpu_reg_VBK'></div><br/>
+                                <div class='name'>LYC</div>
+                                <div class='value' id='gpu_lyc'></div><br/>
+                                <div class='name'>CLK</div>
+                                <div class='value' id='gpu_pixelClock'></div><br/>
+                                <div class='name'>SCX</div>
+                                <div class='value' id='gpu_scx'></div><br/>
+                                <div class='name'>SCY</div>
+                                <div class='value' id='gpu_scy'></div><br/>
+                                <div class='name'>WX</div>
+                                <div class='value' id='gpu_wx'></div><br/>
+                                <div class='name'>WY</div>
+                                <div class='value' id='gpu_wy'></div><br/>
+                            </div>
+                            <div class='column'>
+                                <div class='name'>LCD</div>
+                                <div class='flag' id='gpu_lcd_enable'></div><br/>
+                                <div class='name'>WM</div>
+                                <div class='flag' id='gpu_window_map'></div><br/>
+                                <div class='name'>BM</div>
+                                <div class='flag' id='gpu_background_map'></div><br/>
+                                <div class='name'>WIN</div>
+                                <div class='flag' id='gpu_window_enable'></div><br/>
+                                <div class='name'>BG</div>
+                                <div class='flag' id='gpu_bg_display'></div><br/>
+                                <div class='name'>BNK</div>                    
+                                <div class='flag' id='gpu_map_tile_data'></div><br/>
+                                <div class='name'>OBJ</div>
+                                <div class='flag' id='gpu_obj_enable'></div><br/>
+                                <div class='name'>SIZ</div>
+                                <div class='flag' id='gpu_obj_size'></div><br/>
+                            </div>
+                            <div class='column'>
+                                <div class='name'>LYC</div>
+                                <div class='flag' id='gpu_lycIRQ'></div><br/>
+                                <div class='name'>M0</div>
+                                <div class='flag' id='gpu_mode0IRQ'></div><br/>
+                                <div class='name'>M1</div>
+                                <div class='flag' id='gpu_mode1IRQ'></div><br/>
+                                <div class='name'>M2</div>
+                                <div class='flag' id='gpu_mode2IRQ'></div><br/>
+                            </div>
+                        </div>
+
+                        <div>
+                            <a onclick="runtime.run(true);" href="#">run</a>
+                            <a onclick="runtime.run(false);update();" href="#">stop</a>
+                            <a onclick="runtime.reset();update();" href="#">reset</a><br/>
+                            <a onclick="runtime.singleStep();update();" href="#">step</a>
+                            <a onclick="runtime.step();update();" href="#">frame</a>
+                        </div>
+                    </div>
+                    
+                    <div class='address' id='address'></div>
+                    <div class='hex' id='hex'></div>
+                    <div class='instruction' id='instruction'></div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

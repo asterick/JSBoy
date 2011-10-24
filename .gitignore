@@ -1,0 +1,7 @@
+# ignore roms folder
+roms
+doc
+test
+favicon.ico
+jsboy.komodoproject
+.DS_Store
