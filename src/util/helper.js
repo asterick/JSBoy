@@ -105,39 +105,6 @@ Object.prototype.$ = function( name )
     return function() { return call.apply(self,arguments); }
 }
 
-function pretty(obj)
-{
-    if( obj === null )
-        return "null";
-    
-    else if( obj === undefined )
-        return "undefined";
-    
-    else if( obj instanceof Array )
-    {
-        var c = obj.concat();
-        for( var i = 0; i < c.length; i++ )
-            c[i] = pretty(c[i]);
-        
-        return "[" + c.join(', ') + "]";            
-    }
-
-    else if( typeof(obj) == 'string' )
-    {
-        return obj.split("\n").join("<br/>");
-    }
-    else if( typeof(obj) == 'object' )
-    {
-        var elements = [];
-        
-        for( var k in obj )
-            elements.push( "'" + k + "'" + ": " + pretty(obj[k]) );
-        return "{ " + elements.join(", ") + " }";            
-    }
-    
-    return obj.toString();
-}
-
 // --- Append a source tag to the body
 var includesPending = 0;
 function include(source)
@@ -174,56 +141,10 @@ function log( /*...*/ )
     {
         var elem = document.createElement('span');
         elem.setAttribute('class',typeof(arguments[i]));
-        elem.innerHTML = pretty(arguments[i]);
+        elem.innerHTML = JSON.stringify(arguments[i]);
         msg.appendChild(elem);
     }
 
     logContainer.appendChild(msg);
     logContainer.scrollTop = logContainer.scrollHeight;
-}
-
-function base64decode(str)
-{
-    var b64_key = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-                  "abcdefghijklmnopqrstuvwxyz" +
-                  "0123456789+/";
-    
-    var data = new Array();
-    var shifter = 0;
-    var bits = 0;
-    
-    for( var i = 0; i < str.length; i++ )
-    {
-        var ch = b64_key.indexOf(str.charAt(i));
-        
-        if( ch < 0 )
-            continue ;
-        
-        shifter = (shifter<<6)|ch;
-        bits += 6;
-        
-        while(bits >= 8)
-        {
-            bits -= 8;
-            data.push((shifter>>bits)&0xFF);
-        }
-    }
-
-    return data;
-}
-
-function asyncLoad(url, callback)
-{
-    var xml = new XMLHttpRequest();
-    
-    xml.onreadystatechange = function()
-    {
-        if( xml.readyState != 4 || xml.status != 200 )
-            return ;
-
-        callback(xml.responseText);
-    }
-    
-    xml.open('GET', url);
-    xml.send();
 }

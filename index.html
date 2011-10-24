@@ -30,15 +30,58 @@
                 div.setAttribute('class', change[div.getAttribute('class')] );
             }            
 
-            function onUnload()
+            function base64decode(str)
             {
-                runtime.close();
+                var b64_key = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+                              "abcdefghijklmnopqrstuvwxyz" +
+                              "0123456789+/";
+    
+                var data = new Array();
+                var shifter = 0;
+                var bits = 0;
+    
+                for( var i = 0; i < str.length; i++ )
+                {
+                    var ch = b64_key.indexOf(str.charAt(i));
+        
+                    if( ch < 0 )
+                        continue ;
+        
+                    shifter = (shifter<<6)|ch;
+                    bits += 6;
+        
+                    while(bits >= 8)
+                    {
+                        bits -= 8;
+                        data.push((shifter>>bits)&0xFF);
+                    }
+                }
+
+                return data;
+            }
+
+            function asyncLoad(url, callback)
+            {
+                var xml = new XMLHttpRequest();
+    
+                xml.onreadystatechange = function()
+                {
+                    if( xml.readyState != 4 || xml.status != 200 )
+                        return ;
+
+                    callback(xml.responseText);
+                }
+    
+                xml.open('GET', url);
+                xml.send();
             }
 
             function start()
             {
                 runtime = new jsboy(document.getElementById('screen'));
-                window.onbeforeunload = onUnload;
+                window.onbeforeunload = function() {
+                    runtime.close();
+                };
 
                 update();
 
