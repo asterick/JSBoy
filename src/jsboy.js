@@ -1,7 +1,7 @@
-include('scripts/chips/cpu.js');
-include('scripts/util/memory.js');
-include('scripts/mappers/mappers.js')
-include('scripts/debugger/disassemble.js')
+include('src/chips/cpu.js');
+include('src/util/memory.js');
+include('src/mappers/mappers.js')
+include('src/debugger/disassemble.js')
 
 function jsboy(canvas)
 {

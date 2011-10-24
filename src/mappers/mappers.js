@@ -1,14 +1,14 @@
-include("scripts/mappers/rom.js");
-include("scripts/mappers/mbc1.js");
-include("scripts/mappers/mbc2.js");
-include("scripts/mappers/mbc3.js");
-//include("scripts/mappers/mbc4.js");
-include("scripts/mappers/mbc5.js");
-//include("scripts/mappers/mmm01.js");
-//include("scripts/mappers/camera.js");
-//include("scripts/mappers/tama5.js");
-//include("scripts/mappers/huc3.js");
-//include("scripts/mappers/huc1.js");
+include("src/mappers/rom.js");
+include("src/mappers/mbc1.js");
+include("src/mappers/mbc2.js");
+include("src/mappers/mbc3.js");
+//include("src/mappers/mbc4.js");
+include("src/mappers/mbc5.js");
+//include("src/mappers/mmm01.js");
+//include("src/mappers/camera.js");
+//include("src/mappers/tama5.js");
+//include("src/mappers/huc3.js");
+//include("src/mappers/huc1.js");
 
 const NONE = 0;
 const RAM = 1;

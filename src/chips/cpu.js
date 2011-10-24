@@ -1,13 +1,13 @@
-include('scripts/chips/ops/base.js')
-include('scripts/chips/ops/shift.js')
-include('scripts/chips/ops/control.js')
-include('scripts/chips/video/gpu.js');
+include('src/chips/ops/base.js')
+include('src/chips/ops/shift.js')
+include('src/chips/ops/control.js')
+include('src/chips/video/gpu.js');
 
-include('scripts/chips/registers.js');
-include('scripts/chips/bios.js');
-include('scripts/chips/joypad.js');
-include('scripts/chips/timer.js');
-include('scripts/chips/workram.js');
+include('src/chips/registers.js');
+include('src/chips/bios.js');
+include('src/chips/joypad.js');
+include('src/chips/timer.js');
+include('src/chips/workram.js');
 
 const IRQ_VBLANK = 1;
 const IRQ_LCD_STAT = 2;
