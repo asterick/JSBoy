@@ -32,37 +32,34 @@ jsboyLCD.prototype.clear = function()
 
 jsboyLCD.prototype.copyTileBG = function(x, l, h, pal, flip, pri)
 {
-    var px = (flip ? this.tileDecodeReverse : this.tileDecodeForward)[l|(h<<8)];
+    var px = (flip ? this.tileDecodeForward : this.tileDecodeReverse)[l|(h<<8)];
     var over = (pal << PALETTE_SHIFT) | (pri ? PRIORITY : 0);
     var scanline = this.scanline;
+    var b = 8;
     
-    for( var b = 0; b < 8; b++ )
-        scanline[x++] = px[b] | over;
+    while( b )
+        scanline[x++] = px[--b] | over;
     
     return x;
 }
 
 jsboyLCD.prototype.copyTileOBJ = function(x, l, h, pal, flip, pri)
 {
-    var px = (flip ? this.tileDecodeReverse : this.tileDecodeForward)[l|(h<<8)];
+    var px = (flip ? this.tileDecodeForward : this.tileDecodeReverse)[l|(h<<8)];
     var over = (pal << PALETTE_SHIFT) | SPRITE_FLAG;
     var scanline = this.scanline;
-    
+     
     // Draw OAM when tile has priority 
-    for( var b = 0; b < 8; b++, x++ )
+    for( var b = 8; b; x++ )
     {
-        var npx = px[b], opx = scanline[x];
+        var npx = px[--b], opx = scanline[x];
         // Sprite pixel is invisible ...
         // ... or higher priority sprite already exists
         if( !(npx & PIXELS) || (opx & SPRITE_FLAG) )
             continue;
         
-        // Background tile priority
-        if( (pri || (opx & PRIORITY)) && (opx & PIXELS) )            
-            //scanline[x] |= PRIORITY;  // Prevent lower priority sprite overlap
-            continue ;
-        // Sprite is actually drawn
-        else
+        // Background tile does not have priority
+        if( !((pri || (opx & PRIORITY)) && (opx & PIXELS)) )
             scanline[x] = npx | over;
     }
 }
@@ -126,11 +123,7 @@ jsboyLCD.prototype.colorTable = new Array(0x10000);
 var COLOR_TABLE = new Array(32);
 for( var i = 0; i < 0x20; i++ )
 {
-    var BLACK_LEVEL = 0x29;
-    var WHITE_LEVEL = 0xE7;
-    var level = (1-Math.cos(3.1415926 * i / 0x1F))/2;
-
-    COLOR_TABLE[i] = Math.ceil(level * (WHITE_LEVEL - BLACK_LEVEL) + BLACK_LEVEL);
+    COLOR_TABLE[i] = (i * 0x21) >> 2;
 }
 
 // --- Initalization code

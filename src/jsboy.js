@@ -3,10 +3,8 @@ include('src/util/memory.js');
 include('src/mappers/mappers.js')
 include('src/debugger/disassemble.js')
 
-function jsboy(canvas)
+function jsboy(context)
 {
-    var context = canvas.getContext("2d");
-    
     // Bios will auto reset when the system initializes
     this.cpu = new jsboyCPU(context);
     this.running = false;
@@ -33,12 +31,16 @@ jsboy.prototype.run = function( state )
     if( state == this.running )
         return ;
     
+    if( this.interval )
+    {
+        clearInterval(this.interval);
+        this.interval = null;
+    }
+
     this.running = state;
 
     if( this.running )
-        this.interval = setInterval( this.$('step'), 20 );
-    else
-        clearInterval(this.interval);
+        this.interval = setInterval( this.$('step'), 16 );
 }
 
 jsboy.prototype.step = function()
