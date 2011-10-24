@@ -1,6 +1,6 @@
-include('scripts/chips/video/lcd.js');
-include('scripts/chips/video/dma.js');
-include('scripts/chips/video/palette.js');
+include('src/chips/video/lcd.js');
+include('src/chips/video/dma.js');
+include('src/chips/video/palette.js');
 
 // These clocks are in GBC machine instruction cycles (Double speed)
 // IE: 4MHZ / 4 * 2
