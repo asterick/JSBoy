@@ -109,14 +109,14 @@ function ramBlock(size, extend, name, mask)
     }
     
     var save = function() {
-        var encoded = data.map(String.fromCharCode).join('');
+        var encoded = JSON.stringify(data);
         window.localStorage.setItem(name,encoded);
     }
     
     var load = function() {
         try
         {
-            var encoded = window.localStorage.getItem(name);
+            var encoded = JSON.parse(window.localStorage.getItem(name));
             
             for( var i = 0; i < encoded.length; i++ )
                 data[i] = encoded.charCodeAt(i);

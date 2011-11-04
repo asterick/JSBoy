@@ -27,10 +27,9 @@ Due to laziness on my part, I will not be documenting the internal structure
 of jsboy immediately.  This also gives me flexibility to change inner-workings
 for speed considerations.  Consult index.html for current implementation details
 
-If you wish to use it as is, create a roms directory in the root project folder
-and do this simple command to build the catalog:
+If you wish to use it as is, place some roms in the project folder and run this:
 
-    find roms -name "*.gb*" > gamelist
+    find . -name "*.gb*" > gamelist    #(*nix systems only)
 
 please note that Chrome will not allow XMLHttpRequests on the local file system
 so you may need to run a lightweight http server to run locally.
