@@ -48,18 +48,24 @@ function byteAlignment(size, base)
 
 function romBlock(data, length)
 {
-    var newData = new Array();
-
-    function delegate(value)
+    // Create LUT for rom delegates (avoid using closure data)
+    if( romBlock.delegates === undefined )
     {
-        return function() { return value; }
+        romBlock.delegates = new Array(0x100);
+
+        for( var i = 0; i < 0x100; i++ )
+            romBlock.delegates[i] = "function(){return "+i+"}";
+    
+        romBlock.delegates = eval("["+romBlock.delegates.join(",")+"]");
     }
+
+    var newData = new Array( length || data.length );
     
     for( var i = 0; i < data.length; i++ )
-        newData.push( delegate(data[i]) );
+        newData[i] = romBlock.delegates[data[i]];
 
-    for( var i = length; i >= 0; i-- )
-        newData.push( delegate(0xFF) );
+    for( var i = length; i >= data.length; i-- )
+        newData[i-1] = romBlock.delegates[0xFF];
 
     return newData;
 }
@@ -71,10 +77,10 @@ function ramBlock(size, extend, name, mask)
         
     var read = new Array(extend);
     var write = new Array(extend);
-    var data = new Uint8Array(size);    // This will only work in IE10
+    var data = new Array(size);
     var delegate;
     
-    if(mask && mask < 0xFF)
+    if(mask < 0xFF)
     {
         delegate = function(index)
         {
@@ -103,11 +109,7 @@ function ramBlock(size, extend, name, mask)
     }
     
     var save = function() {
-        var encoded = '';
-        
-        for( var i = 0; i < data.length; i++ )
-            encoded += String.fromCharCode(data[i]);
-        
+        var encoded = data.map(String.fromCharCode).join('');
         window.localStorage.setItem(name,encoded);
     }
     
