@@ -18,6 +18,35 @@ function jsboyLCD(context, palette)
     this.scanline = new Array(172);
     this.context = context;
     this.paletteMemory = palette;
+
+    // --- Setup surface palette
+    this.colorTable = new Array(0x10000);
+
+    for( var i = 0; i < 0x10000; )
+        for( var b = 0; b < 32; b ++ )
+            for( var g = 0; g < 32; g ++ )
+                for( var r = 0; r < 32; r ++ )
+                    this.colorTable[i++] = [
+                        (r * 13 + g *  2 + b *  1) >> 1,
+                        (r *  0 + g * 12 + b *  4) >> 1,
+                        (r *  3 + g *  2 + b * 11) >> 1
+                    ];
+
+    // --- Tile decode LUT
+    this.tileDecodeForward = new Array(0x10000);
+    this.tileDecodeReverse = new Array(0x10000);
+
+    for( var i = 0; i < 0x10000; i++ )
+    {
+        this.tileDecodeForward[i] = new Array(8);
+        this.tileDecodeReverse[i] = new Array(8);
+
+        var h = (i & 0xFF00) >> 7;
+        var l = i & 0xFF;
+        
+        for( var b = 0; b < 8; b++ )
+            this.tileDecodeForward[i][7-b] = this.tileDecodeReverse[i][b] = ((h >> b) & 2) | ((l >> b) & 1);
+    }
 }
 
 jsboyLCD.prototype.update = function()
@@ -113,35 +142,4 @@ jsboyLCD.prototype.copyScanlineLegacy = function( y, bp, op0, op1 )
         for( var i = 0; i < 3; i++ )
             data[o++] = p[i];
     }
-}
-
-// --- Look up tables
-jsboyLCD.prototype.tileDecodeForward = new Array(0x10000);
-jsboyLCD.prototype.tileDecodeReverse = new Array(0x10000);
-jsboyLCD.prototype.colorTable = new Array(0x10000);
-
-// --- Initalization code
-for( var i = 0; i < 0x10000; )
-    for( var b = 0; b < 32; b ++ )
-        for( var g = 0; g < 32; g ++ )
-            for( var r = 0; r < 32; r ++ )
-            {
-                var vr = ((r * 13 + g * 2 + b) >> 1);
-                var vg = (g * 3 + b) << 1
-                var vb = (r * 3 + g * 2 + b * 11) >> 1;
-                
-                jsboyLCD.prototype.colorTable[i++] = [vr,vg,vb];
-            }
-
-// Generate tile decode buffer
-for( var i = 0; i < 0x10000; i++ )
-{
-    var forward_tile = jsboyLCD.prototype.tileDecodeForward[i] = new Array(8);
-    var reverse_tile = jsboyLCD.prototype.tileDecodeReverse[i] = new Array(8);
-
-    var h = (i & 0xFF00) >> 7;
-    var l = i & 0xFF;
-        
-    for( var b = 0; b < 8; b++ )
-        forward_tile[7-b] = reverse_tile[b] = ((h >> b) & 2) | ((l >> b) & 1);
 }
