@@ -96,7 +96,8 @@
                 if( xml.readyState != 4 || xml.status != 200 )
                     throw 'Error loading game list';
                 
-                games = xml.responseText.split('\n');
+                games = xml.responseText.split('\n').sort( function(a,b) { return a.length - b.length; } );
+                
                 document.getElementById('filename').style.visibility = 'visible';
             }
             

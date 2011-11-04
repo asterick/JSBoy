@@ -120,18 +120,18 @@ jsboyLCD.prototype.tileDecodeForward = new Array(0x10000);
 jsboyLCD.prototype.tileDecodeReverse = new Array(0x10000);
 jsboyLCD.prototype.colorTable = new Array(0x10000);
 
-var COLOR_TABLE = new Array(32);
-for( var i = 0; i < 0x20; i++ )
-{
-    COLOR_TABLE[i] = (i * 0x21) >> 2;
-}
-
 // --- Initalization code
 for( var i = 0; i < 0x10000; )
     for( var b = 0; b < 32; b ++ )
         for( var g = 0; g < 32; g ++ )
             for( var r = 0; r < 32; r ++ )
-                jsboyLCD.prototype.colorTable[i++] = [COLOR_TABLE[r],COLOR_TABLE[g],COLOR_TABLE[b]];
+            {
+                var vr = ((r * 13 + g * 2 + b) >> 1);
+                var vg = (g * 3 + b) << 1
+                var vb = (r * 3 + g * 2 + b * 11) >> 1;
+                
+                jsboyLCD.prototype.colorTable[i++] = [vr,vg,vb];
+            }
 
 // Generate tile decode buffer
 for( var i = 0; i < 0x10000; i++ )
