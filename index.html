@@ -30,83 +30,85 @@
                 div.setAttribute('class', change[div.getAttribute('class')] );
             }            
 
-            function base64decode(str)
-            {
-                var b64_key = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-                              "abcdefghijklmnopqrstuvwxyz" +
-                              "0123456789+/";
-    
-                var data = new Array();
-                var shifter = 0;
-                var bits = 0;
-    
-                for( var i = 0; i < str.length; i++ )
-                {
-                    var ch = b64_key.indexOf(str.charAt(i));
-        
-                    if( ch < 0 )
-                        continue ;
-        
-                    shifter = (shifter<<6)|ch;
-                    bits += 6;
-        
-                    while(bits >= 8)
-                    {
-                        bits -= 8;
-                        data.push((shifter>>bits)&0xFF);
-                    }
+            function load_binary(url) {
+                var typedArray = ('ArrayBuffer' in window && 'Uint8Array' in window);
+                var xhr, response, bytes, array, typedArray, ie9support;
+
+                xhr = new XMLHttpRequest();
+                xhr.open('GET', url, false);
+
+                if (typeof ActiveXObject == "function") {
+                    ie9support = true;
+                } else if (typedArray && 'mozResponseType' in xhr) {
+                    xhr.mozResponseType = 'arraybuffer';
+                } else if (typedArray && 'responseType' in xhr) {
+                    xhr.responseType = 'arraybuffer';
+                } else {
+                    xhr.overrideMimeType('text/plain; charset=x-user-defined');
+                    typedArray = false;
                 }
 
-                return data;
-            }
+                xhr.send(null);                
 
-            function asyncLoad(url, callback)
-            {
-                var xml = new XMLHttpRequest();
-    
-                xml.onreadystatechange = function()
-                {
-                    if( xml.readyState != 4 || xml.status != 200 )
-                        return ;
+                // Test ready state
+                if (xhr.readyState != 4 || xhr.status != 200)
+                    throw "Error while loading " + url;
 
-                    callback(xml.responseText);
+                // Determine how we should actually work
+                if (ie9support)            
+                    return VBArray(xhr.responseBody).toArray();
+                
+                if (typedArray && 'mozResponse' in xhr) {
+                    response = xhr.mozResponse;
+                } else if (typedArray && xhr.mozResponseArrayBuffer) {
+                    response = xhr.mozResponseArrayBuffer;
+                } else if ('responseType' in xhr) {
+                    response = xhr.response;
+                } else {
+                    response = xhr.responseText;
+                    
+                    bytes = response.length;
+                    array = new Array(bytes);
+                    for( var i = 0; i < bytes; i++ )
+                        array[i] = response.charCodeAt(i);
+                    return array;
                 }
-    
-                xml.open('GET', url);
-                xml.send();
+        
+                bytes = response.byteLength;
+                return new Uint8Array(response, 0, bytes);
             }
 
             function start()
             {
                 var ctx = document.getElementById('screen').getContext("2d");
                 runtime = new jsboy(ctx);
+                update();
+
                 window.onbeforeunload = function() {
                     runtime.close();
                 };
 
-                update();
-
-                asyncLoad("roms/gamelist", function(data) {
-                    games = data.split('\n');
-                    document.getElementById('filename').style.visibility = 'visible';
-                } );
+                var xml = new XMLHttpRequest();
+    
+                xml.open('GET', "roms/gamelist", false);
+                xml.send();
+                
+                if( xml.readyState != 4 || xml.status != 200 )
+                    throw 'Error loading game list';
+                
+                games = xml.responseText.split('\n');
+                document.getElementById('filename').style.visibility = 'visible';
             }
             
-            function run(div, rom)
+            function run(rom)
             {
-                var url = shorten(rom);
-
                 var field = document.getElementById('filename');
-                field.value = url;
+                document.title = shorten(rom);
 
-                asyncLoad( rom, function(data) {
-                    document.title = "JSBoy - " + url;
+                runtime.reset(rom, load_binary(rom));
+                runtime.run(true);
 
-                    runtime.reset(rom, base64decode(data));
-                    runtime.run(true);
-
-                    update();
-                } );
+                update();
             }
             
             function updateRegs( device, state )
@@ -129,6 +131,40 @@
                             e.innerHTML = state[k];
                     }
                 }
+            }
+            
+            var search;
+            
+            function cheatSearch(value)
+            {
+                var mem = runtime.cpu.wram.memory.data;
+                var count = 0;
+                var address = 0;
+                
+                if( search === undefined )
+                    search = new Array(mem.length);
+                
+                for( var i = 0; i < mem.length; i++ )
+                {
+                    if( search[i] || mem[i] != (value & 0xFF) )
+                    {
+                        search[i] = true;
+                    }
+                    else
+                    {
+                        address = i;
+                        count ++;
+                    }
+                }
+                
+                if( count == 1 )
+                {
+                    alert("Found address");
+                    // Max out value
+                    setInterval( function() { mem[address] = 0xFF }, 100 );
+                }
+                else
+                    alert("Search results: " + count);
             }
             
             function update()
@@ -186,7 +222,7 @@
                         continue ;
                     
                     var url = encodeURI(games[i].split("'").join("\\'"));
-                    var link = '<a href="javascript:run(\''+screen+'\',\'' + url + '\')">' + shorten(games[i]) + "</a>"
+                    var link = '<a href="javascript:run(\'' + url + '\')">' + shorten(games[i]) + "</a>"
                     list.push(link);
                 }
                 

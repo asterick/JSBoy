@@ -48,20 +48,20 @@ function byteAlignment(size, base)
 
 function romBlock(data, length)
 {
-    if( length !== undefined )
-    {
-        data = data.concat();
-        
-        while(data.length < length)
-            data.push(0xFF);
-    }
+    var newData = new Array();
 
     function delegate(value)
     {
         return function() { return value; }
     }
     
-    return data.map( delegate );
+    for( var i = 0; i < data.length; i++ )
+        newData.push( delegate(data[i]) );
+
+    for( var i = length; i >= 0; i-- )
+        newData.push( delegate(0xFF) );
+
+    return newData;
 }
 
 function ramBlock(size, extend, name, mask)
@@ -71,10 +71,10 @@ function ramBlock(size, extend, name, mask)
         
     var read = new Array(extend);
     var write = new Array(extend);
-    var data = new Array(size);
+    var data = new Uint8Array(size);    // This will only work in IE10
     var delegate;
     
-    if(mask)
+    if(mask && mask < 0xFF)
     {
         delegate = function(index)
         {
@@ -103,14 +103,21 @@ function ramBlock(size, extend, name, mask)
     }
     
     var save = function() {
-        window.localStorage.setItem(name,JSON.stringify(data));
+        var encoded = '';
+        
+        for( var i = 0; i < data.length; i++ )
+            encoded += String.fromCharCode(data[i]);
+        
+        window.localStorage.setItem(name,encoded);
     }
     
     var load = function() {
         try
         {
-            var loaded = JSON.parse(window.localStorage.getItem(name)); 
-            data.copy(0,loaded,0,Math.min(loaded.length,data.length));
+            var encoded = window.localStorage.getItem(name);
+            
+            for( var i = 0; i < encoded.length; i++ )
+                data[i] = encoded.charCodeAt(i);
         }
         catch(o)
         {
