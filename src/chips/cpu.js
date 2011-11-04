@@ -342,7 +342,7 @@ jsboyCPU.prototype.nextSignedByte = function()
     // Sign extend byte
     var b = this.nextByte();
     if( b & 0x80 )
-        return b | 0xFFFFFF00;
+        return b - 0x100;
     return b;
 }
 

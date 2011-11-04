@@ -54,11 +54,11 @@ jsboyCPU.prototype.addSP = function() {
     var q = this.sp;
     var v = this.nextSignedByte();
     var r = q + v;
-    
+
     this.zf = false;
     this.nf = false;
-    this.hf = ((q & 0xFFF) + (v & 0xFFF)) >= 0x1000;
-    this.cf = r >= 0x10000;
+    this.cf = ((q & 0xFF) + (v & 0xFF)) >= 0x100;
+    this.hf = ((q & 0xF) + (v & 0xF)) >= 0x10;
 
     return r & 0xFFFF;
 }
@@ -206,21 +206,26 @@ jsboyCPU.prototype.cpl = function() {
 jsboyCPU.prototype.daa = function() {
     var result = this.a;
 
-    if (this.nf) {
-        if (this.hf || (this.a&0xf)>9) 
-            result -= 0x06;
-        if (this.cf || this.a>0x99) 
+    if ( this.nf )
+    {
+        if ( this.hf ) {
+            result -= 6;
+            if ( !this.cf )
+                result &= 0xFF;
+        }
+
+        if ( this.cf )
             result -= 0x60;
     } else {
-        if (this.hf || ((this.a & 0x0F) > 9)) 
-            result += 0x06;
-        if (this.cf || ((result & 0x1F0)>0x90))
+        if ( this.hf || ( result & 0x0F ) > 9 )
+            result += 6;
+        if ( this.cf || result > 0x9F )
             result += 0x60;
     }
     
     this.a = result & 0xFF;
-    this.zf = (result == 0);
-    this.cf = (result & 0xFF00) != 0;
+    this.zf = (this.a == 0);
+    this.cf = this.cf || ((result & 0xFF00) != 0);
     this.hf = false;
 }
 
@@ -1198,7 +1203,9 @@ jsboyCPU.prototype.stepBase = function(){
         this.cycles += 4;
         break ;
     case 0xF8:
-        var o = this.addSP(); this.l = o & 0xFF; this.h = o >> 8;
+        var o = this.addSP(); 
+        this.l = o & 0xFF; 
+        this.h = o >> 8;
         this.cycles += 3;
         break ;
 
