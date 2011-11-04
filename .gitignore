@@ -1,6 +1,6 @@
 # ignore roms folder
 roms
+gamelist
 doc
-test
 favicon.ico
 .DS_Store

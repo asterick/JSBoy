@@ -9,15 +9,15 @@ var PALETTE_SHIFT = 2;
 
 function jsboyLCD(context, palette)
 {
-    // --- Setup display
-    context.fillStyle = 'white';
-    context.fillRect( 0,0,160,144 );
-    
-    this.buffer = context.getImageData(0,0,160,144);    
-    
+    // --- Setup display    
     this.scanline = new Array(172);
     this.context = context;
     this.paletteMemory = palette;
+
+    this.context.fillStyle = 'white';
+    this.context.fillRect( 0,0,160,144 );
+    
+    this.buffer = this.context.getImageData(0,0,160,144);    
 
     // --- Setup surface palette
     this.colorTable = new Array(0x10000);

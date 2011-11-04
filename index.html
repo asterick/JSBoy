@@ -26,7 +26,7 @@
                     'double': 'regular',
                     'regular': 'double'
                 };
-                
+
                 div.setAttribute('class', change[div.getAttribute('class')] );
             }            
 
@@ -90,7 +90,7 @@
 
                 var xml = new XMLHttpRequest();
     
-                xml.open('GET', "roms/gamelist", false);
+                xml.open('GET', "gamelist", false);
                 xml.send();
                 
                 if( xml.readyState != 4 || xml.status != 200 )
@@ -237,8 +237,7 @@
     <body>
         <div class='center'>
             <div id='screenHolder'>
-                <canvas id='screen' class='regular' width='160' height='144' onclick="resize(this)">
-                </canvas>
+                <canvas id='screen' class='regular' width='160' height='144' onclick="resize(this)"></canvas>
                 
                 <div id='Button_A'>X</div>
                 <div id='Button_B'>Z</div>

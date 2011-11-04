@@ -19,6 +19,7 @@ This emulator features a number of performance optimizations in order to keep
 performance at a maximum;  this includes interrupt prediction and the use of
 memory i/o delegates for fast memory accesses.
 
+All the audio registers are simply ignored.
 
 Usage
 ----------------------------------------
@@ -29,8 +30,9 @@ for speed considerations.  Consult index.html for current implementation details
 If you wish to use it as is, create a roms directory in the root project folder
 and do this simple command to build the catalog:
 
-    find roms -name "*.gb*" > roms/gamelist
+    find roms -name "*.gb*" > gamelist
 
 please note that Chrome will not allow XMLHttpRequests on the local file system
-so you may need to run a lightweight http server to test there.
+so you may need to run a lightweight http server to run locally.
+
 
