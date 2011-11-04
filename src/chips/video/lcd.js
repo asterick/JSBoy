@@ -105,8 +105,8 @@ jsboyLCD.prototype.copyScanline = function( y )
     for( var b = 8; b < 168; b++ )
     {
         var px = colorTable[palette[scanline[b] & COLOR]];
-        for( var i = 0; i < 3; i++ )
-            data[o++] = px[i];
+        for( var i = 0; i < 3; i++, o++ )
+            data[o] = (data[o] + px[i]) >> 1;   // BLUR
         o++;
     }
 }
