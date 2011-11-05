@@ -27,9 +27,9 @@ function jsboyLCD(context, palette)
             for( var g = 0; g < 32; g ++ )
                 for( var r = 0; r < 32; r ++ )
                     this.colorTable[i++] = [
-                        (r * 13 + g *  2 + b *  1) >> 1,
-                        (r *  0 + g * 12 + b *  4) >> 1,
-                        (r *  3 + g *  2 + b * 11) >> 1
+                        ((r * 13 + g *  2 + b *  1) >> 1) * 0xCF / 0xFF + 0x20,
+                        ((r *  0 + g * 12 + b *  4) >> 1) * 0xCF / 0xFF + 0x20,
+                        ((r *  3 + g *  2 + b * 11) >> 1) * 0xCF / 0xFF + 0x20
                     ];
 
     // --- Tile decode LUT
