@@ -3,9 +3,10 @@ function jsboyPalette(cpu)
     this.cpu = cpu;
 
     // Create and fill palette to white
-    this.paletteMemory = new Array(0x80);
-    this.paletteMemory.fill(0x7FFF);
-    
+    var palMemory = new ArrayBuffer(0x100);
+    this.byteMemory = new Uint8Array(palMemory);
+    this.wordMemory = new Uint16Array(palMemory);
+
     // DMG Palette registers
     this.reg_BGP = 0;
     this.reg_OBP0 = 0;
@@ -98,22 +99,14 @@ jsboyPalette.prototype.write_OCPS = function(data)
 
 jsboyPalette.prototype.read_BCPD = function()
 {
-    if(this.reg_BCPS & 1)
-        return this.paletteMemory[this.reg_BCPS>>1] >> 8;
-    else
-        return this.paletteMemory[this.reg_BCPS>>1] & 0xFF;
+    return this.byteMemory[this.reg_BCPS];
 }
 
 jsboyPalette.prototype.write_BCPD = function(data)
 {
     this.cpu.catchUp();
 
-    var index = this.reg_BCPS>>1;
-    
-    if(this.reg_BCPS & 1)
-        this.paletteMemory[index] = (this.paletteMemory[index] & 0x00FF) | (data << 8);
-    else
-        this.paletteMemory[index] = (this.paletteMemory[index] & 0xFF00) | (data);
+    this.byteMemory[this.reg_BCPS] = data;
 
     if( this.reg_BCPS_increment )
         this.reg_BCPS = (this.reg_BCPS+1) & 0x3F;
@@ -121,24 +114,14 @@ jsboyPalette.prototype.write_BCPD = function(data)
 
 jsboyPalette.prototype.read_OCPD = function()
 {
-    var index = this.reg_OCPS>>1;
-
-    if(this.reg_OCPS & 1)
-        return this.paletteMemory[index] >> 8;
-    else
-        return this.paletteMemory[index] & 0xFF;
+    return this.byteMemory[0x40|this.reg_OCPS];
 }
 
 jsboyPalette.prototype.write_OCPD = function(data)
 {
     this.cpu.catchUp();
 
-    var index = (this.reg_OCPS>>1) | 0x20;
-
-    if(this.reg_OCPS & 1)
-        this.paletteMemory[index] = (this.paletteMemory[index] & 0x00FF) | (data << 8);
-    else
-        this.paletteMemory[index] = (this.paletteMemory[index] & 0xFF00) | (data);
+    this.byteMemory[0x40|this.reg_OCPS] = data;
     
     if( this.reg_OCPS_increment )
         this.reg_OCPS = (this.reg_OCPS+1) & 0x3F;

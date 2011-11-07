@@ -20,7 +20,7 @@ function jsboyGPU(context, cpu)
     this.videoMemory = ramBlock(0x4000);
     this.oamMemory = ramBlock(0xA0);
     this.palette = new jsboyPalette(cpu);
-    this.lcd = new jsboyLCD(context, this.palette.paletteMemory);
+    this.lcd = new jsboyLCD(context, this.palette.wordMemory);
     this.dma = new jsboyDMA(cpu);
     this.cpu = cpu;
 
