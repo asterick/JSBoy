@@ -59,8 +59,7 @@ jsboyCPU.prototype.reset = function()
     this.irq_master = false;
     
     // KEY1 register
-    this.doubleSpeed = false;
-    this.prepareSpeed = false;
+    this.setCPUSpeed(false);
     
     // CPU registers
     this.a = 0;
@@ -124,6 +123,18 @@ jsboyCPU.prototype.reset = function()
     this.write[REG_KEY1] = this.$('write_KEY1');    
 }
 
+jsboyCPU.prototype.setCPUSpeed = function(fast) {
+    this.doubleSpeed = fast;    
+    this.prepareSpeed = false;
+
+    this.CYCLES_1 = fast ? 1 : 2;
+    this.CYCLES_2 = fast ? 2 : 4;
+    this.CYCLES_3 = fast ? 3 : 6;
+    this.CYCLES_4 = fast ? 4 : 8;
+    this.CYCLES_5 = fast ? 5 : 10;
+    this.CYCLES_6 = fast ? 6 : 12;
+}
+
 jsboyCPU.prototype.alertIllegal = function( addr )
 {
     var addrName = addr.toString(16).toUpperCase();
@@ -163,26 +174,19 @@ jsboyCPU.prototype.predictEvent = function()
     min(this.gpu.predict());
     min(this.timer.predict());
     //TODO: SERIAL?
-
-    // We have half the time in double speed mode    
-    if( !this.doubleSpeed )
-        this.predict = predict / 2;
-    else
-        this.predict = predict;
 }
 
 // --- Send CPU accumulation clock to the external components
 jsboyCPU.prototype.catchUp = function()
 {
     // Increment it based on the CPU clock, not the system
-    var adjusted = this.doubleSpeed ? this.cycles : (this.cycles * 2);
-    var machine = this.doubleSpeed ? (this.cycles * 2) : this.cycles;
+    var machine = this.doubleSpeed ? this.cycles : (this.cycles >> 1);
         
-    this.timer.clock(adjusted, machine);
-    this.gpu.clock(adjusted);
+    this.timer.clock(this.cycles, machine);
+    this.gpu.clock(this.cycles);
 
     // Flush the cycle buffer
-    this.frameCycles -= adjusted;
+    this.frameCycles -= this.cycles;
     this.invalidate();
     this.cycles = 0;
 }
@@ -220,7 +224,7 @@ jsboyCPU.prototype.interrupt = function()
     this.irq_request &= ~select;    
     this.irq_master = false;
     this.call(vector);
-    this.clocks += 4;
+    this.cycles += this.CYCLES_4;
 }
 
 // --- Trigger IRQ (auto invalidate prediction)
