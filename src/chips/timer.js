@@ -20,10 +20,13 @@ jsboyTimer.prototype.PRESCALARS = [
         (2 * 1024 * 1024) / 16384
     ];
 
-jsboyTimer.prototype.clock = function(cycles, machine_cycles)
+jsboyTimer.prototype.tick = function(cycles)
 {
-    this.div = (this.div + machine_cycles) & 0x1FFFF;
+    this.div = (this.div + cycles) & 0xFFFF;
+}
     
+jsboyTimer.prototype.clock = function(cycles)
+{
     if( !this.enabled )
         return ;
     
@@ -80,7 +83,7 @@ jsboyTimer.prototype.write_TMA = function(data)
 jsboyTimer.prototype.read_DIV = function()
 {
     this.cpu.catchUp();
-    return (this.div >> 6) & 0xFF;
+    return this.div >> 8;
 }
 
 jsboyTimer.prototype.write_DIV = function()

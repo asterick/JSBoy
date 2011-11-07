@@ -124,9 +124,11 @@ jsboyCPU.prototype.reset = function()
 }
 
 jsboyCPU.prototype.setCPUSpeed = function(fast) {
-    this.doubleSpeed = fast;    
+    this.doubleSpeed = fast;
     this.prepareSpeed = false;
 
+    // This is arguably the same speed as a table lookup
+    // due to the presense of a large case statement
     this.CYCLES_1 = fast ? 1 : 2;
     this.CYCLES_2 = fast ? 2 : 4;
     this.CYCLES_3 = fast ? 3 : 6;
@@ -164,25 +166,24 @@ jsboyCPU.prototype.predictEvent = function()
     // Never clock more than the rest of the frame!
     var predict = this.frameCycles;
     
-    function min( a )
-    {
-        if( a === null || a > predict )
-            return ;
-        predict = a;
-    }
-    
-    min(this.gpu.predict());
-    min(this.timer.predict());
+    var b = this.gpu.predict();
+    var c = this.timer.predict();
     //TODO: SERIAL?
+
+    if( b && b < predict )
+        predict = b;
+    if( c && c < predict )
+        predict = c;    
 }
 
 // --- Send CPU accumulation clock to the external components
 jsboyCPU.prototype.catchUp = function()
 {
     // Increment it based on the CPU clock, not the system
-    var machine = this.doubleSpeed ? this.cycles : (this.cycles >> 1);
-        
-    this.timer.clock(this.cycles, machine);
+    var cpuCycles = this.doubleSpeed ? this.cycles : (this.cycles >> 1);
+    this.timer.tick(cpuCycles);
+    this.timer.clock(this.cycles);
+
     this.gpu.clock(this.cycles);
 
     // Flush the cycle buffer

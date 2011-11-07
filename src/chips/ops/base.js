@@ -1018,10 +1018,8 @@ jsboyCPU.prototype.stepBase = function(){
     case 0x10:
         // Put the CPU in halt mode
         if( this.prepareSpeed )
-        {
             this.setCPUSpeed(!this.doubleSpeed);
-            this.prepareSpeed = false;
-        }
+
         // Note: this SHOULD fall through
     case 0x76:
         if( !this.irq_master )
