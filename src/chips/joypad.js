@@ -14,6 +14,28 @@ function jsboyJoypad(cpu)
     window.addEventListener( 'keyup', this.$('keyup'), false);
 }
 
+// default joystick to keyboard mapping
+jsboyJoypad.prototype.mapping_A = KEYBOARD_X;
+jsboyJoypad.prototype.mapping_B = KEYBOARD_Z;
+jsboyJoypad.prototype.mapping_Select = KEYBOARD_SHIFT;
+jsboyJoypad.prototype.mapping_Start = KEYBOARD_ENTER;
+
+jsboyJoypad.prototype.mapping_Up = KEYBOARD_UP_ARROW;
+jsboyJoypad.prototype.mapping_Down = KEYBOARD_DOWN_ARROW;
+jsboyJoypad.prototype.mapping_Left = KEYBOARD_LEFT_ARROW;
+jsboyJoypad.prototype.mapping_Right = KEYBOARD_RIGHT_ARROW;
+
+jsboyJoypad.prototype.reset = function()
+{
+    this.selectDir = 0;
+    this.selectButton = 0;
+    this.dataDir = 0;
+    this.dataButton = 0;
+    
+    this.cpu.read[REG_JOYP] = this.$('read_JOYP');
+    this.cpu.write[REG_JOYP] = this.$('write_JOYP');
+}
+
 jsboyJoypad.prototype.disableActions = function(keyEventArgs)
 {
     var root = document.getElementsByTagName('body')[0];
@@ -40,17 +62,6 @@ jsboyJoypad.prototype.keyup = function(keyEventArgs)
 
     return this.disableActions(keyEventArgs);
 }
-
-// Joystick to keyboard mapping
-jsboyJoypad.prototype.mapping_A = KEYBOARD_X;
-jsboyJoypad.prototype.mapping_B = KEYBOARD_Z;
-jsboyJoypad.prototype.mapping_Select = KEYBOARD_SHIFT;
-jsboyJoypad.prototype.mapping_Start = KEYBOARD_ENTER;
-
-jsboyJoypad.prototype.mapping_Up = KEYBOARD_UP_ARROW;
-jsboyJoypad.prototype.mapping_Down = KEYBOARD_DOWN_ARROW;
-jsboyJoypad.prototype.mapping_Left = KEYBOARD_LEFT_ARROW;
-jsboyJoypad.prototype.mapping_Right = KEYBOARD_RIGHT_ARROW;
 
 jsboyJoypad.prototype.update = function()
 {
@@ -100,15 +111,4 @@ jsboyJoypad.prototype.write_JOYP = function(data)
 {
     this.selectDir = data & 0x10;
     this.selectButton = data & 0x20;
-}
-
-jsboyJoypad.prototype.reset = function()
-{
-    this.selectDir = 0;
-    this.selectButton = 0;
-    this.dataDir = 0;
-    this.dataButton = 0;
-    
-    this.cpu.read[REG_JOYP] = this.$('read_JOYP');
-    this.cpu.write[REG_JOYP] = this.$('write_JOYP');
 }

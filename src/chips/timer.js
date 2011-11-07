@@ -14,15 +14,15 @@ function jsboyTimer(cpu)
 }
 
 jsboyTimer.prototype.PRESCALARS = [
-        (2 * 1024 * 1024) / 4096,
-        (2 * 1024 * 1024) / 262144,
-        (2 * 1024 * 1024) / 65536,
-        (2 * 1024 * 1024) / 16384
+        (8 * 1024 * 1024) / 4096,
+        (8 * 1024 * 1024) / 262144,
+        (8 * 1024 * 1024) / 65536,
+        (8 * 1024 * 1024) / 16384
     ];
 
 jsboyTimer.prototype.tick = function(cycles)
 {
-    this.div = (this.div + cycles) & 0x3FFF;
+    this.div = (this.div + cycles) & 0xFFFF;
 }
     
 jsboyTimer.prototype.clock = function(cycles)
@@ -86,7 +86,7 @@ jsboyTimer.prototype.write_TMA = function(data)
 jsboyTimer.prototype.read_DIV = function()
 {
     this.cpu.catchUp();
-    return this.div >> 6;   // We do a predivide of 4 on all clock cycles
+    return this.div >> 8;
 }
 
 jsboyTimer.prototype.write_DIV = function()
@@ -122,7 +122,7 @@ jsboyTimer.prototype.reset = function()
 jsboyTimer.prototype.predict = function()
 {
     if( !this.enabled )
-        return null;
+        return ;
     
     return this.PRESCALARS[this.scalar] * (0x100 - this.timer) - this.divider;
 }

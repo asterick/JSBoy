@@ -60,6 +60,7 @@ jsboyCPU.prototype.reset = function()
     
     // KEY1 register
     this.setCPUSpeed(false);
+    this.invalidate();
     
     // CPU registers
     this.a = 0;
@@ -82,7 +83,6 @@ jsboyCPU.prototype.reset = function()
     
     // CPU timing / runtime variables
     this.frameCycles = 0;
-    this.predict = 0;
     this.cycles = 0;
     
     function nullBody() { return 0xFF; }
@@ -126,15 +126,6 @@ jsboyCPU.prototype.reset = function()
 jsboyCPU.prototype.setCPUSpeed = function(fast) {
     this.doubleSpeed = fast;
     this.prepareSpeed = false;
-
-    // This is arguably the same speed as a table lookup
-    // due to the presense of a large case statement
-    this.CYCLES_1 = fast ? 1 : 2;
-    this.CYCLES_2 = fast ? 2 : 4;
-    this.CYCLES_3 = fast ? 3 : 6;
-    this.CYCLES_4 = fast ? 4 : 8;
-    this.CYCLES_5 = fast ? 5 : 10;
-    this.CYCLES_6 = fast ? 6 : 12;
 }
 
 jsboyCPU.prototype.alertIllegal = function( addr )
@@ -158,7 +149,7 @@ jsboyCPU.prototype.update = function()
 // --- This occurs when the an event causes the IRQ prediction to be invalid
 jsboyCPU.prototype.invalidate = function()
 {
-    this.predict = 0;
+    this.predictDivided = 0;
 };
 
 jsboyCPU.prototype.predictEvent = function()
@@ -170,10 +161,12 @@ jsboyCPU.prototype.predictEvent = function()
     var c = this.timer.predict();
     //TODO: SERIAL?
 
-    if( b && b < predict )
+    if( b < predict )
         predict = b;
-    if( c && c < predict )
-        predict = c;    
+    if( c < predict )
+        predict = c;
+        
+    return predict;
 }
 
 // --- Send CPU accumulation clock to the external components
@@ -225,7 +218,7 @@ jsboyCPU.prototype.interrupt = function()
     this.irq_request &= ~select;    
     this.irq_master = false;
     this.call(vector);
-    this.cycles += this.CYCLES_4;
+    this.cycles += this.doubleSpeed ? 4 : 8;
 }
 
 // --- Trigger IRQ (auto invalidate prediction)
@@ -244,21 +237,25 @@ jsboyCPU.prototype.step = function()
             
     while( this.frameCycles > 0 )
     {
-        this.predictEvent();
+        var clockRate = this.doubleSpeed ? 4 : 8;
+        var predict = this.predictEvent() || clockRate;
+        this.predictDivided = predict / clockRate;
         
         // CPU is stopped, or halted, simply clock the machine up to
         // the predicted value
         if( this.halted )
         {
-            this.cycles += this.predict || 1;
+            this.cycles += predict;
         }
         else
         {
+            var cycles = 0;
+            
             // CPU is running, run up until the IRQ prediction mark
-            do
-            {
-                this.stepBase();
-            } while( this.predict > this.cycles );
+            while( this.predictDivided > cycles )
+                cycles += this.stepBase();
+            
+            this.cycles += cycles * clockRate;
         }
         
         this.catchUp();
@@ -271,7 +268,7 @@ jsboyCPU.prototype.singleStep = function()
     if( this.halted )
         this.cycles += 1;
     else
-        this.stepBase();
+        this.cycles += this.stepBase() * (this.doubleSpeed ? 4 : 8);
 
     this.catchUp();
     this.interrupt();

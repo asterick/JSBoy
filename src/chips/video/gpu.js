@@ -7,9 +7,9 @@ include('src/chips/video/palette.js');
 
 var SCANLINES      = 154;
 var DRAWLINES      = 144;
-var MODE_0_TIME    = 102;
-var MODE_2_TIME    = 40;
-var MODE_3_TIME    = 86;
+var MODE_0_TIME    = 408;
+var MODE_2_TIME    = 160;
+var MODE_3_TIME    = 344;
 var TICKS_PER_LINE = MODE_0_TIME + MODE_2_TIME + MODE_3_TIME;
 var DRAW_PHASE     = DRAWLINES * TICKS_PER_LINE;
 var TICKS_PER_FRAME = SCANLINES * TICKS_PER_LINE;
@@ -314,25 +314,23 @@ jsboyGPU.prototype.predictEndOfFrame = function()
 
 jsboyGPU.prototype.predict = function()
 {
-    var time = null;
- 
-    function min( a )
-    {
-        if( a !== null && a < time )
-            time = a;
-    }
- 
     var phase = this.pixelClock % TICKS_PER_LINE;
 
     // LCD-Stat registers
     if( this.mode2IRQ )
-        min( this.timeUntilDrawClock(0, phase) );
+        var a = this.timeUntilDrawClock(0, phase);
     if( this.mode0IRQ )
-        min( this.timeUntilDrawClock(MODE_2_TIME + MODE_3_TIME, phase) );
+        var b = this.timeUntilDrawClock(MODE_2_TIME + MODE_3_TIME, phase);
     if( this.lycIRQ )
-        min( this.timeUntilLine(this.lyc) );
-
-    return time;
+        var c = this.timeUntilLine(this.lyc);
+        
+    // Note: This relies a lot on 'undefined' comparison behavior
+    if( a < b && a < c )
+        return a;
+    else if( b < c )
+        return b;
+    else
+        return c;
 }
 
 jsboyGPU.prototype.timeUntilVBlank = function()
@@ -347,9 +345,8 @@ jsboyGPU.prototype.timeUntilDrawClock = function(phase, period)
 {
     // The next one is on a banking line, so we wait until line 0's period
     if( this.pixelClock >= DRAW_PHASE - TICKS_PER_LINE + period )
-    {
         return DRAW_PHASE - this.pixelClock + period;
-    }
+
     // Calculate time until phase crossing
     else if( phase < period )
         return period - phase;
@@ -360,7 +357,7 @@ jsboyGPU.prototype.timeUntilDrawClock = function(phase, period)
 jsboyGPU.prototype.timeUntilLine = function(line)
 {
     if( line >= SCANLINES )
-        return null;
+        return ;
     
     var bias = TICKS_PER_LINE * line;
     
