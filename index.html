@@ -104,9 +104,10 @@
             function run(rom)
             {
                 var field = document.getElementById('filename');
-                document.title = unescape(shorten(rom));
+                var name = games[rom];
+                document.title = unescape(shorten(name));
 
-                runtime.reset(rom, load_binary(rom));
+                runtime.reset(rom, load_binary(name));
                 runtime.run(true);
 
                 update();
@@ -223,7 +224,7 @@
                         continue ;
                     
                     var url = encodeURI(games[i].split("'").join("\\'"));
-                    var link = '<a href="#" onclick="run(\'' + url + '\')">' + shorten(games[i]) + "</a>"
+                    var link = "<a href='#' onclick='run(" + i + ")'>" + shorten(games[i]) + "</a>"
                     list.push(link);
                 }
                 
