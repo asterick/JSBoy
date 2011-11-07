@@ -34,4 +34,7 @@ If you wish to use it as is, place some roms in the project folder and run this:
 please note that Chrome will not allow XMLHttpRequests on the local file system
 so you may need to run a lightweight http server to run locally.
 
-
+Bugs
+----------------------------------------
+Predictions are busted (most noticeable in hi-color games)
+Interrupts for joypad seem off, as a lot of games boot if you press a key

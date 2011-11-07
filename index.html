@@ -104,7 +104,7 @@
             function run(rom)
             {
                 var field = document.getElementById('filename');
-                document.title = shorten(rom);
+                document.title = unescape(shorten(rom));
 
                 runtime.reset(rom, load_binary(rom));
                 runtime.run(true);
@@ -223,7 +223,7 @@
                         continue ;
                     
                     var url = encodeURI(games[i].split("'").join("\\'"));
-                    var link = '<a href="javascript:run(\'' + url + '\')">' + shorten(games[i]) + "</a>"
+                    var link = '<a href="#" onclick="run(\'' + url + '\')">' + shorten(games[i]) + "</a>"
                     list.push(link);
                 }
                 
@@ -360,6 +360,7 @@
                             <a onclick="runtime.reset();update();" href="#">reset</a><br/>
                             <a onclick="runtime.singleStep();update();" href="#">step</a>
                             <a onclick="runtime.step();update();" href="#">frame</a>
+                            <a onclick="runtime.cpu.predictEvent = function() { this.predict = 0; }" href='#'>disable predictions</a>
                         </div>
                     </div>
                     

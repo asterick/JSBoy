@@ -83,6 +83,10 @@ jsboyDMA.prototype.write_HDMA5 = function(data)
         while( this.active )
             this.moveBlock();
     }
+    else
+    {
+        log('Warning, HBLANK HDMA activated (unsupported)');
+    }
 }
 
 jsboyDMA.prototype.moveBlock = function()
