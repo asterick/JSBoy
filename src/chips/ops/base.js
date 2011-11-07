@@ -1,6 +1,3 @@
-// INSTRUCTIONS VALIDATED:
-// $40 - $BF
-
 // --- Instruction map for base block
 jsboyCPU.prototype.rlca = function() {
     var n = ((this.a >> 7) | (this.a << 1)) & 0xFF;

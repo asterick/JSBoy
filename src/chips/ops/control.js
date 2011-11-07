@@ -1,4 +1,4 @@
-// --- CPU Level hardware registers (IEQ, Speed and CPU dependant timer)    
+// --- CPU Level hardware registers (IEQ, Speed and CPU dependant timer)
 jsboyCPU.prototype.read_IE = function()
 {
     return this.irq_enable;
@@ -13,13 +13,13 @@ jsboyCPU.prototype.write_IE = function( data )
 jsboyCPU.prototype.read_IF = function()
 {
     this.catchUp();
-    
+
     return this.irq_request;
 }
 
 jsboyCPU.prototype.write_IF = function( data )
 {
-    this.irq_request = data & 0x1F;        
+    this.irq_request = data & 0x1F;
     this.invalidate();
 }
 
@@ -46,35 +46,35 @@ jsboyCPU.prototype.write_LOCK = function(data)
 
     var self = this;
     var lock = this.write[REG_BLCK];
-    
+
     this.write[REG_BLCK] = function(data)
     {
         if( data != 0x11 )
             return ;
-        
+
         // --- IR Communication
         self.alertIllegal(REG_RP);
-    
+
         // --- Video DMA
         self.alertIllegal(REG_HDMA1);
         self.alertIllegal(REG_HDMA2);
         self.alertIllegal(REG_HDMA3);
         self.alertIllegal(REG_HDMA4);
         self.alertIllegal(REG_HDMA5);
-    
+
         // --- Palette access
         self.alertIllegal(REG_BCPS);
         self.alertIllegal(REG_BCPD);
         self.alertIllegal(REG_OCPS);
         self.alertIllegal(REG_OCPD);
-        
+
         // --- Memory banking
         self.alertIllegal(REG_VBK);
         self.alertIllegal(REG_SVBK);
-    
+
         // --- Speed control
         self.alertIllegal(REG_KEY1);
-    
+
         // --- Lockout controls
         self.alertIllegal(REG_LCD_MODE);
         self.alertIllegal(REG_LOCK);

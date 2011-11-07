@@ -16,8 +16,8 @@ jsboyWorkRam.prototype.write_SVBK = function( data )
     this.cpu.write.copy(0xD000, this.memory.write, ab, 0x1000);
 
     // Shadow memory
-    this.cpu.read.copy(0xF000, this.memory.read, ab, 0xE00);
-    this.cpu.write.copy(0xF000, this.memory.write, ab, 0xE00);
+    this.cpu.read.copy(0xF000, this.cpu.read, 0xD000, 0xE00);
+    this.cpu.write.copy(0xF000, this.cpu.write, 0xD000, 0xE00);
 }
 
 jsboyWorkRam.prototype.read_SVBK = function()
@@ -36,9 +36,8 @@ jsboyWorkRam.prototype.reset = function()
     this.cpu.write.copy(0xC000, this.memory.write, 0, 0x2000);
 
     // --- Shadow memory
-    this.cpu.read.copy(0xE000, this.memory.read, 0, 0x1E00);
-    this.cpu.write.copy(0xE000, this.memory.write, 0, 0x1E00);
-    
+    this.cpu.read.copy(0xE000, this.cpu.read, 0xC000, 0x1E00);
+    this.cpu.write.copy(0xE000, this.cpu.write, 0xC000, 0x1E00);
     this.bank = 0;
 
     this.cpu.read[REG_SVBK] = this.$('read_SVBK');
