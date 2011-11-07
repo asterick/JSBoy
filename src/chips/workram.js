@@ -9,11 +9,11 @@ function jsboyWorkRam(cpu)
 jsboyWorkRam.prototype.write_SVBK = function( data )
 {
     this.bank = data & 0x7;
-    var ab = (this.bank || 1) * 0x1000;
+    var ea = (this.bank || 1) * 0x1000;
 
     // Bankable memory
-    this.cpu.read.copy(0xD000, this.memory.read, ab, 0x1000);
-    this.cpu.write.copy(0xD000, this.memory.write, ab, 0x1000);
+    this.cpu.read.copy(0xD000, this.memory.read, ea, 0x1000);
+    this.cpu.write.copy(0xD000, this.memory.write, ea, 0x1000);
 
     // Shadow memory
     this.cpu.read.copy(0xF000, this.cpu.read, 0xD000, 0xE00);

@@ -70,8 +70,8 @@ jsboyDMA.prototype.read_HDMA5 = function()
 
 jsboyDMA.prototype.write_HDMA5 = function(data)
 {
-    this.active = true;
     this.blocksLeft = data & 0x7F;
+    this.active = true;
 
     var masked = this.sourceAddress & 0xE000;
     if( masked == 0x8000 || masked == 0xE000 )

@@ -2,10 +2,13 @@ function jsboyPalette(cpu)
 {
     this.cpu = cpu;
 
-    // Create and fill palette to white
+    // --- Create a blank palette
     var palMemory = new ArrayBuffer(0x100);
     this.byteMemory = new Uint8Array(palMemory);
-    this.wordMemory = new Uint16Array(palMemory);
+    this.paletteMemory = new Uint16Array(palMemory);
+
+    for( var i = 0; i < this.paletteMemory.length; i++ )
+        this.paletteMemory[i] = 0x7FFF;
 
     // DMG Palette registers
     this.reg_BGP = 0;

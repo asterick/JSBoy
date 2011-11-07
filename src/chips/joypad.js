@@ -14,16 +14,31 @@ function jsboyJoypad(cpu)
     window.addEventListener( 'keyup', this.$('keyup'), false);
 }
 
+jsboyJoypad.prototype.disableActions = function(keyEventArgs)
+{
+    var root = document.getElementsByTagName('body')[0];
+
+    if( root === document.activeElement )
+    {
+        keyEventArgs.preventDefault();
+        return false;
+    }
+}
+
 jsboyJoypad.prototype.keydown = function(keyEventArgs)
 {
     this.keyboard[keyEventArgs.keyCode] = true;
     this.update();
+
+    return this.disableActions(keyEventArgs);
 }
 
 jsboyJoypad.prototype.keyup = function(keyEventArgs)
 {
     this.keyboard[keyEventArgs.keyCode] = false;
     this.update();
+
+    return this.disableActions(keyEventArgs);
 }
 
 // Joystick to keyboard mapping

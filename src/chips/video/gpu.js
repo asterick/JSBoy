@@ -20,7 +20,7 @@ function jsboyGPU(context, cpu)
     this.videoMemory = ramBlock(0x4000);
     this.oamMemory = ramBlock(0xA0);
     this.palette = new jsboyPalette(cpu);
-    this.lcd = new jsboyLCD(context, this.palette.wordMemory);
+    this.lcd = new jsboyLCD(context, this.palette.paletteMemory);
     this.dma = new jsboyDMA(cpu);
     this.cpu = cpu;
 
@@ -53,6 +53,14 @@ function jsboyGPU(context, cpu)
     this.legacySpriteOrder = new Array(40);
     for( var i = 0; i < 40; i++ )
         this.legacySpriteOrder[i] = (i << 2);
+
+    // We don't want to create this closure more than once.
+    var oam = this.oamMemory.data;
+    this.legacySorter = function(a,b) {
+        var ax = oam[a+1];
+        var bx = oam[b+1];
+        return ax - bx;
+    }
 }
 
 jsboyGPU.prototype.reset = function()
@@ -253,17 +261,13 @@ jsboyGPU.prototype.drawLegacyScanline = function(line)
         for( ; tpx < 168; tpx += 8, tx++ )
             this.drawLegacyMapTile( mapAddr | (tx & 0x1F), tpx, mapLine );        
     }
-
-    var oam = this.oamMemory.data;
+    
     if( this.obj_enable )
     {
         // Sort sprite index list based on their X coordinate
+        var oam = this.oamMemory.data;
         var order = this.legacySpriteOrder;
-        order.sort( function(a,b) {
-            var ax = oam[a+1];
-            var bx = oam[b+1];
-            return ax - bx;
-        } );
+        order.sort( this.legacySorter );
     
         var sprites = 0;
         var spriteBound = this.obj_size ? 15 : 7;
@@ -580,6 +584,11 @@ jsboyGPU.prototype.write_VBK = function( data )
     this.cpu.write.copy( 0x8000, this.videoMemory.write, bank, 0x2000 );
 }
 
+jsboyGPU.prototype.read_VBK = function()
+{
+    return this.vbk;
+}
+
 jsboyGPU.prototype.write_DMA = function( data )
 {
     this.cpu.catchUp();
@@ -588,11 +597,6 @@ jsboyGPU.prototype.write_DMA = function( data )
     var oam = this.oamMemory.data;
     for( var i = 0; i < 0xA0; i++ )
         oam[i] = this.cpu.read[data++]();
-}
-
-jsboyGPU.prototype.read_VBK = function()
-{
-    return this.vbk;
 }
 
 jsboyGPU.prototype.write_LCD_MODE = function(data)
