@@ -82,7 +82,6 @@ jsboyCPU.prototype.reset = function()
     this.halted = false;
     
     // CPU timing / runtime variables
-    this.frameCycles = 0;
     this.cycles = 0;
     
     function nullBody() { return 0xFF; }
@@ -155,32 +154,27 @@ jsboyCPU.prototype.invalidate = function()
 jsboyCPU.prototype.predictEvent = function()
 {
     // Never clock more than the rest of the frame!
-    var predict = this.frameCycles;
-    
     var b = this.gpu.predict();
     var c = this.timer.predict();
     //TODO: SERIAL?
 
-    if( b < predict )
-        predict = b;
-    if( c < predict )
-        predict = c;
-        
-    return predict;
+    if( b < c )
+        return b;
+    else
+        return c;
 }
 
 // --- Send CPU accumulation clock to the external components
 jsboyCPU.prototype.catchUp = function()
 {
-    // Increment it based on the CPU clock, not the system
-    var cpuCycles = this.doubleSpeed ? this.cycles : (this.cycles >> 1);
-    this.timer.tick(cpuCycles);
     this.timer.clock(this.cycles);
-
     this.gpu.clock(this.cycles);
 
+    // Increment DIV based on the CPU ticks, not the system clock
+    var cpuTicks = this.doubleSpeed ? this.cycles : (this.cycles >> 1);
+    this.timer.tick(cpuTicks);
+
     // Flush the cycle buffer
-    this.frameCycles -= this.cycles;
     this.invalidate();
     this.cycles = 0;
 }
@@ -194,15 +188,14 @@ jsboyCPU.prototype.interrupt = function()
 
     this.halted = false;
 
-    var masked = this.irq_enable & this.irq_request;        
-    if( !masked )
-        return ;
-
     // --- Master IRQ enabled?
     if( !this.irq_master )
         return ;
 
-    // --- Do we have any pending IRQs?
+    // --- Any servicable interrupts available
+    var masked = this.irq_enable & this.irq_request;        
+    if( !masked )
+        return ;
     
     // Locate vector
     var vector = 0x40;
@@ -214,10 +207,10 @@ jsboyCPU.prototype.interrupt = function()
         vector += 8;
     }
 
-    // Dispatch the IRQ
-    this.irq_request &= ~select;    
-    this.irq_master = false;
+    // Service the IRQ
     this.call(vector);
+    this.irq_request &= ~select;
+    this.irq_master = false;
     this.cycles += this.doubleSpeed ? 4 : 8;
 }
 
@@ -232,14 +225,16 @@ jsboyCPU.prototype.trigger = function(irq)
 // --- Step the CPU to the next event point
 jsboyCPU.prototype.step = function()
 {
-    // 114 cycles per scanline, 154 scanlines, double speed
-    this.frameCycles = this.gpu.predictEndOfFrame();
+    // Try to run up to the end of the frame
+    var frameCycles = this.gpu.predictEndOfFrame();
             
-    while( this.frameCycles > 0 )
+    while( frameCycles > 0 )
     {
         var clockRate = this.doubleSpeed ? 4 : 8;
         var predict = this.predictEvent() || clockRate;
-        this.predictDivided = predict / clockRate;
+
+        if( predict > frameCycles )
+            predict = frameCycles;
         
         // CPU is stopped, or halted, simply clock the machine up to
         // the predicted value
@@ -249,26 +244,32 @@ jsboyCPU.prototype.step = function()
         }
         else
         {
+            this.predictDivided = predict / clockRate;
             var cycles = 0;
             
             // CPU is running, run up until the IRQ prediction mark
-            while( this.predictDivided > cycles )
+            do {
                 cycles += this.stepBase();
+            } while( this.predictDivided > cycles );
             
             this.cycles += cycles * clockRate;
         }
         
+        frameCycles -= this.cycles;
+
         this.catchUp();
-        this.interrupt();
+        this.interrupt();        
     }
 }
     
 jsboyCPU.prototype.singleStep = function()
 {
+    var clockSpeed = (this.doubleSpeed ? 4 : 8)
+
     if( this.halted )
-        this.cycles += 1;
+        this.cycles += clockSpeed;
     else
-        this.cycles += this.stepBase() * (this.doubleSpeed ? 4 : 8);
+        this.cycles += this.stepBase() * clockSpeed;
 
     this.catchUp();
     this.interrupt();

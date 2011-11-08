@@ -6,21 +6,20 @@ jsboyCPU.prototype.read_IE = function()
 
 jsboyCPU.prototype.write_IE = function( data )
 {
+    this.catchUp();
     this.irq_enable = data & 0x1F;
-    this.invalidate();
 }
 
 jsboyCPU.prototype.read_IF = function()
 {
     this.catchUp();
-
     return this.irq_request;
 }
 
 jsboyCPU.prototype.write_IF = function( data )
 {
+    this.catchUp();
     this.irq_request = data & 0x1F;
-    this.invalidate();
 }
 
 jsboyCPU.prototype.read_KEY1 = function()

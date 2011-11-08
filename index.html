@@ -361,7 +361,7 @@
                             <a onclick="runtime.reset();update();" href="#">reset</a><br/>
                             <a onclick="runtime.singleStep();update();" href="#">step</a>
                             <a onclick="runtime.step();update();" href="#">frame</a>
-                            <a onclick="runtime.cpu.predictEvent = function() { this.predict = 0; }" href='#'>disable predictions</a>
+                            <a onclick="runtime.cpu.predictEvent = function() { return 0; }" href='#'>disable predictions</a>
                         </div>
                     </div>
                     
