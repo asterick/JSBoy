@@ -140,7 +140,7 @@ jsboyCPU.prototype.stepExtended = function()
         this.l = this.rlc(this.l);
         return 2;
     case 0x06:
-        this.write[this.hl()](this.rlc(this.read[this.hl()]()));
+        this.write[this.hl](this.rlc(this.read[this.hl]()));
         return 4;
     case 0x07:
         this.a = this.rlc(this.a);
@@ -164,7 +164,7 @@ jsboyCPU.prototype.stepExtended = function()
         this.l = this.rrc(this.l);
         return 2;
     case 0x0E:
-        this.write[this.hl()](this.rrc(this.read[this.hl()]()));
+        this.write[this.hl](this.rrc(this.read[this.hl]()));
         return 4;
     case 0x0F:
         this.a = this.rrc(this.a);
@@ -188,7 +188,7 @@ jsboyCPU.prototype.stepExtended = function()
         this.l = this.rl(this.l);
         return 2;
     case 0x16:
-        this.write[this.hl()](this.rl(this.read[this.hl()]()));
+        this.write[this.hl](this.rl(this.read[this.hl]()));
         return 4;
     case 0x17:
         this.a = this.rl(this.a);
@@ -212,7 +212,7 @@ jsboyCPU.prototype.stepExtended = function()
         this.l = this.rr(this.l);
         return 2;
     case 0x1E:
-        this.write[this.hl()](this.rr(this.read[this.hl()]()));
+        this.write[this.hl](this.rr(this.read[this.hl]()));
         return 4;
     case 0x1F:
         this.a = this.rr(this.a);
@@ -243,7 +243,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0x26:
-        this.write[this.hl()](this.sla(this.read[this.hl()]()));
+        this.write[this.hl](this.sla(this.read[this.hl]()));
         return 4;
 
     case 0x27:
@@ -275,7 +275,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0x2E:
-        this.write[this.hl()](this.sra(this.read[this.hl()]()));
+        this.write[this.hl](this.sra(this.read[this.hl]()));
         return 4;
 
     case 0x2F:
@@ -307,7 +307,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0x36:
-        this.write[this.hl()](this.swap(this.read[this.hl()]()));
+        this.write[this.hl](this.swap(this.read[this.hl]()));
         return 4;
 
     case 0x37:
@@ -339,7 +339,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0x3E:
-        this.write[this.hl()](this.srl(this.read[this.hl()]()));
+        this.write[this.hl](this.srl(this.read[this.hl]()));
         return 4;
 
     case 0x3F:
@@ -371,7 +371,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0x46:
-        this.bit(this.read[this.hl()](),0)
+        this.bit(this.read[this.hl](),0)
         return 3;
 
     case 0x47:
@@ -403,7 +403,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0x4E:
-        this.bit(this.read[this.hl()](),1)
+        this.bit(this.read[this.hl](),1)
         return 3;
 
     case 0x4F:
@@ -435,7 +435,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0x56:
-        this.bit(this.read[this.hl()](),2)
+        this.bit(this.read[this.hl](),2)
         return 3;
 
     case 0x57:
@@ -467,7 +467,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0x5E:
-        this.bit(this.read[this.hl()](),3)
+        this.bit(this.read[this.hl](),3)
         return 3;
 
     case 0x5F:
@@ -499,7 +499,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0x66:
-        this.bit(this.read[this.hl()](),4)
+        this.bit(this.read[this.hl](),4)
         return 3;
 
     case 0x67:
@@ -531,7 +531,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0x6E:
-        this.bit(this.read[this.hl()](),5)
+        this.bit(this.read[this.hl](),5)
         return 3;
 
     case 0x6F:
@@ -563,7 +563,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0x76:
-        this.bit(this.read[this.hl()](),6)
+        this.bit(this.read[this.hl](),6)
         return 3;
 
     case 0x77:
@@ -595,7 +595,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0x7E:
-        this.bit(this.read[this.hl()](),7)
+        this.bit(this.read[this.hl](),7)
         return 3;
 
     case 0x7F:
@@ -627,7 +627,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0x86:
-        this.write[this.hl()](this.rst(this.read[this.hl()](),0));
+        this.write[this.hl](this.rst(this.read[this.hl](),0));
         return 4;
 
     case 0x87:
@@ -659,7 +659,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0x8E:
-        this.write[this.hl()](this.rst(this.read[this.hl()](),1));
+        this.write[this.hl](this.rst(this.read[this.hl](),1));
         return 4;
 
     case 0x8F:
@@ -691,7 +691,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0x96:
-        this.write[this.hl()](this.rst(this.read[this.hl()](),2));
+        this.write[this.hl](this.rst(this.read[this.hl](),2));
         return 4;
 
     case 0x97:
@@ -723,7 +723,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0x9E:
-        this.write[this.hl()](this.rst(this.read[this.hl()](),3));
+        this.write[this.hl](this.rst(this.read[this.hl](),3));
         return 4;
 
     case 0x9F:
@@ -755,7 +755,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0xA6:
-        this.write[this.hl()](this.rst(this.read[this.hl()](),4));
+        this.write[this.hl](this.rst(this.read[this.hl](),4));
         return 4;
 
     case 0xA7:
@@ -787,7 +787,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0xAE:
-        this.write[this.hl()](this.rst(this.read[this.hl()](),5));
+        this.write[this.hl](this.rst(this.read[this.hl](),5));
         return 4;
 
     case 0xAF:
@@ -819,7 +819,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0xB6:
-        this.write[this.hl()](this.rst(this.read[this.hl()](),6));
+        this.write[this.hl](this.rst(this.read[this.hl](),6));
         return 4;
 
     case 0xB7:
@@ -851,7 +851,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0xBE:
-        this.write[this.hl()](this.rst(this.read[this.hl()](),7));
+        this.write[this.hl](this.rst(this.read[this.hl](),7));
         return 4;
 
     case 0xBF:
@@ -883,7 +883,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0xC6:
-        this.write[this.hl()](this.set(this.read[this.hl()](),0));
+        this.write[this.hl](this.set(this.read[this.hl](),0));
         return 4;
 
     case 0xC7:
@@ -915,7 +915,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0xCE:
-        this.write[this.hl()](this.set(this.read[this.hl()](),1));
+        this.write[this.hl](this.set(this.read[this.hl](),1));
         return 4;
 
     case 0xCF:
@@ -947,7 +947,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0xD6:
-        this.write[this.hl()](this.set(this.read[this.hl()](),2));
+        this.write[this.hl](this.set(this.read[this.hl](),2));
         return 4;
 
     case 0xD7:
@@ -979,7 +979,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0xDE:
-        this.write[this.hl()](this.set(this.read[this.hl()](),3));
+        this.write[this.hl](this.set(this.read[this.hl](),3));
         return 4;
 
     case 0xDF:
@@ -1011,7 +1011,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0xE6:
-        this.write[this.hl()](this.set(this.read[this.hl()](),4));
+        this.write[this.hl](this.set(this.read[this.hl](),4));
         return 4;
 
     case 0xE7:
@@ -1043,7 +1043,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0xEE:
-        this.write[this.hl()](this.set(this.read[this.hl()](),5));
+        this.write[this.hl](this.set(this.read[this.hl](),5));
         return 4;
 
     case 0xEF:
@@ -1075,7 +1075,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0xF6:
-        this.write[this.hl()](this.set(this.read[this.hl()](),6));
+        this.write[this.hl](this.set(this.read[this.hl](),6));
         return 4;
 
     case 0xF7:
@@ -1107,7 +1107,7 @@ jsboyCPU.prototype.stepExtended = function()
         return 2;
 
     case 0xFE:
-        this.write[this.hl()](this.set(this.read[this.hl()](),7));
+        this.write[this.hl](this.set(this.read[this.hl](),7));
         return 4;
 
     case 0xFF:

@@ -105,6 +105,28 @@ Object.prototype.$ = function( name )
     return function() { return call.apply(self,arguments); }
 }
 
+Object.prototype.addProperty = function(label, getter, setter)
+{
+    if (Object.defineProperty) {
+        Object.defineProperty( this, label,
+            {
+                get: getter,
+                set: setter
+            } );
+    }
+    else 
+    {
+        if (getter) 
+        {
+            this.__defineGetter__(label, getter);
+        }
+        if (setter)
+        {
+            this.__defineSetter__(label, setter);
+        }
+    }
+}
+
 // --- Append a source tag to the body
 var includesPending = 0;
 function include(source)

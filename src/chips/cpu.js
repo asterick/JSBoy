@@ -17,6 +17,11 @@ var IRQ_JOYSTICK = 16;
 
 function jsboyCPU(context)
 {
+    this.addProperty('bc', this.regBC);
+    this.addProperty('de', this.regDE);
+    this.addProperty('hl', this.regHL);
+    this.addProperty('f', this.getF, this.setF);
+
     // External hardware
     this.gpu = new jsboyGPU(context, this);
     this.joypad = new jsboyJoypad(this);
@@ -276,17 +281,17 @@ jsboyCPU.prototype.singleStep = function()
 }
 
 // --- Start emulation helpers
-jsboyCPU.prototype.bc = function()
+jsboyCPU.prototype.regBC = function()
 {
     return (this.b<<8) | this.c;
 }
 
-jsboyCPU.prototype.de = function()
+jsboyCPU.prototype.regDE = function()
 {
     return (this.d<<8) | this.e;
 }
 
-jsboyCPU.prototype.hl = function()
+jsboyCPU.prototype.regHL = function()
 {
     return (this.h<<8) | this.l;
 }

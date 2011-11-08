@@ -36,7 +36,7 @@ jsboyCPU.prototype.rra = function() {
 }
 
 jsboyCPU.prototype.add16 = function( v ) {
-    var q = this.hl();
+    var q = this.hl;
     var r = q + v;
 
     this.nf = false;
@@ -61,37 +61,37 @@ jsboyCPU.prototype.addSP = function() {
 }
 
 jsboyCPU.prototype.incHL = function() {
-    var v = (this.hl() + 1) & 0xFFFF;
+    var v = (this.hl + 1) & 0xFFFF;
     this.h = v >> 8;
     this.l = v & 0xFF;
 }
 
 jsboyCPU.prototype.decHL = function() {
-    var v = (this.hl() - 1) & 0xFFFF;
+    var v = (this.hl - 1) & 0xFFFF;
     this.h = v >> 8;
     this.l = v & 0xFF;
 }
 
 jsboyCPU.prototype.incDE = function() {
-    var v = (this.de() + 1) & 0xFFFF;
+    var v = (this.de + 1) & 0xFFFF;
     this.d = v >> 8;
     this.e = v & 0xFF;
 }
 
 jsboyCPU.prototype.decDE = function() {
-    var v = (this.de() - 1) & 0xFFFF;
+    var v = (this.de - 1) & 0xFFFF;
     this.d = v >> 8;
     this.e = v & 0xFF;
 }
 
 jsboyCPU.prototype.incBC = function() {
-    var v = (this.bc() + 1) & 0xFFFF;
+    var v = (this.bc + 1) & 0xFFFF;
     this.b = v >> 8;
     this.c = v & 0xFF;
 }
 
 jsboyCPU.prototype.decBC = function() {
-    var v = (this.bc() - 1) & 0xFFFF;
+    var v = (this.bc - 1) & 0xFFFF;
     this.b = v >> 8;
     this.c = v & 0xFF;
 }
@@ -253,7 +253,7 @@ jsboyCPU.prototype.stepBase = function(){
         this.b = this.l;
         return 1;
     case 0x46:
-        this.b = this.read[this.hl()]();
+        this.b = this.read[this.hl]();
         return 2;
     case 0x47:
         this.b = this.a;
@@ -276,7 +276,7 @@ jsboyCPU.prototype.stepBase = function(){
         this.c = this.l;
         return 1;
     case 0x4E:
-        this.c = this.read[this.hl()]();
+        this.c = this.read[this.hl]();
         return 2;
     case 0x4F:
         this.c = this.a;
@@ -299,7 +299,7 @@ jsboyCPU.prototype.stepBase = function(){
         this.d = this.l;
         return 1;
     case 0x56:
-        this.d = this.read[this.hl()]();
+        this.d = this.read[this.hl]();
         return 2;
     case 0x57:
         this.d = this.a;
@@ -322,7 +322,7 @@ jsboyCPU.prototype.stepBase = function(){
         this.e = this.l;
         return 1;
     case 0x5E:
-        this.e = this.read[this.hl()]();
+        this.e = this.read[this.hl]();
         return 2;
     case 0x5F:
         this.e = this.a;
@@ -345,7 +345,7 @@ jsboyCPU.prototype.stepBase = function(){
         this.h = this.l;
         return 1;
     case 0x66:
-        this.h = this.read[this.hl()]();
+        this.h = this.read[this.hl]();
         return 2;
     case 0x67:
         this.h = this.a;
@@ -368,31 +368,31 @@ jsboyCPU.prototype.stepBase = function(){
     case 0x6D:
         return 1;
     case 0x6E:
-        this.l = this.read[this.hl()]();
+        this.l = this.read[this.hl]();
         return 2;
     case 0x6F:
         this.l = this.a;
         return 1;
     case 0x70:
-        this.write[this.hl()](this.b);
+        this.write[this.hl](this.b);
         return 2;
     case 0x71:
-        this.write[this.hl()](this.c);
+        this.write[this.hl](this.c);
         return 2;
     case 0x72:
-        this.write[this.hl()](this.d);
+        this.write[this.hl](this.d);
         return 2;
     case 0x73:
-        this.write[this.hl()](this.e);
+        this.write[this.hl](this.e);
         return 2;
     case 0x74:
-        this.write[this.hl()](this.h);
+        this.write[this.hl](this.h);
         return 2;
     case 0x75:
-        this.write[this.hl()](this.l);
+        this.write[this.hl](this.l);
         return 2;
     case 0x77:
-        this.write[this.hl()](this.a);
+        this.write[this.hl](this.a);
         return 2;
     case 0x78:
         this.a = this.b;
@@ -413,7 +413,7 @@ jsboyCPU.prototype.stepBase = function(){
         this.a = this.l;
         return 1;
     case 0x7E:
-        this.a = this.read[this.hl()]();
+        this.a = this.read[this.hl]();
         return 2;
     case 0x7F:
         return 1;
@@ -437,7 +437,7 @@ jsboyCPU.prototype.stepBase = function(){
         this.l = this.nextByte();
         return 2;
     case 0x36:
-        this.write[this.hl()](this.nextByte());
+        this.write[this.hl](this.nextByte());
         return 3;
     case 0x3E:
         this.a = this.nextByte();
@@ -456,20 +456,20 @@ jsboyCPU.prototype.stepBase = function(){
         this.sp = this.nextWord();
         return 3;
     case 0xF9:
-        this.sp = this.hl();
+        this.sp = this.hl;
         return 2;
 
     case 0x02:
-        this.write[this.bc()](this.a);
+        this.write[this.bc](this.a);
         return 2;
     case 0x12:
-        this.write[this.de()](this.a);
+        this.write[this.de](this.a);
         return 2;
     case 0x0A:
-        this.a = this.read[this.bc()]();
+        this.a = this.read[this.bc]();
         return 2;
     case 0x1A:
-        this.a = this.read[this.de()]();
+        this.a = this.read[this.de]();
         return 2;
     case 0xEA:
         this.write[this.nextWord()](this.a);
@@ -499,19 +499,19 @@ jsboyCPU.prototype.stepBase = function(){
     
     // --- LDI and LDD instructions
     case 0x22:
-        this.write[this.hl()](this.a);
+        this.write[this.hl](this.a);
         this.incHL();
         return 2;
     case 0x2A:
-        this.a = this.read[this.hl()]();
+        this.a = this.read[this.hl]();
         this.incHL();
         return 2;
     case 0x32:
-        this.write[this.hl()](this.a);
+        this.write[this.hl](this.a);
         this.decHL();
         return 2;
     case 0x3A:
-        this.a = this.read[this.hl()]();
+        this.a = this.read[this.hl]();
         this.decHL();
         return 2;
 
@@ -535,7 +535,7 @@ jsboyCPU.prototype.stepBase = function(){
         this.add(this.l);
         return 1;
     case 0x86:
-        this.add(this.read[this.hl()]());
+        this.add(this.read[this.hl]());
         return 2;
     case 0x87:
         this.add(this.a);
@@ -559,7 +559,7 @@ jsboyCPU.prototype.stepBase = function(){
         this.adc(this.l);
         return 1;
     case 0x8E:
-        this.adc(this.read[this.hl()]());
+        this.adc(this.read[this.hl]());
         return 2;
     case 0x8F:
         this.adc(this.a);
@@ -583,7 +583,7 @@ jsboyCPU.prototype.stepBase = function(){
         this.sub(this.l);
         return 1;
     case 0x96:
-        this.sub(this.read[this.hl()]());
+        this.sub(this.read[this.hl]());
         return 2;
     case 0x97:
         this.sub(this.a);
@@ -607,7 +607,7 @@ jsboyCPU.prototype.stepBase = function(){
         this.sbc(this.l);
         return 1;
     case 0x9E:
-        this.sbc(this.read[this.hl()]());
+        this.sbc(this.read[this.hl]());
         return 2;
     case 0x9F:
         this.sbc(this.a);
@@ -631,7 +631,7 @@ jsboyCPU.prototype.stepBase = function(){
         this.and(this.l);
         return 1;
     case 0xA6:
-        this.and(this.read[this.hl()]());
+        this.and(this.read[this.hl]());
         return 2;
     case 0xA7:
         this.and(this.a);
@@ -655,7 +655,7 @@ jsboyCPU.prototype.stepBase = function(){
         this.xor(this.l);
         return 1;
     case 0xAE:
-        this.xor(this.read[this.hl()]());
+        this.xor(this.read[this.hl]());
         return 2;
     case 0xAF:
         this.xor(this.a);
@@ -679,7 +679,7 @@ jsboyCPU.prototype.stepBase = function(){
         this.or(this.l);
         return 1;
     case 0xB6:
-        this.or(this.read[this.hl()]());
+        this.or(this.read[this.hl]());
         return 2;
     case 0xB7:
         this.or(this.a);
@@ -703,7 +703,7 @@ jsboyCPU.prototype.stepBase = function(){
         this.cp(this.l);
         return 1;
     case 0xBE:
-        this.cp(this.read[this.hl()]());
+        this.cp(this.read[this.hl]());
         return 2;
     case 0xBF:
         this.cp(this.a);
@@ -761,7 +761,7 @@ jsboyCPU.prototype.stepBase = function(){
     case 0xDA:
         var o = this.nextWord(); if(this.cf) { this.pc = o; return 4; } else return 3;
     case 0xE9:
-        this.pc = this.hl();
+        this.pc = this.hl;
         return 1;
     
     // --- RST Instructions
@@ -873,10 +873,10 @@ jsboyCPU.prototype.stepBase = function(){
         this.l = this.dec(this.l);
         return 1;
     case 0x34:
-        this.write[this.hl()](this.inc(this.read[this.hl()]()));
+        this.write[this.hl](this.inc(this.read[this.hl]()));
         return 3;
     case 0x35:
-        this.write[this.hl()](this.dec(this.read[this.hl()]()));
+        this.write[this.hl](this.dec(this.read[this.hl]()));
         return 3;
     case 0x3C:
         this.a = this.inc(this.a);
@@ -929,10 +929,10 @@ jsboyCPU.prototype.stepBase = function(){
         this.push(this.h); this.push(this.l);
         return 4;
     case 0xF1:
-        this.setF(this.pop()); this.a = this.pop();
+        this.f = this.pop(); this.a = this.pop();
         return 3;
     case 0xF5:
-        this.push(this.a); this.push(this.getF());
+        this.push(this.a); this.push(this.f);
         return 4;
 
     // --- Shifter Instructions
@@ -951,13 +951,13 @@ jsboyCPU.prototype.stepBase = function(){
 
     // --- 16bit ALU
     case 0x09:
-        this.add16(this.bc());
+        this.add16(this.bc);
         return 2;
     case 0x19:
-        this.add16(this.de());
+        this.add16(this.de);
         return 2;
     case 0x29:
-        this.add16(this.hl());
+        this.add16(this.hl);
         return 2;
     case 0x39:
         this.add16(this.sp);
