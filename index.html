@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8">
         <title>JSBoy</title>
         <link rel="shortcut icon" href="favicon.ico" />
         <link rel="stylesheet" type="text/css" href="media/style.css" />
@@ -30,12 +31,12 @@
                 div.setAttribute('class', change[div.getAttribute('class')] );
             }            
 
-            function load_binary(url) {
+            function load_binary(url, callback) {
                 var typedArray = ('ArrayBuffer' in window && 'Uint8Array' in window);
                 var xhr, response, bytes, array, typedArray, ie9support;
 
                 xhr = new XMLHttpRequest();
-                xhr.open('GET', url, false);
+                xhr.open('GET', url, true);
 
                 if (typeof ActiveXObject == "function") {
                     ie9support = true;
@@ -49,33 +50,34 @@
                 }
 
                 xhr.send(null);                
+                xhr.addEventListener("load", function(event) {
+                  // Test ready state
+                  if (xhr.readyState != 4 || xhr.status != 200)
+                      throw "Error while loading " + url;
 
-                // Test ready state
-                if (xhr.readyState != 4 || xhr.status != 200)
-                    throw "Error while loading " + url;
+                  // Determine how we should actually work
+                  if (ie9support)
+                      callback( VBArray(xhr.responseBody).toArray());
 
-                // Determine how we should actually work
-                if (ie9support)            
-                    return VBArray(xhr.responseBody).toArray();
-                
-                if (typedArray && 'mozResponse' in xhr) {
-                    response = xhr.mozResponse;
-                } else if (typedArray && xhr.mozResponseArrayBuffer) {
-                    response = xhr.mozResponseArrayBuffer;
-                } else if ('responseType' in xhr) {
-                    response = xhr.response;
-                } else {
-                    response = xhr.responseText;
-                    
-                    bytes = response.length;
-                    array = new Array(bytes);
-                    for( var i = 0; i < bytes; i++ )
-                        array[i] = response.charCodeAt(i);
-                    return array;
-                }
-        
-                bytes = response.byteLength;
-                return new Uint8Array(response, 0, bytes);
+                  if (typedArray && 'mozResponse' in xhr) {
+                      response = xhr.mozResponse;
+                  } else if (typedArray && xhr.mozResponseArrayBuffer) {
+                      response = xhr.mozResponseArrayBuffer;
+                  } else if ('responseType' in xhr) {
+                      response = xhr.response;
+                  } else {
+                      response = xhr.responseText;
+
+                      bytes = response.length;
+                      array = new Array(bytes);
+                      for( var i = 0; i < bytes; i++ )
+                          array[i] = response.charCodeAt(i);
+                      callback(array);
+                  }
+
+                  bytes = response.byteLength;
+                  callback(new Uint8Array(response, 0, bytes));
+                }, true);
             }
 
             function start()
@@ -107,10 +109,12 @@
                 var name = games[rom];
                 document.title = unescape(shorten(name));
 
-                runtime.reset(rom, load_binary(name));
-                runtime.run(true);
+                load_binary(name, function(data) {
+                  runtime.reset(rom, data);
+                  runtime.run(true);
+                  update();
+                });
 
-                update();
             }
             
             function updateRegs( device, state )
