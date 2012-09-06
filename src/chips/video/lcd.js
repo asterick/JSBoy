@@ -17,7 +17,8 @@ function jsboyLCD(context, palette)
     this.context.fillStyle = 'white';
     this.context.fillRect( 0,0,160,144 );
     
-    this.buffer = this.context.getImageData(0,0,160,144);    
+    this.buffer = this.context.getImageData(0,0,160,144);
+    this.bufferData = new Uint32Array(this.buffer.data.buffer);
 
     // --- Setup surface palette
     this.colorTable = new Array(0x10000);
@@ -26,11 +27,11 @@ function jsboyLCD(context, palette)
         for( var b = 0; b < 32; b ++ )
             for( var g = 0; g < 32; g ++ )
                 for( var r = 0; r < 32; r ++ )
-                    this.colorTable[i++] = [
-                        ((r * 13 + g *  2 + b *  1) >> 1) * 0xCF / 0xFF + 0x20,
-                        ((r *  0 + g * 12 + b *  4) >> 1) * 0xCF / 0xFF + 0x20,
-                        ((r *  3 + g *  2 + b * 11) >> 1) * 0xCF / 0xFF + 0x20
-                    ];
+                    this.colorTable[i++] =
+                        (((r * 13 + g *  2 + b *  1) >> 1) * 0xCF / 0xFF + 0x20) |
+                        ((((r *  0 + g * 12 + b *  4) >> 1) * 0xCF / 0xFF + 0x20) << 8) |
+                        ((((r *  3 + g *  2 + b * 11) >> 1) * 0xCF / 0xFF + 0x20) << 16) |
+                        0xFF000000;
 
     // --- Tile decode LUT
     this.tileDecodeForward = new Array(0x10000);
@@ -99,15 +100,12 @@ jsboyLCD.prototype.copyScanline = function( y )
     var colorTable = this.colorTable;
     var scanline = this.scanline;
     
-    var data = this.buffer.data;
-    var o = y * 160 * 4;
+    var data = this.bufferData;
+    var o = y * 160;
     
     for( var b = 8; b < 168; b++ )
     {
-        var px = colorTable[palette[scanline[b] & COLOR]];
-        for( var i = 0; i < 3; i++, o++ )
-            data[o] = px[i];
-        o++;
+        data[o++] = colorTable[palette[scanline[b] & COLOR]];
     }
 }
 
@@ -117,11 +115,11 @@ jsboyLCD.prototype.copyScanlineLegacy = function( y, bp, op0, op1 )
     var colorTable = this.colorTable;
     var scanline = this.scanline;
     
-    var data = this.buffer.data;
-    var o = y * 160 * 4;
+    var data = this.bufferData;
+    var o = y * 160;
     
     // Similar to copy scanline, but this uses the old-style palette registers
-    for( var b = 8; b < 168; b++, o++ )
+    for( var b = 8; b < 168; b++ )
     {
         var px = scanline[b];
         var c = ((px & PIXELS) << 1);
@@ -138,8 +136,6 @@ jsboyLCD.prototype.copyScanlineLegacy = function( y, bp, op0, op1 )
             c = (bp >> c) & 3;
         }
         
-        var p = colorTable[palette[c]];
-        for( var i = 0; i < 3; i++ )
-            data[o++] = p[i];
+        data[o++] = colorTable[palette[c]];
     }
 }
