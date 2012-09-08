@@ -32,52 +32,21 @@
             }            
 
             function load_binary(url, callback) {
-                var typedArray = ('ArrayBuffer' in window && 'Uint8Array' in window);
-                var xhr, response, bytes, array, typedArray, ie9support;
+                var xhr, bytes;
 
                 xhr = new XMLHttpRequest();
                 xhr.open('GET', url, true);
-
-                if (typeof ActiveXObject == "function") {
-                    ie9support = true;
-                } else if (typedArray && 'mozResponseType' in xhr) {
-                    xhr.mozResponseType = 'arraybuffer';
-                } else if (typedArray && 'responseType' in xhr) {
-                    xhr.responseType = 'arraybuffer';
-                } else {
-                    xhr.overrideMimeType('text/plain; charset=x-user-defined');
-                    typedArray = false;
-                }
-
-                xhr.send(null);                
-                xhr.addEventListener("load", function(event) {
+                xhr.responseType = 'arraybuffer';
+                xhr.send(null);
+                
+                xhr.onload = function(event) {
                   // Test ready state
                   if (xhr.readyState != 4 || xhr.status != 200)
                       throw "Error while loading " + url;
 
-                  // Determine how we should actually work
-                  if (ie9support)
-                      callback( VBArray(xhr.responseBody).toArray());
-
-                  if (typedArray && 'mozResponse' in xhr) {
-                      response = xhr.mozResponse;
-                  } else if (typedArray && xhr.mozResponseArrayBuffer) {
-                      response = xhr.mozResponseArrayBuffer;
-                  } else if ('responseType' in xhr) {
-                      response = xhr.response;
-                  } else {
-                      response = xhr.responseText;
-
-                      bytes = response.length;
-                      array = new Array(bytes);
-                      for( var i = 0; i < bytes; i++ )
-                          array[i] = response.charCodeAt(i);
-                      callback(array);
-                  }
-
-                  bytes = response.byteLength;
-                  callback(new Uint8Array(response, 0, bytes));
-                }, true);
+                  bytes = xhr.response.byteLength;
+                  callback(new Uint8Array(xhr.response, 0, bytes));
+                };
             }
 
             function start()
@@ -101,11 +70,12 @@
                 games = xml.responseText.split('\n').sort( function(a,b) { return a.length - b.length; } );
                 
                 document.getElementById('filename').style.visibility = 'visible';
+                run();
             }
             
-            function run(rom)
+            function run()
             {
-                var field = document.getElementById('filename');
+                var rom = window.location.hash.substr(1);
                 var name = games[rom];
                 document.title = unescape(shorten(name));
 
@@ -114,9 +84,9 @@
                   runtime.run(true);
                   update();
                 });
-
             }
-            
+            window.addEventListener("hashchange", run, false);
+
             function updateRegs( device, state )
             {
                 for( var k in state )
@@ -228,7 +198,7 @@
                         continue ;
                     
                     var url = encodeURI(games[i].split("'").join("\\'"));
-                    var link = "<a href='#' onclick='run(" + i + ")'>" + shorten(games[i]) + "</a>"
+                    var link = "<a href='#"+i+"')'>" + shorten(games[i]) + "</a>"
                     list.push(link);
                 }
                 

@@ -9,7 +9,7 @@ var PALETTE_SHIFT = 2;
 
 function jsboyLCD(context, palette) {
     // --- Setup display    
-    this.scanline = new Array(172);
+    this.scanline = new Uint8Array(172);
     this.context = context;
     this.paletteMemory = palette;
 
@@ -57,7 +57,8 @@ jsboyLCD.prototype.update = function () {
 }
 
 jsboyLCD.prototype.clear = function () {
-    this.scanline.fill( WHITEOUT );
+    for (var i = 0; i < 172; i++)
+    this.scanline[i] = WHITEOUT;
 }
 
 jsboyLCD.prototype.copyTileBG = function (x, l, h, pal, flip, pri) {
@@ -78,7 +79,7 @@ jsboyLCD.prototype.copyTileOBJ = function (x, l, h, pal, flip, pri) {
     var scanline = this.scanline;
      
     // Draw OAM when tile has priority 
-    for( var b = 8; b; x++ )
+    for (var b = 8; b; x++)
     {
         var npx = px[--b], opx = scanline[x];
         // Sprite pixel is invisible ...
@@ -100,8 +101,7 @@ jsboyLCD.prototype.copyScanline = function (y) {
     var data = this.bufferData;
     var o = y * 160;
     
-    for( var b = 8; b < 168; b++ )
-    {
+    for (var b = 8; b < 168; b++) {
         data[o++] = colorTable[palette[scanline[b] & COLOR]];
     }
 }
@@ -120,7 +120,7 @@ jsboyLCD.prototype.copyScanlineLegacy = function (y, bp, op0, op1) {
         var c = ((px & PIXELS) << 1);
         
         if( px & SPRITE_FLAG ) {
-            if( px & PALETTE )
+            if (px & PALETTE)
                 c = ((op1 >> c) & 3) | SPRITE_FLAG;
             else
                 c = ((op0 >> c) & 3) | SPRITE_FLAG;
