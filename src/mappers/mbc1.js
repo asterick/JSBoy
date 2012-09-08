@@ -31,15 +31,11 @@ mapperMBC1.prototype.reset = function()
     // --- Static mapping
     this.cpu.read.copy( 0, this.banks[0] );
     
-    for( var i = 0x0000; i < 0x2000; i++ )
-        this.cpu.write[i] = this.$('ramEnableReg');
-    for( var i = 0x2000; i < 0x4000; i++ )
-        this.cpu.write[i] = this.$('romBankSelectReg');
-    for( var i = 0x4000; i < 0x6000; i++ )
-        this.cpu.write[i] = this.$('upperBankSelectReg');
-    for( var i = 0x6000; i < 0x8000; i++ )
-        this.cpu.write[i] = this.$('ramModeSelectReg');
-
+    this.cpu.write.fill(this.$('ramEnableReg'),       0x0000, 0x2000);
+    this.cpu.write.fill(this.$('romBankSelectReg'),   0x2000, 0x2000);
+    this.cpu.write.fill(this.$('upperBankSelectReg'), 0x4000, 0x2000);
+    this.cpu.write.fill(this.$('ramModeSelectReg'),   0x6000, 0x2000);
+    
     this.updateMemoryMap();
 }
 
