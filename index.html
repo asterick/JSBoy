@@ -64,8 +64,9 @@
                 xml.open('GET', "gamelist", false);
                 xml.send();
                 
-                if( xml.readyState != 4 || xml.status != 200 )
+                if( xml.readyState != 4 || xml.status != 200 ) {
                     throw 'Error loading game list';
+                }
                 
                 games = xml.responseText.split('\n').sort( function(a,b) { return a.length - b.length; } );
                 
@@ -75,6 +76,8 @@
             
             function run()
             {
+                if (!window.location.hash) { return ; }
+
                 var rom = window.location.hash.substr(1);
                 var name = games[rom];
                 document.title = unescape(shorten(name));
