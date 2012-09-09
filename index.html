@@ -11,46 +11,20 @@
         <script type='text/javascript'>
             var games, runtime;
         
-            function shorten(fn)
-            {
-                // Trim extension
-                var parts = fn.split(".")
-                parts.pop();
-                
-                // Clear out path
-                return parts.join(".").split("/").pop();
+            function shorten(fn) {
+                return /([^\/]*)\.[^\.]*$/.exec(fn)[1];
             }
         
-            function resize(div)
-            {
+            function resize(div) {
                 var change = {
                     'double': 'regular',
                     'regular': 'double'
                 };
 
                 div.setAttribute('class', change[div.getAttribute('class')] );
-            }            
-
-            function load_binary(url, callback) {
-                var xhr, bytes;
-
-                xhr = new XMLHttpRequest();
-                xhr.open('GET', url, true);
-                xhr.responseType = 'arraybuffer';
-                xhr.send(null);
-                
-                xhr.onload = function(event) {
-                  // Test ready state
-                  if (xhr.readyState != 4 || xhr.status != 200)
-                      throw "Error while loading " + url;
-
-                  bytes = xhr.response.byteLength;
-                  callback(new Uint8Array(xhr.response, 0, bytes));
-                };
             }
 
-            function start()
-            {
+            function start() {
                 var ctx = document.getElementById('screen').getContext("2d");
                 runtime = new jsboy(ctx);
                 update();
@@ -74,32 +48,41 @@
                 run();
             }
             
-            function run()
-            {
+            function run() {
                 if (!window.location.hash) { return ; }
 
-                var rom = window.location.hash.substr(1);
-                var name = games[rom];
+                var name = window.location.hash.substr(1),
+                    xhr, data;
+
                 document.title = unescape(shorten(name));
 
-                load_binary(name, function(data) {
-                  runtime.reset(rom, data);
-                  runtime.run(true);
-                  update();
-                });
+                xhr = new XMLHttpRequest();
+                xhr.open('GET', name, true);
+                xhr.responseType = 'arraybuffer';
+                xhr.send(null);
+                
+                xhr.onload = function(event) {
+                    // Test ready state
+                    if (xhr.readyState != 4 || xhr.status != 200)
+                        throw "Error while loading " + url;
+
+                    data = new Uint8Array(xhr.response);
+                  
+                    runtime.reset(name, data);
+                    runtime.run(true);
+                    update();
+                };
             }
             window.addEventListener("hashchange", run, false);
 
-            function updateRegs( device, state )
-            {
-                for( var k in state )
-                {
+            function updateRegs( device, state ) {
+                for (var k in state) {
                     var e = document.getElementById(device+'_'+k);
-                    if( !e )
+                    if (!e) {
                         continue;
+                    }
                     
-                    switch( e.getAttribute('class') )
-                    {
+                    switch (e.getAttribute('class')) {
                         case 'value':
                             e.innerHTML = state[k].toString(16);
                             break ;
@@ -111,60 +94,24 @@
                     }
                 }
             }
-            
-            var search;
-            
-            function cheatSearch(value)
-            {
-                var mem = runtime.cpu.wram.memory.data;
-                var count = 0;
-                var address = 0;
-                
-                if( search === undefined )
-                    search = new Array(mem.length);
-                
-                for( var i = 0; i < mem.length; i++ )
-                {
-                    if( search[i] || mem[i] != (value & 0xFF) )
-                    {
-                        search[i] = true;
-                    }
-                    else
-                    {
-                        address = i;
-                        count ++;
-                    }
-                }
-                
-                if( count == 1 )
-                {
-                    alert("Found address");
-                    // Max out value
-                    setInterval( function() { mem[address] = 0xFF }, 100 );
-                }
-                else
-                    alert("Search results: " + count);
-            }
-            
+
             function update()
             {
+                var addr = document.getElementById('address'),
+                    hex = document.getElementById('hex'),
+                    inst = document.getElementById('instruction'),
+                    dis = new disassembler(runtime.cpu),
+                    pc = runtime.cpu.pc;
+
                 updateRegs('cpu',runtime.cpu);
                 updateRegs('gpu',runtime.cpu.gpu);
-                                
-                var addr = document.getElementById('address');
-                var hex = document.getElementById('hex');
-                var inst = document.getElementById('instruction');
-            
-                var dis = new disassembler(runtime.cpu)
-                var pc = runtime.cpu.pc
-            
+
                 addr.innerHTML = '';
                 hex.innerHTML = '';
                 inst.innerHTML = '';
             
-                for( var i = 0; i < 25; i++ )
-                {
-                    var o = dis.disassemble(pc);                    
+                for (var i = 0; i < 25; i++) {
+                    var o = dis.disassemble(pc);
                     if(!o)
                         break ;
                     
@@ -180,34 +127,27 @@
             function runTo( addr )
             {
                 // Limit number of executions (This is enough to boot the system)
-                var i = 1250000;
-                
-                while( i-- && runtime.cpu.pc != addr )
+                for (var i = 1250000; i && runtime.cpu.pc != addr; i--) {
                     runtime.cpu.singleStep();
-                
+                }
+
                 update();
             }
-            
-            function find(field, screen, suggest)
-            {
-                var suggestions = document.getElementById(suggest);
-                var name = field.value.toLowerCase();
-                
-                var list = [];
-            
-                for( var i = 0; i < games.length && list.length < 10; i++ )
-                {
-                    if( games[i].toLowerCase().indexOf(name) < 0 )
-                        continue ;
-                    
-                    var url = encodeURI(games[i].split("'").join("\\'"));
-                    var link = "<a href='#"+i+"')'>" + shorten(games[i]) + "</a>"
-                    list.push(link);
-                }
-                
+
+            function find(field, suggest) {
+                var suggestions = document.getElementById(suggest),
+                    name = field.value.toLowerCase(),
+                    list;
+
+                list = games.filter(function(game) {
+                    return game.toLowerCase().indexOf(name) >= 0;
+                });
+
+                suggestions.innerHTML = list.map(function(game) {
+                    return "<a href='#"+escape(game)+"')'>" + shorten(game) + "</a>";
+                }).join("<br/>");
+
                 document.getElementById(suggest).style.visibility = (list.length > 0) ? 'visible' : 'hidden';
-                
-                suggestions.innerHTML = list.join("<br/>");
             }
         </script>
     </head>
@@ -236,7 +176,7 @@
                             the gameboy color boot up screen.
                         </p>
 
-                        <input type="text" id='filename' style="visibility: hidden;" onfocus="this.value = '';" onkeyup="find(this,'screen','suggestions')" value="... type here to load a rom ..."></input>
+                        <input type="text" id='filename' style="visibility: hidden;" onfocus="this.value = '';" onkeyup="find(this,'suggestions')" value="... type here to load a rom ..."></input>
                         <div id='suggestions' style="visibility: hidden;"></div>
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 body {
-    font-family: helvetica; /* Eat it hipsters */
+    font-family: helvetica;
     background: rgb(212,244,148)
 }
 
@@ -38,6 +38,9 @@ body {
     border: dashed black 1px;
     margin: 4px;
     padding: 4px;
+    max-height: 10em;
+    overflow-y: scroll ;
+    overflow-x: hidden ;
 }
 
 /* --- REGISTER VIEWER --- */
