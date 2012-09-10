@@ -1,0 +1,381 @@
+define([
+    "chips/timer",
+    "chips/workram",
+    "chips/joypad",
+    "chips/bios",
+    "chips/video/gpu",
+    "chips/registers"
+], function(jsboyTimer, jsboyWorkRam, jsboyJoypad, jsboyBIOS, jsboyGPU, registers) {
+    function jsboyCPU(context)
+    {
+        Object.defineProperty(this, 'bc', {
+            get: this.regBC
+        });
+        Object.defineProperty(this, 'de', {
+            get: this.regDE
+        });
+        Object.defineProperty(this, 'hl', {
+            get: this.regHL
+        });
+        Object.defineProperty(this, 'f', {
+            get: this.getF,
+            set: this.setF
+        });
+
+        // External hardware
+        this.gpu = new jsboyGPU(context, this);
+        this.joypad = new jsboyJoypad(this);
+        this.wram = new jsboyWorkRam(this);
+        this.timer = new jsboyTimer(this);
+        this.bios = new jsboyBIOS(this);
+        this.rom = null;
+
+        // Our memory delegate holders
+        this.read = new Array(0x10000);
+        this.write = new Array(0x10000);
+
+        this.reset();
+    }
+
+    jsboyCPU.prototype.close = function()
+    {
+        if( this.rom )
+        {
+            this.rom.close();
+            this.rom = null;
+        }
+    }
+
+    jsboyCPU.prototype.insert = function( cartridge )
+    {
+        this.close();
+    
+        if( cartridge !== undefined )
+            this.rom = cartridge;
+    
+        this.reset();
+    }
+
+    jsboyCPU.prototype.reset = function()
+    {
+        // IF, IE registers
+        this.irq_enable = 0;
+        this.irq_request = 0;
+        this.irq_master = false;
+    
+        // KEY1 register
+        this.setCPUSpeed(false);
+        this.invalidate();
+    
+        // CPU registers
+        this.a = 0;
+        this.b = 0;
+        this.c = 0;
+        this.d = 0;
+        this.e = 0;
+        this.h = 0;
+        this.l = 0;
+
+        this.pc = 0;
+        this.sp = 0;
+
+        this.cf = false;
+        this.hf = false;
+        this.zf = false;
+        this.nf = false;
+
+        this.halted = false;
+    
+        // CPU timing / runtime variables
+        this.cycles = 0;
+    
+        function nullBody() { return 0xFF; }
+
+        // Reset memory map
+        this.read.fill(nullBody);
+        this.write.fill(nullBody);
+
+        // For debugging purposes, alert me when the system accesses a register it does not recognize
+    //    for( var i = 0xFF00; i < 0xFF80; i++ )
+    //        this.alertIllegal(i);
+
+        // Ignoring the sound registers for now.
+        this.read.fill(nullBody, 0xFF10, 0x30);
+        this.write.fill(nullBody, 0xFF10, 0x30);
+
+        // Map external hardware
+        if( this.rom )
+            this.rom.reset();
+
+        this.gpu.reset();
+        this.joypad.reset();
+        this.wram.reset();
+        this.timer.reset();
+        this.bios.reset();        
+
+        // Map IRQ specific registers into CPU
+        this.read[registers.IE] = this.$('read_IE');
+        this.write[registers.IE] = this.$('write_IE');
+        this.read[registers.IF] = this.$('read_IF');        
+        this.write[registers.IF] = this.$('write_IF');
+
+        // Hardware lockout register
+        this.write[registers.LOCK] = this.$('write_LOCK');
+    
+        // Map speed control register into CPU
+        this.read[registers.KEY1] = this.$('read_KEY1');
+        this.write[registers.KEY1] = this.$('write_KEY1');    
+    }
+
+    jsboyCPU.prototype.setCPUSpeed = function(fast) {
+        this.doubleSpeed = fast;
+        this.prepareSpeed = false;
+    }
+
+    jsboyCPU.prototype.alertIllegal = function( addr )
+    {
+        var addrName = addr.toString(16).toUpperCase();
+    
+        this.read[addr] = function() {
+            log("ILLEGAL READ: ", addrName);
+            return 0xFF;
+        }
+        this.write[addr] = function(data) {
+            log("ILLEGAL WRITE: ", addrName, data.toString(16).toUpperCase());
+        }
+    }
+
+    jsboyCPU.prototype.update = function()
+    {
+        this.gpu.update();
+    }
+
+    // --- This occurs when the an event causes the IRQ prediction to be invalid
+    jsboyCPU.prototype.invalidate = function()
+    {
+        this.predictDivided = 0;
+    };
+
+    jsboyCPU.prototype.predictEvent = function()
+    {
+        // Never clock more than the rest of the frame!
+        var b = this.gpu.predict();
+        var c = this.timer.predict();
+        //TODO: SERIAL?
+
+        if( b < c )
+            return b;
+        else
+            return c;
+    }
+
+    // --- Send CPU accumulation clock to the external components
+    jsboyCPU.prototype.catchUp = function()
+    {
+        this.timer.clock(this.cycles);
+        this.gpu.clock(this.cycles);
+
+        // Increment DIV based on the CPU ticks, not the system clock
+        var cpuTicks = this.doubleSpeed ? this.cycles : (this.cycles >> 1);
+        this.timer.tick(cpuTicks);
+
+        // Flush the cycle buffer
+        this.invalidate();
+        this.cycles = 0;
+    }
+
+    // --- Interrupt logic
+    jsboyCPU.prototype.interrupt = function()
+    {
+        // Absolutely no IRQs are pending, so we simply give up    
+        if( !this.irq_request )
+            return ;
+
+        this.halted = false;
+
+        // --- Master IRQ enabled?
+        if( !this.irq_master )
+            return ;
+
+        // --- Any servicable interrupts available
+        var masked = this.irq_enable & this.irq_request;        
+        if( !masked )
+            return ;
+    
+        // Locate vector
+        var vector = 0x40;
+        var select = 0x01;
+    
+        while( !(masked & select) && 0x20 > select )
+        {
+            select <<= 1;
+            vector += 8;
+        }
+
+        // Service the IRQ
+        this.call(vector);
+        this.irq_request &= ~select;
+        this.irq_master = false;
+        this.cycles += this.doubleSpeed ? 4 : 8;
+    }
+
+    // --- Trigger IRQ (auto invalidate prediction)
+    jsboyCPU.prototype.trigger = function(irq)
+    {
+        // There is no prediction, the game did, in fact, have an event
+        this.irq_request |= irq;
+        this.invalidate();
+    }
+
+    // --- Step the CPU to the next event point
+    jsboyCPU.prototype.step = function()
+    {
+        // Try to run up to the end of the frame
+        var frameCycles = this.gpu.predictEndOfFrame();
+            
+        while( frameCycles > 0 )
+        {
+            var clockRate = this.doubleSpeed ? 4 : 8;
+            var predict = this.predictEvent() || clockRate;
+
+            if( predict > frameCycles )
+                predict = frameCycles;
+        
+            // CPU is stopped, or halted, simply clock the machine up to
+            // the predicted value
+            if( this.halted )
+            {
+                this.cycles += predict;
+            }
+            else
+            {
+                this.predictDivided = predict / clockRate;
+                var cycles = 0;
+            
+                // CPU is running, run up until the IRQ prediction mark
+                do {
+                    cycles += this.stepBase();
+                } while( this.predictDivided > cycles );
+            
+                this.cycles += cycles * clockRate;
+            }
+        
+            frameCycles -= this.cycles;
+
+            this.catchUp();
+            this.interrupt();        
+        }
+    }
+    
+    jsboyCPU.prototype.singleStep = function()
+    {
+        var clockSpeed = (this.doubleSpeed ? 4 : 8)
+
+        if( this.halted )
+            this.cycles += clockSpeed;
+        else
+            this.cycles += this.stepBase() * clockSpeed;
+
+        this.catchUp();
+        this.interrupt();
+    }
+
+    // --- Start emulation helpers
+    jsboyCPU.prototype.regBC = function()
+    {
+        return (this.b<<8) | this.c;
+    }
+
+    jsboyCPU.prototype.regDE = function()
+    {
+        return (this.d<<8) | this.e;
+    }
+
+    jsboyCPU.prototype.regHL = function()
+    {
+        return (this.h<<8) | this.l;
+    }
+
+    jsboyCPU.prototype.setF = function(data)
+    {
+        this.cf = data & 0x10;
+        this.hf = data & 0x20;
+        this.nf = data & 0x40;
+        this.zf = data & 0x80;
+    }
+
+    jsboyCPU.prototype.getF = function()
+    {
+        return (this.zf ? 0x80 : 0) |
+            (this.nf ? 0x40 : 0) |
+            (this.hf ? 0x20 : 0) |
+            (this.cf ? 0x10 : 0);
+    }
+    
+    jsboyCPU.prototype.push = function(data)
+    {
+        this.sp = (this.sp - 1) & 0xFFFF;
+        this.write[this.sp](data);
+    }
+
+    jsboyCPU.prototype.pop = function()
+    {
+        var data = this.read[this.sp]();
+        this.sp = (this.sp + 1) & 0xFFFF;
+        return data;
+    }
+
+    jsboyCPU.prototype.call = function(addr)
+    {
+        this.push(this.pc>>8);
+        this.push(this.pc&0xFF);
+        this.pc = addr;
+    }
+
+    jsboyCPU.prototype.ret = function()
+    {
+        this.pc = this.pop();
+        this.pc |= this.pop() << 8;        
+    }
+
+    jsboyCPU.prototype.nextByte = function()
+    {
+        var op = this.read[this.pc]();
+        this.pc = (this.pc + 1) & 0xFFFF;
+        return op;
+    }
+
+    jsboyCPU.prototype.nextSignedByte = function()
+    {
+        // Sign extend byte
+        var b = this.nextByte();
+        if( b & 0x80 )
+            return b - 0x100;
+        return b;
+    }
+
+    jsboyCPU.prototype.nextRelative = function()
+    {
+        var o = this.nextSignedByte();
+        return (this.pc + o) & 0xFFFF;
+    }
+
+    jsboyCPU.prototype.nextWord = function()
+    {
+        var l = this.nextByte();
+        var h = this.nextByte();
+        return (h<<8) | l;
+    }
+
+    jsboyCPU.prototype.delayByte = function()
+    {
+        // This is a cute way of preventing the CPU from incrementing PC for a
+        // clock happens on halts and stops with IME disabled
+        this.nextByte = function() {
+            delete this.nextByte;
+            return this.read[this.pc]();
+        }
+    }
+
+    return jsboyCPU;
+});

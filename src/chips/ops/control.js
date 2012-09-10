@@ -1,83 +1,88 @@
-// --- CPU Level hardware registers (IEQ, Speed and CPU dependant timer)
-jsboyCPU.prototype.read_IE = function()
-{
-    return this.irq_enable;
-}
-
-jsboyCPU.prototype.write_IE = function( data )
-{
-    this.catchUp();
-    this.irq_enable = data & 0x1F;
-}
-
-jsboyCPU.prototype.read_IF = function()
-{
-    this.catchUp();
-    return this.irq_request;
-}
-
-jsboyCPU.prototype.write_IF = function( data )
-{
-    this.catchUp();
-    this.irq_request = data & 0x1F;
-}
-
-jsboyCPU.prototype.read_KEY1 = function()
-{
-    return (this.doubleSpeed ? 0x80 : 0) |
-           (this.prepareSpeed ? 0x01 : 0);
-}
-
-jsboyCPU.prototype.write_KEY1 = function(data)
-{
-    this.prepareSpeed = data & 1;
-}
-
-jsboyCPU.prototype.write_LOCK = function(data)
-{
-    if( data != 1 )
-        return ;
-
-    // This perminantly locks down all GBC specfic hardware, preventing it from
-    // being inadvertantly accessed by mono gameboy titles
-    // BIOS appears to have priviledged access to the hardware, so until
-    // it locks, don't disable the advanced registers
-
-    var self = this;
-    var lock = this.write[REG_BLCK];
-
-    this.write[REG_BLCK] = function(data)
+define([
+    'chips/ops/core',
+    "chips/registers"
+], function (jsboyCPU, registers) {
+    // --- CPU Level hardware registers (IEQ, Speed and CPU dependant timer)
+    jsboyCPU.prototype.read_IE = function()
     {
-        if( data != 0x11 )
+        return this.irq_enable;
+    }
+
+    jsboyCPU.prototype.write_IE = function( data )
+    {
+        this.catchUp();
+        this.irq_enable = data & 0x1F;
+    }
+
+    jsboyCPU.prototype.read_IF = function()
+    {
+        this.catchUp();
+        return this.irq_request;
+    }
+
+    jsboyCPU.prototype.write_IF = function( data )
+    {
+        this.catchUp();
+        this.irq_request = data & 0x1F;
+    }
+
+    jsboyCPU.prototype.read_KEY1 = function()
+    {
+        return (this.doubleSpeed ? 0x80 : 0) |
+               (this.prepareSpeed ? 0x01 : 0);
+    }
+
+    jsboyCPU.prototype.write_KEY1 = function(data)
+    {
+        this.prepareSpeed = data & 1;
+    }
+
+    jsboyCPU.prototype.write_LOCK = function(data)
+    {
+        if( data != 1 )
             return ;
 
-        // --- IR Communication
-        self.alertIllegal(REG_RP);
+        // This perminantly locks down all GBC specfic hardware, preventing it from
+        // being inadvertantly accessed by mono gameboy titles
+        // BIOS appears to have priviledged access to the hardware, so until
+        // it locks, don't disable the advanced registers
 
-        // --- Video DMA
-        self.alertIllegal(REG_HDMA1);
-        self.alertIllegal(REG_HDMA2);
-        self.alertIllegal(REG_HDMA3);
-        self.alertIllegal(REG_HDMA4);
-        self.alertIllegal(REG_HDMA5);
+        var self = this;
+        var lock = this.write[registers.BLCK];
 
-        // --- Palette access
-        self.alertIllegal(REG_BCPS);
-        self.alertIllegal(REG_BCPD);
-        self.alertIllegal(REG_OCPS);
-        self.alertIllegal(REG_OCPD);
+        this.write[registers.BLCK] = function(data)
+        {
+            if( data != 0x11 )
+                return ;
 
-        // --- Memory banking
-        self.alertIllegal(REG_VBK);
-        self.alertIllegal(REG_SVBK);
+            // --- IR Communication
+            self.alertIllegal(registers.RP);
 
-        // --- Speed control
-        self.alertIllegal(REG_KEY1);
+            // --- Video DMA
+            self.alertIllegal(registers.HDMA1);
+            self.alertIllegal(registers.HDMA2);
+            self.alertIllegal(registers.HDMA3);
+            self.alertIllegal(registers.HDMA4);
+            self.alertIllegal(registers.HDMA5);
 
-        // --- Lockout controls
-        self.alertIllegal(REG_LCD_MODE);
-        self.alertIllegal(REG_LOCK);
+            // --- Palette access
+            self.alertIllegal(registers.BCPS);
+            self.alertIllegal(registers.BCPD);
+            self.alertIllegal(registers.OCPS);
+            self.alertIllegal(registers.OCPD);
 
-        lock(0x11);
-    };
-}
+            // --- Memory banking
+            self.alertIllegal(registers.VBK);
+            self.alertIllegal(registers.SVBK);
+
+            // --- Speed control
+            self.alertIllegal(registers.KEY1);
+
+            // --- Lockout controls
+            self.alertIllegal(registers.LCD_MODE);
+            self.alertIllegal(registers.LOCK);
+
+            lock(0x11);
+        };
+    }
+});
