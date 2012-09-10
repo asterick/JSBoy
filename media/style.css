@@ -138,18 +138,18 @@ body {
     position: relative;
 }
 
+.regular {
+    position: relative;
+    left: 90px;
+    top: 67px;
+}
+
 .double {
     position: relative;
     width: 320px;
     height: 288px;
     left: 10px;
     top: 10px;
-}
-
-.regular {
-    position: relative;
-    left: 90px;
-    top: 67px;
 }
 
 #Button_A {

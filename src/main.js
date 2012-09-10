@@ -11,24 +11,16 @@ requirejs([
         return /([^\/]*)\.[^\.]*$/.exec(fn)[1];
     }
 
-    function resize(div) {
-        var change = {
-            'double': 'regular',
-            'regular': 'double'
-        };
-
-        div.setAttribute('class', change[div.getAttribute('class')] );
-    }
-
     function run() {
         if (!window.location.hash) { return ; }
 
         var name = window.location.hash.substr(1),
-            xhr, data;
+            xhr = new XMLHttpRequest();
+
+        if (!name) { return ; }
 
         document.title = unescape(shorten(name));
 
-        xhr = new XMLHttpRequest();
         xhr.open('GET', name, true);
         xhr.responseType = 'arraybuffer';
         xhr.send(null);
@@ -38,15 +30,13 @@ requirejs([
             if (xhr.readyState != 4 || xhr.status != 200)
                 throw "Error while loading " + url;
 
-            data = new Uint8Array(xhr.response);
-      
-            runtime.reset(name, data);
+            runtime.reset(name, new Uint8Array(xhr.response));
             runtime.run(true);
             update();
         };
     }
 
-    function updateRegs( device, state ) {
+    function updateRegs(device, state) {
         for (var k in state) {
             var e = document.getElementById(device+'_'+k);
             if (!e) {
@@ -62,24 +52,25 @@ requirejs([
                     break ;
                 default:
                     e.innerHTML = state[k];
+                    break ;
             }
         }
     }
 
     function update()
     {
-        var addr = document.getElementById('address'),
-            hex = document.getElementById('hex'),
-            inst = document.getElementById('instruction'),
+        var addr = $('#address'),
+            hex = $('#hex'),
+            inst = $('#instruction'),
             dis = new disassembler(runtime.cpu),
             pc = runtime.cpu.pc;
 
         updateRegs('cpu',runtime.cpu);
         updateRegs('gpu',runtime.cpu.gpu);
 
-        addr.innerHTML = '';
-        hex.innerHTML = '';
-        inst.innerHTML = '';
+        addr.empty();
+        hex.empty();
+        inst.empty();
 
         for (var i = 0; i < 25; i++) {
             var o = dis.disassemble(pc);
@@ -87,16 +78,15 @@ requirejs([
                 break ;
         
             var a = pc.toString(16);
-            addr.innerHTML += "<a href='#' onclick='runTo("+pc+")'>" + a + "</a><br/>";
-            hex.innerHTML += o.hex + "<br/>";
-            inst.innerHTML += o.op + "<br/>";
+            addr.append("<a href='#' onclick='runTo("+pc+")'>" + a + "</a><br/>");
+            hex.append(o.hex + "<br/>");
+            inst.append(o.op + "<br/>");
         
             pc = o.next;
         }
     }
 
-    function runTo( addr )
-    {
+    function runTo(addr) {
         // Limit number of executions (This is enough to boot the system)
         for (var i = 1250000; i && runtime.cpu.pc != addr; i--) {
             runtime.cpu.singleStep();
@@ -106,7 +96,7 @@ requirejs([
     }
 
     function find(field, suggest) {
-        var suggestions = document.getElementById(suggest),
+        var suggestions = $(suggest),
             name = field.value.toLowerCase(),
             list;
 
@@ -114,35 +104,50 @@ requirejs([
             return game.toLowerCase().indexOf(name) >= 0;
         });
 
-        suggestions.innerHTML = list.map(function(game) {
+        suggestions.html(list.map(function(game) {
             return "<a href='#"+escape(game)+"')'>" + shorten(game) + "</a>";
-        }).join("<br/>");
+        }).join("<br/>"));
 
-        document.getElementById(suggest).style.visibility = (list.length > 0) ? 'visible' : 'hidden';
+        suggestions.toggle(list.length > 0);
     }
-
-    update();
 
     window.onbeforeunload = function() {
         runtime.close();
     };
 
-    document.getElementById('screen').addEventListener("click", function (e) {
-        resize(this);
-    }, false);
+    $("#run").click(function () {
+        runtime.run(true);
+    });
+    $("#stop").click(function () {
+        runtime.run(false);
+        update();
+    });
+    $("#reset").click(function () {
+        runtime.reset();
+        update();
+    });
+    $("#step").click(function () {
+        runtime.singleStep();
+        update();
+    });
+    $("#frame").click(function () {
+        runtime.step();update();
+    });
+    $("#stop_predictions").click(function () {
+        runtime.cpu.predictEvent = function() { return 0; }
+    });
 
+    $('#screen').click(function () {
+        $(this).toggleClass('double');
+    });
 
-    var fn = document.getElementById('filename');
-
-    fn.addEventListener("focus", function (e) {
+    $("#filename").focus(function () {
         this.value = '';
-    }, false);
+    }).keyup(function () {
+        find(this,'#suggestions');
+    }).show();
 
-    fn.addEventListener("keyup", function (e) {
-        find(this,'suggestions');
-    }, false);
-
-    fn.style.visibility = 'visible';
     window.addEventListener("hashchange", run, false);
+    update();
     run();
 });
