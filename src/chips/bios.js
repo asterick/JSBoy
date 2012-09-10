@@ -5,8 +5,7 @@ define([
         this.cpu = cpu;
     }
 
-    BIOS.prototype.reset = function()
-    {
+    BIOS.prototype.reset = function () {
         // Preserve non-overlay memory
         this.cart = this.cpu.read.slice( 0, this.COLOR_BIOS.length );
 
@@ -18,11 +17,11 @@ define([
         this.cpu.write[registers.BLCK] = this.$('write_BLCK');
     };
 
-    BIOS.prototype.write_BLCK = function(data)
-    {    
-        if( data != 0x11 )
+    BIOS.prototype.write_BLCK = function (data) {
+        if (data != 0x11) {
             return ;
- 
+        }
+
         // De-overlay the bios
         this.cpu.read.copy( 0, this.cart );
     };

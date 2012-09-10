@@ -9,7 +9,7 @@ define([
     }
 
     jsboy.prototype.reset = function( name, data ) {
-        if (data !== undefined) {
+        if (data) {
             this.cpu.close();
             this.cpu.insert(mapper(name, this.cpu, data));
         } else {
@@ -22,7 +22,7 @@ define([
     }
 
     jsboy.prototype.run = function (state) {
-        if (state == this.running ) {
+        if (state == this.running) {
             return ;
         }
     

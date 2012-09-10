@@ -4,8 +4,9 @@ define([
     "chips/joypad",
     "chips/bios",
     "chips/video/gpu",
+    "chips/audio",
     "chips/registers"
-], function(Timer, WorkRam, Joypad, BIOS, GPU, registers) {
+], function(Timer, WorkRam, Joypad, BIOS, GPU, Audio, registers) {
     function CPU(context)
     {
         Object.defineProperty(this, 'bc', {
@@ -23,6 +24,7 @@ define([
         });
 
         // External hardware
+        this.audio = new Audio(this);
         this.gpu = new GPU(context, this);
         this.joypad = new Joypad(this);
         this.wram = new WorkRam(this);
@@ -96,17 +98,16 @@ define([
         this.write.fill(nullBody);
 
         // For debugging purposes, alert me when the system accesses a register it does not recognize
-    //    for( var i = 0xFF00; i < 0xFF80; i++ )
-    //        this.alertIllegal(i);
-
-        // Ignoring the sound registers for now.
-        this.read.fill(nullBody, 0xFF10, 0x30);
-        this.write.fill(nullBody, 0xFF10, 0x30);
+        for (var i = 0xFF00; i < 0xFF80; i++) {
+            this.alertIllegal(i);
+        }
 
         // Map external hardware
-        if( this.rom )
+        if (this.rom) {
             this.rom.reset();
+        }
 
+        this.audio.reset();
         this.gpu.reset();
         this.joypad.reset();
         this.wram.reset();
@@ -172,6 +173,7 @@ define([
     // --- Send CPU accumulation clock to the external components
     CPU.prototype.catchUp = function()
     {
+        this.audio.clock(this.cycles);
         this.timer.clock(this.cycles);
         this.gpu.clock(this.cycles);
 

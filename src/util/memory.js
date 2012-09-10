@@ -49,23 +49,23 @@ function byteAlignment(size, base)
 function romBlock(data, length)
 {
     // Create LUT for rom delegates (avoid using closure data)
-    if( romBlock.delegates === undefined )
-    {
+    if (romBlock.delegates === undefined) {
         romBlock.delegates = new Array(0x100);
 
-        for( var i = 0; i < 0x100; i++ )
-            romBlock.delegates[i] = "function(){return "+i+"}";
-    
-        romBlock.delegates = eval("["+romBlock.delegates.join(",")+"]");
+        for (var i = 0; i < 0x100; i++) {
+            romBlock.delegates[i] = eval("(function(){return "+i+"})");
+        }
     }
 
     var newData = new Array( length || data.length );
     
-    for( var i = 0; i < data.length; i++ )
+    for (var i = 0; i < data.length; i++) {
         newData[i] = romBlock.delegates[data[i]];
-
-    for( var i = length; i >= data.length; i-- )
+    }
+    
+    for (var i = length; i >= data.length; i--) {
         newData[i-1] = romBlock.delegates[0xFF];
+    }
 
     return newData;
 }
@@ -77,52 +77,45 @@ function ramBlock(size, extend, name, mask)
         
     var read = new Array(extend);
     var write = new Array(extend);
-    var data = new Array(size);
+    var data = new Uint8Array(size);
     var delegate;
     
-    if(mask < 0xFF)
-    {
-        delegate = function(index)
-        {
+    if (mask < 0xFF) {
+        delegate = function (index) {
             data[index] = 0;
             read[index] = function() { return data[index]; }
             write[index] = function(value) { data[index] = value & mask; }
-        }
-    }
-    else
-    {
-        delegate = function(index)
-        {
+        };
+    } else {
+        delegate = function (index) {
             data[index] = 0;
             read[index] = function() { return data[index]; }
             write[index] = function(value) { data[index] = value; }
-        }
+        };
     }
 
-    for( var i = 0; i < size; i++ )
+    for (var i = 0; i < size; i++) {
         delegate(i);
+    }
 
-    for( var i = size; i < extend; i++ )
-    {
+    for (var i = size; i < extend; i++) {
         read[i] = read[i%size];
         write[i] = write[i%size];
     }
     
-    var save = function() {
+    var save = function () {
         var encoded = JSON.stringify(data);
         window.localStorage.setItem(name,encoded);
     }
     
-    var load = function() {
-        try
-        {
+    var load = function () {
+        try {
             var encoded = JSON.parse(window.localStorage.getItem(name));
             
-            for( var i = 0; i < encoded.length; i++ )
+            for (var i = 0; i < encoded.length; i++) {
                 data[i] = encoded.charCodeAt(i);
-        }
-        catch(o)
-        {
+            }
+        } catch (o) {
             // Unable to decode JSON (old save file)   
         }
     }

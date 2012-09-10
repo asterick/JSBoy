@@ -523,15 +523,13 @@ define([], function() {
         { format:    'SET 7, A', arg:IMPLIED }
     ];
 
-    function disassembler(cpu)
-    {
+    function disassembler(cpu) {
         this.cpu = cpu;
     }
 
     disassembler.prototype.disassemble = function(pc)
     {
-        function hex(v, p)
-        {
+        function hex(v, p) {
             var o = v.toString(16);
         
             while( o.length < p )
@@ -539,29 +537,25 @@ define([], function() {
             return o;
         }
 
-        var template;
+        var op = this.cpu.read[pc](),
+            bytes = hex(op,2),
+            template;
 
-        var op = this.cpu.read[pc]();
         pc = (pc+1) & 0xFFFF;
-    
-        var bytes = hex(op,2);
-    
-    
-        if( op == 0xCB )
-        {
+
+        if (op == 0xCB) {
             op = this.cpu.read[pc]();
             pc = (pc+1) & 0xFFFF;
             bytes += " " + hex(op,2);
             template = EXTENDED_INSTRUCTION_SET[op];
-        }
-        else
-        {
+        } else {
             template = BASE_INSTRUCTION_SET[op]
         }
-    
-        if( !template )
+
+        if (!template) {
             return null;
-    
+        }
+
         switch( template.arg )
         {
             case WORD:

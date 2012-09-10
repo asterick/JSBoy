@@ -101,7 +101,7 @@ requirejs([
             list;
 
         list = games.filter(function(game) {
-            return game.toLowerCase().indexOf(name) >= 0;
+            return game && game.toLowerCase().indexOf(name) >= 0;
         });
 
         suggestions.html(list.map(function(game) {
