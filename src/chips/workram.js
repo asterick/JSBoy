@@ -1,7 +1,7 @@
 define([
     "chips/registers"
 ], function(registers) {
-    function jsboyWorkRam(cpu)
+    function WorkRam(cpu)
     {
         this.cpu = cpu;
         this.memory = ramBlock( 0x8000 );
@@ -9,7 +9,7 @@ define([
         this.bank = 0;
     }
 
-    jsboyWorkRam.prototype.write_SVBK = function( data )
+    WorkRam.prototype.write_SVBK = function( data )
     {
         this.bank = data & 0x7;
         var ea = (this.bank || 1) * 0x1000;
@@ -23,12 +23,12 @@ define([
         this.cpu.write.copy(0xF000, this.cpu.write, 0xD000, 0xE00);
     }
 
-    jsboyWorkRam.prototype.read_SVBK = function()
+    WorkRam.prototype.read_SVBK = function()
     {
         return this.bank;
     }
     
-    jsboyWorkRam.prototype.reset = function()
+    WorkRam.prototype.reset = function()
     {
         // --- Zero page memory (fast)
         this.cpu.read.copy(0xFF80, this.zeroPage.read );
@@ -47,5 +47,5 @@ define([
         this.cpu.write[registers.SVBK] = this.$('write_SVBK');
     }
 
-    return jsboyWorkRam;
+    return WorkRam;
 });

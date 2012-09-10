@@ -1,43 +1,43 @@
 define([
     'chips/ops/core',
     "chips/registers"
-], function (jsboyCPU, registers) {
+], function (CPU, registers) {
     // --- CPU Level hardware registers (IEQ, Speed and CPU dependant timer)
-    jsboyCPU.prototype.read_IE = function()
+    CPU.prototype.read_IE = function()
     {
         return this.irq_enable;
     }
 
-    jsboyCPU.prototype.write_IE = function( data )
+    CPU.prototype.write_IE = function( data )
     {
         this.catchUp();
         this.irq_enable = data & 0x1F;
     }
 
-    jsboyCPU.prototype.read_IF = function()
+    CPU.prototype.read_IF = function()
     {
         this.catchUp();
         return this.irq_request;
     }
 
-    jsboyCPU.prototype.write_IF = function( data )
+    CPU.prototype.write_IF = function( data )
     {
         this.catchUp();
         this.irq_request = data & 0x1F;
     }
 
-    jsboyCPU.prototype.read_KEY1 = function()
+    CPU.prototype.read_KEY1 = function()
     {
         return (this.doubleSpeed ? 0x80 : 0) |
                (this.prepareSpeed ? 0x01 : 0);
     }
 
-    jsboyCPU.prototype.write_KEY1 = function(data)
+    CPU.prototype.write_KEY1 = function(data)
     {
         this.prepareSpeed = data & 1;
     }
 
-    jsboyCPU.prototype.write_LOCK = function(data)
+    CPU.prototype.write_LOCK = function(data)
     {
         if( data != 1 )
             return ;

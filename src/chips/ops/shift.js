@@ -5,8 +5,8 @@
 
 define([
     'chips/ops/core'
-], function (jsboyCPU) {
-    jsboyCPU.prototype.swap = function( v )
+], function (CPU) {
+    CPU.prototype.swap = function( v )
     {
         var n = ((v >> 4) | (v << 4)) & 0xFF;
 
@@ -18,7 +18,7 @@ define([
         return n;
     }
 
-    jsboyCPU.prototype.sla = function( v )
+    CPU.prototype.sla = function( v )
     {
         var n = (v << 1) & 0xFF;
 
@@ -30,7 +30,7 @@ define([
         return n;
     }
 
-    jsboyCPU.prototype.sra = function( v )
+    CPU.prototype.sra = function( v )
     {
         var n = (v >> 1) | (v & 0x80);
 
@@ -42,7 +42,7 @@ define([
         return n;
     }
 
-    jsboyCPU.prototype.srl = function( v )
+    CPU.prototype.srl = function( v )
     {
         var n = (v >> 1);
 
@@ -54,7 +54,7 @@ define([
         return n;
     }
 
-    jsboyCPU.prototype.rrc = function( v )
+    CPU.prototype.rrc = function( v )
     {
         var n = ((v >> 1) | (v << 7)) & 0xFF;
 
@@ -66,7 +66,7 @@ define([
         return n;
     }
 
-    jsboyCPU.prototype.rlc = function( v )
+    CPU.prototype.rlc = function( v )
     {
         var n = ((v >> 7) | (v << 1)) & 0xFF;
 
@@ -78,7 +78,7 @@ define([
         return n;
     }
 
-    jsboyCPU.prototype.rr = function( v )
+    CPU.prototype.rr = function( v )
     {
         var n = (this.cf ? 0x80 : 0) | (v >> 1);
 
@@ -90,7 +90,7 @@ define([
         return n;
     }
 
-    jsboyCPU.prototype.rl = function( v )
+    CPU.prototype.rl = function( v )
     {
         var n = ((this.cf ? 1 : 0) | (v << 1)) & 0xFF;
 
@@ -102,25 +102,25 @@ define([
         return n;
     }
 
-    jsboyCPU.prototype.bit = function( v, bit )
+    CPU.prototype.bit = function( v, bit )
     {
         this.zf = !(v & (1 << bit));
         this.hf = true;
         this.nf = false;
     }
 
-    jsboyCPU.prototype.set = function( v, bit )
+    CPU.prototype.set = function( v, bit )
     {
         return v | (1<<bit);
     }
 
-    jsboyCPU.prototype.rst = function( v, bit )
+    CPU.prototype.rst = function( v, bit )
     {
         return v & ~(1<<bit);
     }
 
     // --- Instruction map for the extended (0xCB) block
-    jsboyCPU.prototype.stepExtended = function()
+    CPU.prototype.stepExtended = function()
     {
         switch(this.nextByte())
         {

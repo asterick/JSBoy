@@ -1,12 +1,11 @@
 define([
     "chips/registers"
 ], function (registers) {
-    function jsboyDMA(cpu)
-    {
+    function DMA (cpu) {
         this.cpu = cpu;
     }
 
-    jsboyDMA.prototype.reset = function()
+    DMA.prototype.reset = function()
     {
         this.active = false;
         this.blocksLeft = 0;
@@ -26,53 +25,43 @@ define([
         this.cpu.write[registers.HDMA5] = this.$('write_HDMA5');
     }
 
-    jsboyDMA.prototype.read_HDMA1 = function()
-    {
+    DMA.prototype.read_HDMA1 = function () {
         return (this.sourceAddress >> 8);
     }
 
-    jsboyDMA.prototype.write_HDMA1 = function(data)
-    {
+    DMA.prototype.write_HDMA1 = function (data) {
         this.sourceAddress = (this.sourceAddress & 0x00FF) | (data << 8);
     }
 
-    jsboyDMA.prototype.read_HDMA2 = function()
-    {
+    DMA.prototype.read_HDMA2 = function () {
         return this.sourceAddress & 0xFF;
     }
 
-    jsboyDMA.prototype.write_HDMA2 = function(data)
-    {
+    DMA.prototype.write_HDMA2 = function (data) {
         this.sourceAddress = (this.sourceAddress & 0xFF00) | (data);
     }
 
-    jsboyDMA.prototype.read_HDMA3 = function()
-    {
+    DMA.prototype.read_HDMA3 = function () {
         return (this.destinationAddress >> 8);
     }
 
-    jsboyDMA.prototype.write_HDMA3 = function(data)
-    {
+    DMA.prototype.write_HDMA3 = function (data) {
         this.destinationAddress = (this.destinationAddress & 0x00FF) | (data << 8);
     }
 
-    jsboyDMA.prototype.read_HDMA4 = function()
-    {
+    DMA.prototype.read_HDMA4 = function () {
         return this.destinationAddress & 0xFF;
     }
 
-    jsboyDMA.prototype.write_HDMA4 = function(data)
-    {
+    DMA.prototype.write_HDMA4 = function (data) {
         this.destinationAddress = (this.destinationAddress & 0xFF00) | (data);
     }
 
-    jsboyDMA.prototype.read_HDMA5 = function()
-    {
+    DMA.prototype.read_HDMA5 = function () {
         return (this.active ? 0 : 0x80) | (this.blocksLeft);
     }
 
-    jsboyDMA.prototype.write_HDMA5 = function(data)
-    {
+    DMA.prototype.write_HDMA5 = function (data) {
         this.blocksLeft = data & 0x7F;
         this.active = true;
 
@@ -92,8 +81,7 @@ define([
         }
     }
 
-    jsboyDMA.prototype.moveBlock = function()
-    {    
+    DMA.prototype.moveBlock = function () {
         // DMA is no longer active
         if( !this.active )
             return ;
@@ -117,5 +105,5 @@ define([
         this.destinationAddress = (this.destinationAddress + 0x0010) & 0xFFFF;
     }
 
-    return jsboyDMA;
+    return DMA;
 });

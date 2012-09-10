@@ -1,8 +1,7 @@
 define([
     "chips/registers"
 ], function (registers) {
-    function jsboyPalette(cpu)
-    {
+    function Palette(cpu) {
         this.cpu = cpu;
 
         // --- Create a blank palette
@@ -10,13 +9,14 @@ define([
         this.byteMemory = new Uint8Array(palMemory);
         this.paletteMemory = new Uint16Array(palMemory);
 
-        for( var i = 0; i < this.paletteMemory.length; i++ )
+        for (var i = 0; i < this.paletteMemory.length; i++) {
             this.paletteMemory[i] = 0x7FFF;
+        }
 
         // DMG Palette registers
         this.reg_BGP = 0;
         this.reg_OBP0 = 0;
-        this.reg_OBP1 = 0;    
+        this.reg_OBP1 = 0;
 
         // CGB Palette registers (upper half always white)
         this.reg_BCPS = 0;
@@ -25,8 +25,7 @@ define([
         this.reg_OCPS_increment = false;
     }
 
-    jsboyPalette.prototype.reset = function()
-    {
+    Palette.prototype.reset = function (){
         // DMG Palette registers
         this.cpu.read[registers.BGP] = this.$('read_BGP');
         this.cpu.write[registers.BGP] = this.$('write_BGP');
@@ -43,95 +42,83 @@ define([
         this.cpu.read[registers.OCPS] = this.$('read_OCPS');
         this.cpu.write[registers.OCPS] = this.$('write_OCPS');
         this.cpu.read[registers.OCPD] = this.$('read_OCPD');
-        this.cpu.write[registers.OCPD] = this.$('write_OCPD');    
-    }
+        this.cpu.write[registers.OCPD] = this.$('write_OCPD');
+    };
 
     // --- DMG Palette paletteMemory registers
-    jsboyPalette.prototype.read_BGP = function()
-    {
+    Palette.prototype.read_BGP = function () {
         return this.reg_BGP;
-    }
+    };
 
-    jsboyPalette.prototype.write_BGP = function(data)
-    {
+    Palette.prototype.write_BGP = function (data) {
         this.cpu.catchUp();
         this.reg_BGP = data;
-    }
+    };
 
-    jsboyPalette.prototype.read_OBP0 = function()
-    {
+    Palette.prototype.read_OBP0 = function () {
         return this.reg_OBP0;
-    }
+    };
 
-    jsboyPalette.prototype.write_OBP0 = function(data)
-    {
+    Palette.prototype.write_OBP0 = function (data) {
         this.cpu.catchUp();
         this.reg_OBP0 = data;
-    }
+    };
 
-    jsboyPalette.prototype.read_OBP1 = function()
-    {
+    Palette.prototype.read_OBP1 = function () {
         return this.reg_OBP1;
-    }
+    };
 
-    jsboyPalette.prototype.write_OBP1 = function(data)
-    {
+    Palette.prototype.write_OBP1 = function (data) {
         this.cpu.catchUp();
         this.reg_OBP1 = data;
-    }
+    };
 
     // --- CGB Palette paletteMemory registers
-    jsboyPalette.prototype.read_BCPS = function()
-    {
+    Palette.prototype.read_BCPS = function () {
         return this.reg_BCPS | (this.reg_BCPS_increment ? 0x80 : 0);
-    }
+    };
 
-    jsboyPalette.prototype.write_BCPS = function(data)
-    {
+    Palette.prototype.write_BCPS = function (data) {
         this.reg_BCPS_increment = (data & 0x80);
         this.reg_BCPS = data & 0x3F;
-    }
+    };
 
-    jsboyPalette.prototype.read_OCPS = function()
-    {
+    Palette.prototype.read_OCPS = function () {
         return this.reg_OCPS | (this.reg_OCPS_increment ? 0x80 : 0);
-    }
+    };
 
-    jsboyPalette.prototype.write_OCPS = function(data)
-    {
+    Palette.prototype.write_OCPS = function (data) {
         this.reg_OCPS_increment = (data & 0x80);
         this.reg_OCPS = data & 0x3F;
-    }
+    };
 
-    jsboyPalette.prototype.read_BCPD = function()
-    {
+    Palette.prototype.read_BCPD = function () {
         return this.byteMemory[this.reg_BCPS];
-    }
+    };
 
-    jsboyPalette.prototype.write_BCPD = function(data)
-    {
+    Palette.prototype.write_BCPD = function (data) {
         this.cpu.catchUp();
 
         this.byteMemory[this.reg_BCPS] = data;
 
-        if( this.reg_BCPS_increment )
+        if (this.reg_BCPS_increment) {
             this.reg_BCPS = (this.reg_BCPS+1) & 0x3F;
-    }
+        }
+    };
 
-    jsboyPalette.prototype.read_OCPD = function()
-    {
+    Palette.prototype.read_OCPD = function () {
         return this.byteMemory[0x40|this.reg_OCPS];
-    }
+    };
 
-    jsboyPalette.prototype.write_OCPD = function(data)
-    {
+    Palette.prototype.write_OCPD = function (data) {
         this.cpu.catchUp();
 
         this.byteMemory[0x40|this.reg_OCPS] = data;
     
-        if( this.reg_OCPS_increment )
+        if (this.reg_OCPS_increment) {
             this.reg_OCPS = (this.reg_OCPS+1) & 0x3F;
-    }
+        }
+    };
 
-    return jsboyPalette;
+    return Palette;
 });

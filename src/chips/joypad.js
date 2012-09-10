@@ -2,7 +2,7 @@ define([
     "util/keyboard",
     "chips/registers"
 ], function(keyboard, registers) {
-    function jsboyJoypad(cpu)
+    function Joypad(cpu)
     {    
         // --- Internal data storage
         this.selectDir = 0;
@@ -19,17 +19,17 @@ define([
     }
 
     // default joystick to keyboard mapping
-    jsboyJoypad.prototype.mapping_A = keyboard.X;
-    jsboyJoypad.prototype.mapping_B = keyboard.Z;
-    jsboyJoypad.prototype.mapping_Select = keyboard.SHIFT;
-    jsboyJoypad.prototype.mapping_Start = keyboard.ENTER;
+    Joypad.prototype.mapping_A = keyboard.X;
+    Joypad.prototype.mapping_B = keyboard.Z;
+    Joypad.prototype.mapping_Select = keyboard.SHIFT;
+    Joypad.prototype.mapping_Start = keyboard.ENTER;
 
-    jsboyJoypad.prototype.mapping_Up = keyboard.UP_ARROW;
-    jsboyJoypad.prototype.mapping_Down = keyboard.DOWN_ARROW;
-    jsboyJoypad.prototype.mapping_Left = keyboard.LEFT_ARROW;
-    jsboyJoypad.prototype.mapping_Right = keyboard.RIGHT_ARROW;
+    Joypad.prototype.mapping_Up = keyboard.UP_ARROW;
+    Joypad.prototype.mapping_Down = keyboard.DOWN_ARROW;
+    Joypad.prototype.mapping_Left = keyboard.LEFT_ARROW;
+    Joypad.prototype.mapping_Right = keyboard.RIGHT_ARROW;
 
-    jsboyJoypad.prototype.reset = function()
+    Joypad.prototype.reset = function()
     {
         this.selectDir = 0;
         this.selectButton = 0;
@@ -40,7 +40,7 @@ define([
         this.cpu.write[registers.JOYP] = this.$('write_JOYP');
     }
 
-    jsboyJoypad.prototype.disableActions = function(keyEventArgs)
+    Joypad.prototype.disableActions = function(keyEventArgs)
     {
         var root = document.getElementsByTagName('body')[0];
 
@@ -51,7 +51,7 @@ define([
         }
     }
 
-    jsboyJoypad.prototype.keydown = function(keyEventArgs)
+    Joypad.prototype.keydown = function(keyEventArgs)
     {
         this.keyboard[keyEventArgs.keyCode] = true;
         this.update();
@@ -59,7 +59,7 @@ define([
         return this.disableActions(keyEventArgs);
     }
 
-    jsboyJoypad.prototype.keyup = function(keyEventArgs)
+    Joypad.prototype.keyup = function(keyEventArgs)
     {
         this.keyboard[keyEventArgs.keyCode] = false;
         this.update();
@@ -67,7 +67,7 @@ define([
         return this.disableActions(keyEventArgs);
     }
 
-    jsboyJoypad.prototype.update = function()
+    Joypad.prototype.update = function()
     {
         var oD = this.dataDir, oB = this.dataButton;
     
@@ -97,7 +97,7 @@ define([
             this.cpu.trigger(IRQ_JOYSTICK);
     }
 
-    jsboyJoypad.prototype.read_JOYP = function()
+    Joypad.prototype.read_JOYP = function()
     {
         var data = 0xF;
     
@@ -111,11 +111,11 @@ define([
                (this.selectButton ? 0x20 : 0);
     }
 
-    jsboyJoypad.prototype.write_JOYP = function(data)
+    Joypad.prototype.write_JOYP = function(data)
     {
         this.selectDir = data & 0x10;
         this.selectButton = data & 0x20;
     }
 
-    return jsboyJoypad;
+    return Joypad;
 });

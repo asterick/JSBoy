@@ -3,27 +3,27 @@ define([
     'chips/video/dma',
     'chips/video/palette',
     'chips/registers'    
-], function (jsboyLCD, jsboyDMA, jsboyPalette, registers) {
+], function (LCD, DMA, Palette, registers) {
     // These clocks are in GBC machine instruction cycles (Double speed)
     // IE: 4MHZ / 4 * 2
 
-    var SCANLINES      = 154;
-    var DRAWLINES      = 144;
-    var MODE_0_TIME    = 408;
-    var MODE_2_TIME    = 160;
-    var MODE_3_TIME    = 344;
-    var TICKS_PER_LINE = MODE_0_TIME + MODE_2_TIME + MODE_3_TIME;
-    var DRAW_PHASE     = DRAWLINES * TICKS_PER_LINE;
-    var TICKS_PER_FRAME = SCANLINES * TICKS_PER_LINE;
+    var SCANLINES      = 154,
+        DRAWLINES      = 144,
+        MODE_0_TIME    = 408,
+        MODE_2_TIME    = 160,
+        MODE_3_TIME    = 344,
+        TICKS_PER_LINE = MODE_0_TIME + MODE_2_TIME + MODE_3_TIME,
+        DRAW_PHASE     = DRAWLINES * TICKS_PER_LINE,
+        TICKS_PER_FRAME = SCANLINES * TICKS_PER_LINE;
 
-    function jsboyGPU(context, cpu)
+    function GPU(context, cpu)
     {    
         // --- System registers    
         this.videoMemory = ramBlock(0x4000);
         this.oamMemory = ramBlock(0xA0);
-        this.palette = new jsboyPalette(cpu);
-        this.lcd = new jsboyLCD(context, this.palette.paletteMemory);
-        this.dma = new jsboyDMA(cpu);
+        this.palette = new Palette(cpu);
+        this.lcd = new LCD(context, this.palette.paletteMemory);
+        this.dma = new DMA(cpu);
         this.cpu = cpu;
 
         // Video registers
@@ -65,7 +65,7 @@ define([
         }
     }
 
-    jsboyGPU.prototype.reset = function()
+    GPU.prototype.reset = function()
     {
         // Clear the scanline override
         delete this.drawScanline;
@@ -129,7 +129,7 @@ define([
         this.cpu.write[registers.LCD_MODE] = this.$('write_LCD_MODE');
     }
 
-    jsboyGPU.prototype.drawMapTile = function(mapAddr, tpx, tpy)
+    GPU.prototype.drawMapTile = function(mapAddr, tpx, tpy)
     {
         var attr = this.videoMemory.data[mapAddr | 0x2000];
         var tile = this.videoMemory.data[mapAddr] << 4;
@@ -150,7 +150,7 @@ define([
         this.lcd.copyTileBG( tpx, this.videoMemory.data[tileAddr], this.videoMemory.data[tileAddr+1], pal, hflip, priority );
     }
 
-    jsboyGPU.prototype.drawLegacyMapTile = function(mapAddr, tpx, tpy)
+    GPU.prototype.drawLegacyMapTile = function(mapAddr, tpx, tpy)
     {
         var tile = this.videoMemory.data[mapAddr] << 4;    
 
@@ -164,7 +164,7 @@ define([
         this.lcd.copyTileBG( tpx, this.videoMemory.data[tileAddr], this.videoMemory.data[tileAddr+1], 0, false, false );
     }
 
-    jsboyGPU.prototype.drawScanline = function(line)
+    GPU.prototype.drawScanline = function(line)
     {
         if( !this.lcd_enable )
             return ;
@@ -226,7 +226,7 @@ define([
         this.lcd.copyScanline(line);
     }
 
-    jsboyGPU.prototype.drawLegacyScanline = function(line)
+    GPU.prototype.drawLegacyScanline = function(line)
     {
         // White out the line
         if( !this.lcd_enable )
@@ -309,12 +309,12 @@ define([
                               this.palette.reg_OBP1);
     }
 
-    jsboyGPU.prototype.predictEndOfFrame = function()
+    GPU.prototype.predictEndOfFrame = function()
     {
         return TICKS_PER_FRAME - this.pixelClock;
     }
 
-    jsboyGPU.prototype.predict = function()
+    GPU.prototype.predict = function()
     {
         var phase = this.pixelClock % TICKS_PER_LINE;
 
@@ -335,7 +335,7 @@ define([
             return c;
     }
 
-    jsboyGPU.prototype.timeUntilVBlank = function()
+    GPU.prototype.timeUntilVBlank = function()
     {
         if( this.pixelClock < DRAW_PHASE )
             return DRAW_PHASE - this.pixelClock;
@@ -343,7 +343,7 @@ define([
             return DRAW_PHASE + TICKS_PER_FRAME - this.pixelClock;
     }
 
-    jsboyGPU.prototype.timeUntilDrawClock = function(phase, period)
+    GPU.prototype.timeUntilDrawClock = function(phase, period)
     {
         // The next one is on a banking line, so we wait until line 0's period
         if( this.pixelClock >= DRAW_PHASE - TICKS_PER_LINE + period )
@@ -356,7 +356,7 @@ define([
             return period - phase + TICKS_PER_LINE;
     }
 
-    jsboyGPU.prototype.timeUntilLine = function(line)
+    GPU.prototype.timeUntilLine = function(line)
     {
         if( line >= SCANLINES )
             return ;
@@ -369,7 +369,7 @@ define([
             return bias - this.pixelClock + TICKS_PER_FRAME;
     }
 
-    jsboyGPU.prototype.clock = function(cycles)
+    GPU.prototype.clock = function(cycles)
     {
         var phase = this.pixelClock % TICKS_PER_LINE;
 
@@ -437,13 +437,13 @@ define([
 
     // --- Mapping code
     // --- Runtime body
-    jsboyGPU.prototype.update = function()
+    GPU.prototype.update = function()
     {
         this.lcd.update();
     }
 
     // --- Video control register
-    jsboyGPU.prototype.read_LCDC = function()
+    GPU.prototype.read_LCDC = function()
     {
         return (this.lcd_enable ? 0x80 : 0) |
             (this.window_map ? 0x40 : 0) |
@@ -455,7 +455,7 @@ define([
             (this.bg_display ? 0x01 : 0);
     }
 
-    jsboyGPU.prototype.write_LCDC = function(data)
+    GPU.prototype.write_LCDC = function(data)
     {
         this.cpu.catchUp();
  
@@ -470,7 +470,7 @@ define([
     }
 
     // --- Video stat register
-    jsboyGPU.prototype.read_STAT = function()
+    GPU.prototype.read_STAT = function()
     {
         this.cpu.catchUp();
 
@@ -496,7 +496,7 @@ define([
         return data | 1;
     }
 
-    jsboyGPU.prototype.write_STAT = function(data)
+    GPU.prototype.write_STAT = function(data)
     {
         this.cpu.catchUp();
     
@@ -507,74 +507,74 @@ define([
     }
 
     // --- Video position / clock values
-    jsboyGPU.prototype.read_WX = function()
+    GPU.prototype.read_WX = function()
     {
         return this.wx;
     }
 
-    jsboyGPU.prototype.write_WX = function(data)
+    GPU.prototype.write_WX = function(data)
     {
         this.cpu.catchUp();
         this.wx = data;
     }
 
-    jsboyGPU.prototype.read_WY = function()
+    GPU.prototype.read_WY = function()
     {
         return this.wy;
     }
 
-    jsboyGPU.prototype.write_WY = function(data)
+    GPU.prototype.write_WY = function(data)
     {
         this.cpu.catchUp();
         this.wy = data;
     }
 
-    jsboyGPU.prototype.read_SCX = function()
+    GPU.prototype.read_SCX = function()
     {
         return this.scx;
     }
 
-    jsboyGPU.prototype.write_SCX = function(data)
+    GPU.prototype.write_SCX = function(data)
     {
         this.cpu.catchUp();
         this.scx = data;
     }
 
-    jsboyGPU.prototype.read_SCY = function()
+    GPU.prototype.read_SCY = function()
     {
         return this.scy;
     }
 
-    jsboyGPU.prototype.write_SCY = function(data)
+    GPU.prototype.write_SCY = function(data)
     {
         this.cpu.catchUp();
         this.scy = data;
     }
 
-    jsboyGPU.prototype.activeLine = function()
+    GPU.prototype.activeLine = function()
     {
         return Math.floor(this.pixelClock/TICKS_PER_LINE);    
     }
 
-    jsboyGPU.prototype.read_LY = function()
+    GPU.prototype.read_LY = function()
     {
         this.cpu.catchUp();
         return this.activeLine();
     }
 
-    jsboyGPU.prototype.read_LYC = function()
+    GPU.prototype.read_LYC = function()
     {
         return this.lyc;
     }
 
-    jsboyGPU.prototype.write_LYC = function(data)
+    GPU.prototype.write_LYC = function(data)
     {
         this.cpu.catchUp();
         this.lyc = data;
     }
 
     // --- Bank register
-    jsboyGPU.prototype.write_VBK = function( data )
+    GPU.prototype.write_VBK = function( data )
     {
         this.vbk = data & 1;
         bank = this.vbk * 0x2000;
@@ -583,12 +583,12 @@ define([
         this.cpu.write.copy( 0x8000, this.videoMemory.write, bank, 0x2000 );
     }
 
-    jsboyGPU.prototype.read_VBK = function()
+    GPU.prototype.read_VBK = function()
     {
         return this.vbk;
     }
 
-    jsboyGPU.prototype.write_DMA = function( data )
+    GPU.prototype.write_DMA = function( data )
     {
         this.cpu.catchUp();
         data = data << 8;
@@ -598,7 +598,7 @@ define([
             oam[i] = this.cpu.read[data++]();
     }
 
-    jsboyGPU.prototype.write_LCD_MODE = function(data)
+    GPU.prototype.write_LCD_MODE = function(data)
     {
         // I don't know how this is actually supose to work.
         if( data != 4 )
@@ -607,5 +607,5 @@ define([
         this.drawScanline = this.drawLegacyScanline;
     }
 
-    return jsboyGPU;
+    return GPU;
 });

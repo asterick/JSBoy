@@ -1,10 +1,10 @@
 define([
     'chips/cpu',
     'mappers/mapper'
-], function (jsboyCPU, mapper) {
+], function (CPU, mapper) {
     function jsboy(context) {
         // Bios will auto reset when the system initializes
-        this.cpu = new jsboyCPU(context);
+        this.cpu = new CPU(context);
         this.running = false;
     }
 

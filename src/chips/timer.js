@@ -1,7 +1,7 @@
 define([
     "chips/registers"
 ], function(registers) {
-    function jsboyTimer(cpu)
+    function Timer(cpu)
     {
         this.cpu = cpu;
 
@@ -16,19 +16,19 @@ define([
         this.enabled = false;
     }
 
-    jsboyTimer.prototype.PRESCALARS = [
+    Timer.prototype.PRESCALARS = [
             (8 * 1024 * 1024) / 4096,
             (8 * 1024 * 1024) / 262144,
             (8 * 1024 * 1024) / 65536,
             (8 * 1024 * 1024) / 16384
         ];
 
-    jsboyTimer.prototype.tick = function(cycles)
+    Timer.prototype.tick = function(cycles)
     {
         this.div = (this.div + cycles) & 0xFFFF;
     };
     
-    jsboyTimer.prototype.clock = function(cycles)
+    Timer.prototype.clock = function(cycles)
     {
         if( !this.enabled )
             return ;
@@ -47,26 +47,26 @@ define([
         }
     };
 
-    jsboyTimer.prototype.read_TIMA = function()
+    Timer.prototype.read_TIMA = function()
     {
         this.cpu.catchUp();
     
         return this.timer;
     };
 
-    jsboyTimer.prototype.write_TIMA = function(data)
+    Timer.prototype.write_TIMA = function(data)
     {
         this.cpu.catchUp();
     
         this.timer = data;
     };
 
-    jsboyTimer.prototype.read_TAC = function()
+    Timer.prototype.read_TAC = function()
     {
         return this.scalar | (this.enabled ? 4 : 0);
     };
 
-    jsboyTimer.prototype.write_TAC = function(data)
+    Timer.prototype.write_TAC = function(data)
     {
         this.cpu.catchUp();
     
@@ -75,30 +75,30 @@ define([
         this.divider = 0;
     };
 
-    jsboyTimer.prototype.read_TMA = function()
+    Timer.prototype.read_TMA = function()
     {
         return this.modulo;
     };
 
-    jsboyTimer.prototype.write_TMA = function(data)
+    Timer.prototype.write_TMA = function(data)
     {
         this.cpu.catchUp();
         this.modulo = data;
     };
 
-    jsboyTimer.prototype.read_DIV = function()
+    Timer.prototype.read_DIV = function()
     {
         this.cpu.catchUp();
         return this.div >> 8;
     };
 
-    jsboyTimer.prototype.write_DIV = function()
+    Timer.prototype.write_DIV = function()
     {
         this.cpu.catchUp();
         this.div = 0;
     };
 
-    jsboyTimer.prototype.reset = function()
+    Timer.prototype.reset = function()
     {
         // Map TIMER
         this.timer = 0;
@@ -122,7 +122,7 @@ define([
     };
 
     // Determine how many cycles until the next interrupt
-    jsboyTimer.prototype.predict = function()
+    Timer.prototype.predict = function()
     {
         if( !this.enabled )
             return ;
@@ -130,5 +130,5 @@ define([
         return this.PRESCALARS[this.scalar] * (0x100 - this.timer) - this.divider;
     };
 
-    return jsboyTimer;
+    return Timer;
 });

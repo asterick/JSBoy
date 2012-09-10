@@ -1,8 +1,8 @@
 define([
     'chips/ops/core'
-], function (jsboyCPU) {
+], function (CPU) {
     // --- Instruction map for base block
-    jsboyCPU.prototype.rlca = function() {
+    CPU.prototype.rlca = function() {
         var n = ((this.a >> 7) | (this.a << 1)) & 0xFF;
         this.cf = (this.a & 0x80);
         this.zf = false;
@@ -11,7 +11,7 @@ define([
         this.a = n;    
     }
 
-    jsboyCPU.prototype.rrca = function() {
+    CPU.prototype.rrca = function() {
         var n = ((this.a >> 1) | (this.a << 7)) & 0xFF;
         this.cf = (this.a & 1);
         this.zf = false;
@@ -20,7 +20,7 @@ define([
         this.a = n;    
     }
 
-    jsboyCPU.prototype.rla = function() {
+    CPU.prototype.rla = function() {
         var n = ((this.cf ? 1 : 0) | (this.a << 1)) & 0xFF;
         this.cf = (this.a & 0x80);
         this.zf = false;
@@ -29,7 +29,7 @@ define([
         this.a = n;
     }
 
-    jsboyCPU.prototype.rra = function() {
+    CPU.prototype.rra = function() {
         var n = (this.a >> 1) | (this.cf ? 0x80 : 0);
         this.cf = (this.a & 1);
         this.zf = false;
@@ -38,7 +38,7 @@ define([
         this.a = n;
     }
 
-    jsboyCPU.prototype.add16 = function( v ) {
+    CPU.prototype.add16 = function( v ) {
         var q = this.hl;
         var r = q + v;
 
@@ -50,7 +50,7 @@ define([
         this.l = r & 0xFF;
     }
 
-    jsboyCPU.prototype.addSP = function() {
+    CPU.prototype.addSP = function() {
         var q = this.sp;
         var v = this.nextSignedByte();
         var r = q + v;
@@ -63,43 +63,43 @@ define([
         return r & 0xFFFF;
     }
 
-    jsboyCPU.prototype.incHL = function() {
+    CPU.prototype.incHL = function() {
         var v = (this.hl + 1) & 0xFFFF;
         this.h = v >> 8;
         this.l = v & 0xFF;
     }
 
-    jsboyCPU.prototype.decHL = function() {
+    CPU.prototype.decHL = function() {
         var v = (this.hl - 1) & 0xFFFF;
         this.h = v >> 8;
         this.l = v & 0xFF;
     }
 
-    jsboyCPU.prototype.incDE = function() {
+    CPU.prototype.incDE = function() {
         var v = (this.de + 1) & 0xFFFF;
         this.d = v >> 8;
         this.e = v & 0xFF;
     }
 
-    jsboyCPU.prototype.decDE = function() {
+    CPU.prototype.decDE = function() {
         var v = (this.de - 1) & 0xFFFF;
         this.d = v >> 8;
         this.e = v & 0xFF;
     }
 
-    jsboyCPU.prototype.incBC = function() {
+    CPU.prototype.incBC = function() {
         var v = (this.bc + 1) & 0xFFFF;
         this.b = v >> 8;
         this.c = v & 0xFF;
     }
 
-    jsboyCPU.prototype.decBC = function() {
+    CPU.prototype.decBC = function() {
         var v = (this.bc - 1) & 0xFFFF;
         this.b = v >> 8;
         this.c = v & 0xFF;
     }
 
-    jsboyCPU.prototype.inc = function( v ){
+    CPU.prototype.inc = function( v ){
         var o = (v + 1) & 0xFF;
 
         this.zf = !o;
@@ -109,7 +109,7 @@ define([
         return o;
     }
 
-    jsboyCPU.prototype.dec = function( v ){
+    CPU.prototype.dec = function( v ){
         var o = (v - 1) & 0xFF;
 
         this.zf = !o;
@@ -119,7 +119,7 @@ define([
         return o;
     }
 
-    jsboyCPU.prototype.and = function( v ){
+    CPU.prototype.and = function( v ){
         this.a &= v;
         this.zf = !this.a;
         this.nf = false;
@@ -127,7 +127,7 @@ define([
         this.cf = false;
     }
 
-    jsboyCPU.prototype.or = function(v) {
+    CPU.prototype.or = function(v) {
         this.a |= v;
         this.zf = !this.a;
         this.nf = false;
@@ -135,7 +135,7 @@ define([
         this.cf = false;
     }
 
-    jsboyCPU.prototype.xor = function(v) {
+    CPU.prototype.xor = function(v) {
         this.a ^= v;
         this.zf = !this.a;
         this.nf = false;
@@ -143,7 +143,7 @@ define([
         this.cf = false;
     }
 
-    jsboyCPU.prototype.add = function( v ) {
+    CPU.prototype.add = function( v ) {
         this.hf = ((this.a & 0xF) + (v & 0xF)) >= 0x10;
 
         this.a = this.a + v;
@@ -154,7 +154,7 @@ define([
         this.zf = !this.a;
     }
 
-    jsboyCPU.prototype.adc = function( v ) {
+    CPU.prototype.adc = function( v ) {
         this.hf = ((this.a & 0xF) + (v & 0xF) + (this.cf ? 1 : 0)) >= 0x10;
 
         this.a = this.a + v + (this.cf ? 1 : 0);
@@ -165,7 +165,7 @@ define([
         this.zf = !this.a;
     }
 
-    jsboyCPU.prototype.sub = function( v ) {
+    CPU.prototype.sub = function( v ) {
         this.hf = ((this.a & 0xF) - (v & 0xF)) < 0;
 
         this.a = this.a - v;
@@ -176,7 +176,7 @@ define([
         this.zf = !this.a;
     }
 
-    jsboyCPU.prototype.sbc = function( v ) {
+    CPU.prototype.sbc = function( v ) {
         this.hf = ((this.a & 0xF) - (v & 0xF) - (this.cf ? 1 : 0)) < 0;
 
         this.a = this.a - v - (this.cf ? 1 : 0);
@@ -187,7 +187,7 @@ define([
         this.zf = !this.a;
     }
 
-    jsboyCPU.prototype.cp = function( v ){
+    CPU.prototype.cp = function( v ){
         this.hf = ((this.a & 0xF) - (v & 0xF)) < 0;
 
         var o = this.a - v;
@@ -196,14 +196,14 @@ define([
         this.zf = !(o & 0xFF);
     }
 
-    jsboyCPU.prototype.cpl = function() {
+    CPU.prototype.cpl = function() {
         this.a = this.a ^ 0xFF;
         this.hf = true;
         this.nf = true;
     }
 
     // --- THIS INSTRUCTION REQUIRES A CONFIDENCE CHECK!
-    jsboyCPU.prototype.daa = function() {
+    CPU.prototype.daa = function() {
         var result = this.a;
 
         if ( this.nf )
@@ -229,7 +229,7 @@ define([
         this.hf = false;
     }
 
-    jsboyCPU.prototype.stepBase = function(){
+    CPU.prototype.stepBase = function(){
         var opCode = this.nextByte();
     
         switch(opCode)
