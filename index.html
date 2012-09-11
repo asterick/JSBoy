@@ -14,137 +14,170 @@
     
     <body>
         <div class='center'>
-            <div id='screenHolder'>
-                <canvas id='screen' class='regular' width='160' height='144'></canvas>
-                
-                <div id='Button_A'>X</div>
-                <div id='Button_B'>Z</div>
-                <div id='Button_Select'>Shift</div>
-                <div id='Button_Start'>Return</div>
-            </div>
-            
-            <div class='main_col'>
-                <div id='block'>
-                    <div class='group'>
-                        <p style='text-align: center; font: larger bold; font-family: helvetica;'>
-                            <img src='media/kirby.png'> JSBoy demo page
-                        </p>
-                        
-                        <p style='text-align: justify'>
-                            To load a cartridge image, simply type a partial name in the field below and
-                            clicking the respective name.  Once a game finishes loading you should see
-                            the gameboy color boot up screen.
-                        </p>
+            <input class="span4" id='filename' type="text" placeholder="Load a rom">
+            <ul id='suggestions'></ul>
 
-                        <input type="text" id='filename' style="display: none;" value="... type here to load a rom ..."></input>
-                        <div id='suggestions' style="display: none;"></div>
-                    </div>
-                </div>
-    
-                <div id='block' class='disassembly'>
-                    <div id='registers'>
-                        <div>
-                            <div style='text-align:center; padding-bottom: 4px'>CPU Flags</div>
-                            <div class='column'>
-                                <div class='name'>B</div>
-                                <div class='value' id='cpu_b'></div>
-                                <div class='name'>C</div>
-                                <div class='value' id='cpu_c'></div><br/>
-                                <div class='name'>D</div>
-                                <div class='value' id='cpu_d'></div>
-                                <div class='name'>E</div>
-                                <div class='value' id='cpu_e'></div><br/>
-                                <div class='name'>H</div>
-                                <div class='value' id='cpu_h'></div>
-                                <div class='name'>L</div>
-                                <div class='value' id='cpu_l'></div><br/>
-                                <div class='name'>A</div>
-                                <div class='value' id='cpu_a'></div><br/>
-                                <div class='name'>PC</div>
-                                <div class='value' id='cpu_pc'></div>
-                                <div class='name'>SP</div>
-                                <div class='value' id='cpu_sp'></div><br/>
-                                <div class='name'>IF</div>
-                                <div class='value' id='cpu_irq_request'></div>
-                                <div class='name'>IE</div>
-                                <div class='value' id='cpu_irq_enable'></div><br/>
+            <canvas id='display' class='' width='160' height='144'></canvas>
+
+            <div class='debugger'>
+                <ul class='button-group'>
+                    <li><a class='button' id="run" href="javascript:void 0">Run</a></li
+                    ><li><a class='button' id="stop" href="javascript:void 0">Stop</a></li
+                    ><li><a class='button' id="reset" href="javascript:void 0">Reset</a></li
+                    ><li><a class='button' id="step" href="javascript:void 0">Step</a></li
+                    ><li><a class='button' id="frame" href="javascript:void 0">Frame</a></li
+                    ><li><a class='button' id="stop_predictions" href='javascript:void 0'>Disable predictions</a></li>
+                </ul>
+
+                <div class='debugger-body'>
+                    <div class='registers'>
+                        <div class='header'>CPU Flags</div>
+                        <div class='column'>
+                            <div>
+                                <span class='name'>BC</span>
+                                <span class='value' data-chip='cpu' data-reg='b'></span>
+                                <span class='value' data-chip='cpu' data-reg='c'></span>
                             </div>
-                            <div class='column'>
-                                <div class='name'>C</div>
-                                <div class='flag' id='cpu_cf'></div><br/>
-                                <div class='name'>H</div>
-                                <div class='flag' id='cpu_hf'></div><br/>
-                                <div class='name'>N</div>
-                                <div class='flag' id='cpu_nf'></div><br/>
-                                <div class='name'>Z</div>
-                                <div class='flag' id='cpu_zf'></div><br/>
-                                <div class='name'>I</div>
-                                <div class='flag' id='cpu_irq_master'></div><br/>
-                                <div class='name'>S</div>
-                                <div class='flag' id='cpu_halted'></div>
+                            <div>
+                                <span class='name'>DE</span>
+                                <span class='value' data-chip='cpu' data-reg='d'></span>
+                                <span class='value' data-chip='cpu' data-reg='e'></span>
+                            </div>
+                            <div>
+                                <span class='name'>HL</span>
+                                <span class='value' data-chip='cpu' data-reg='h'></span>
+                                <span class='value' data-chip='cpu' data-reg='l'></span>
+                            </div>
+                            <div>
+                                <span class='name'>A</span>
+                                <span class='value' data-chip='cpu' data-reg='a'></span>
+                            </div>
+                            <div>
+                                <span class='name'>PC</span>
+                                <span class='value' data-chip='cpu' data-reg='pc'></span>
+                                <span class='name'>SP</span>
+                                <span class='value' data-chip='cpu' data-reg='sp'></span>
+                            </div>
+                            <div>
+                                <span class='name'>IF</span>
+                                <span class='value' data-chip='cpu' data-reg='irq_request'></span>
+                                <span class='name'>IE</span>
+                                <span class='value' data-chip='cpu' data-reg='irq_enable'></span>
                             </div>
                         </div>
-                        <div>
-                            <div style='text-align:center; padding-bottom: 4px'>GPU Flags</div>
-                            <div class='column'>
-                                <div class='name'>VBK</div>
-                                <div class='value' id='gpu_reg_VBK'></div><br/>
-                                <div class='name'>LYC</div>
-                                <div class='value' id='gpu_lyc'></div><br/>
-                                <div class='name'>CLK</div>
-                                <div class='value' id='gpu_pixelClock'></div><br/>
-                                <div class='name'>SCX</div>
-                                <div class='value' id='gpu_scx'></div><br/>
-                                <div class='name'>SCY</div>
-                                <div class='value' id='gpu_scy'></div><br/>
-                                <div class='name'>WX</div>
-                                <div class='value' id='gpu_wx'></div><br/>
-                                <div class='name'>WY</div>
-                                <div class='value' id='gpu_wy'></div><br/>
+                        <div class='column'>
+                            <div class='flag-group'>
+                                <span class='name'>C</span>
+                                <span class='flag' data-chip='cpu' data-reg='cf'></span>
                             </div>
-                            <div class='column'>
-                                <div class='name'>LCD</div>
-                                <div class='flag' id='gpu_lcd_enable'></div><br/>
-                                <div class='name'>WM</div>
-                                <div class='flag' id='gpu_window_map'></div><br/>
-                                <div class='name'>BM</div>
-                                <div class='flag' id='gpu_background_map'></div><br/>
-                                <div class='name'>WIN</div>
-                                <div class='flag' id='gpu_window_enable'></div><br/>
-                                <div class='name'>BG</div>
-                                <div class='flag' id='gpu_bg_display'></div><br/>
-                                <div class='name'>BNK</div>                    
-                                <div class='flag' id='gpu_map_tile_data'></div><br/>
-                                <div class='name'>OBJ</div>
-                                <div class='flag' id='gpu_obj_enable'></div><br/>
-                                <div class='name'>SIZ</div>
-                                <div class='flag' id='gpu_obj_size'></div><br/>
+                            <div class='flag-group'>
+                                <span class='name'>H</span>
+                                <span class='flag' data-chip='cpu' data-reg='hf'></span>
                             </div>
-                            <div class='column'>
-                                <div class='name'>LYC</div>
-                                <div class='flag' id='gpu_lycIRQ'></div><br/>
-                                <div class='name'>M0</div>
-                                <div class='flag' id='gpu_mode0IRQ'></div><br/>
-                                <div class='name'>M1</div>
-                                <div class='flag' id='gpu_mode1IRQ'></div><br/>
-                                <div class='name'>M2</div>
-                                <div class='flag' id='gpu_mode2IRQ'></div><br/>
+                            <div class='flag-group'>
+                                <span class='name'>N</span>
+                                <span class='flag' data-chip='cpu' data-reg='nf'></span>
+                            </div>
+                            <div class='flag-group'>
+                                <span class='name'>Z</span>
+                                <span class='flag' data-chip='cpu' data-reg='zf'></span>
+                            </div>
+                            <div class='flag-group'>
+                                <span class='name'>I</span>
+                                <span class='flag' data-chip='cpu' data-reg='irq_master'></span>
+                            </div>
+                            <div class='flag-group'>
+                                <span class='name'>S</span>
+                                <span class='flag' data-chip='cpu' data-reg='halted'></span>
                             </div>
                         </div>
-
-                        <div>
-                            <a id="run" href="javascript:void 0">run</a>
-                            <a id="stop" href="javascript:void 0">stop</a>
-                            <a id="reset" href="javascript:void 0">reset</a><br/>
-                            <a id="step" href="javascript:void 0">step</a>
-                            <a id="frame" href="javascript:void 0">frame</a>
-                            <a id="stop_predictions" href='javascript:void 0'>disable predictions</a>
+                        <div class='header'>GPU Flags</div>
+                        <div class='column'>
+                            <div>
+                                <span class='name'>VBK</span>
+                                <span class='value' data-chip='gpu' data-reg='vbk'></span>
+                            </div>
+                            <div>
+                                <span class='name'>LYC</span>
+                                <span class='value' data-chip='gpu' data-reg='lyc'></span>
+                            </div>
+                            <div>
+                                <span class='name'>CLK</span>
+                                <span class='value' data-chip='gpu' data-reg='pixelClock'></span>
+                            </div>
+                            <div>
+                                <span class='name'>SCX</span>
+                                <span class='value' data-chip='gpu' data-reg='scx'></span>
+                            </div>
+                            <div>
+                                <span class='name'>SCY</span>
+                                <span class='value' data-chip='gpu' data-reg='scy'></span>
+                            </div>
+                            <div>
+                                <span class='name'>WX</span>
+                                <span class='value' data-chip='gpu' data-reg='wx'></span>
+                            </div>
+                            <div>
+                                <span class='name'>WY</span>
+                                <span class='value' data-chip='gpu' data-reg='wy'></span>
+                            </div>
+                        </div>
+                        <div class='column'>
+                            <div class='flag-group'>
+                                <span class='name'>LCD</span>
+                                <span class='flag' data-chip='gpu' data-reg='lcd_enable'></span>
+                            </div>
+                            <div class='flag-group'>
+                                <span class='name'>WM</span>
+                                <span class='flag' data-chip='gpu' data-reg='window_map'></span>
+                            </div>
+                            <div class='flag-group'>
+                                <span class='name'>BM</span>
+                                <span class='flag' data-chip='gpu' data-reg='background_map'></span>
+                            </div>
+                            <div class='flag-group'>
+                                <span class='name'>WIN</span>
+                                <span class='flag' data-chip='gpu' data-reg='window_enable'></span>
+                            </div>
+                            <div class='flag-group'>
+                                <span class='name'>BG</span>
+                                <span class='flag' data-chip='gpu' data-reg='bg_display'></span>
+                            </div>
+                            <div class='flag-group'>
+                                <span class='name'>BNK</span>                    
+                                <span class='flag' data-chip='gpu' data-reg='map_tile_data'></span>
+                            </div>
+                            <div class='flag-group'>
+                                <span class='name'>OBJ</span>
+                                <span class='flag' data-chip='gpu' data-reg='obj_enable'></span>
+                            </div>
+                            <div class='flag-group'>
+                                <span class='name'>SIZ</span>
+                                <span class='flag' data-chip='gpu' data-reg='obj_size'></span>
+                            </div>
+                        </div>
+                        <div class='column'>
+                            <div class='flag-group'>
+                                <span class='name'>LYC</span>
+                                <span class='flag' data-chip='gpu' data-reg='lycIRQ'></span>
+                            </div>
+                            <div class='flag-group'>
+                                <span class='name'>M0</span>
+                                <span class='flag' data-chip='gpu' data-reg='mode0IRQ'></span>
+                            </div>
+                            <div class='flag-group'>
+                                <span class='name'>M1</span>
+                                <span class='flag' data-chip='gpu' data-reg='mode1IRQ'></span>
+                            </div>
+                            <div class='flag-group'>
+                                <span class='name'>M2</span>
+                                <span class='flag' data-chip='gpu' data-reg='mode2IRQ'></span>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class='address' id='address'></div>
-                    <div class='hex' id='hex'></div>
-                    <div class='instruction' id='instruction'></div>
+                    <div class='disassembly' id='disassembly'>
+                    </div>
                 </div>
             </div>
         </div>

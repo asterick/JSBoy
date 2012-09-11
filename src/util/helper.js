@@ -19,23 +19,5 @@ Object.prototype.$ = function (name) {
 };
 
 function log (/*...*/) {
-    var logContainer = document.getElementById('messageLog');
-
-    if (!logContainer) {
-        logContainer = document.createElement('div');
-        logContainer.setAttribute("id","messageLog");
-        document.getElementsByTagName('body').item(0).appendChild(logContainer);
-    }
-    
-    var msg = document.createElement('div');
-    
-    for (var i = 0; i < arguments.length; i++) {
-        var elem = document.createElement('span');
-        elem.setAttribute('class',typeof(arguments[i]));
-        elem.innerHTML = JSON.stringify(arguments[i]);
-        msg.appendChild(elem);
-    }
-
-    logContainer.appendChild(msg);
-    logContainer.scrollTop = logContainer.scrollHeight;
+    console.log.apply(console, arguments);
 }

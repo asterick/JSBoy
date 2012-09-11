@@ -4,7 +4,7 @@ requirejs([
     "text!../gamelist"
 ], function (jsboy, disassembler, gamelist) {
     var games = gamelist.split('\n').sort(),
-        ctx = document.getElementById('screen').getContext("2d"),
+        ctx = document.getElementById('display').getContext("2d"),
         runtime = new jsboy(ctx);
 
     function shorten(fn) {
@@ -37,21 +37,22 @@ requirejs([
     }
 
     function updateRegs(device, state) {
-        for (var k in state) {
-            var e = document.getElementById(device+'_'+k);
-            if (!e) {
-                continue;
-            }
-        
+        var regs = document.querySelectorAll("[data-chip="+device+"]"),
+            e;
+
+        for (var i = 0; i < regs.length; i++) {
+            var e = regs[i],
+                v = state[e.dataset.reg];
+
             switch (e.getAttribute('class')) {
                 case 'value':
-                    e.innerHTML = state[k].toString(16);
+                    e.innerHTML = v.toString(16);
                     break ;
                 case 'flag':
-                    e.innerHTML = (state[k] ? 'X' : '&nbsp;')
+                    e.innerHTML = (v ? '&#10003;' : '&nbsp;')
                     break ;
                 default:
-                    e.innerHTML = state[k];
+                    e.innerHTML = v;
                     break ;
             }
         }
@@ -59,18 +60,14 @@ requirejs([
 
     function update()
     {
-        var addr = $('#address'),
-            hex = $('#hex'),
-            inst = $('#instruction'),
+        var disasm = $('#disassembly'),
             dis = new disassembler(runtime.cpu),
             pc = runtime.cpu.pc;
 
         updateRegs('cpu',runtime.cpu);
         updateRegs('gpu',runtime.cpu.gpu);
 
-        addr.empty();
-        hex.empty();
-        inst.empty();
+        disasm.empty();
 
         for (var i = 0; i < 25; i++) {
             var o = dis.disassemble(pc);
@@ -78,15 +75,12 @@ requirejs([
                 break ;
         
             var a = pc.toString(16);
-            addr.append("<a href='#' onclick='runTo("+pc+")'>" + a + "</a><br/>");
-            hex.append(o.hex + "<br/>");
-            inst.append(o.op + "<br/>");
-        
+            disasm.append("<div class='row'><span class='addr'><a href='javascript:runTo("+pc+")'>" + a + "</a></span><span class='hex'>"+o.hex+"</span><span class='instruction'>"+o.op+"</span></div>");
             pc = o.next;
         }
     }
 
-    function runTo(addr) {
+    window.runTo = function (addr) {
         // Limit number of executions (This is enough to boot the system)
         for (var i = 1250000; i && runtime.cpu.pc != addr; i--) {
             runtime.cpu.singleStep();
@@ -105,8 +99,8 @@ requirejs([
         });
 
         suggestions.html(list.map(function(game) {
-            return "<a href='#"+escape(game)+"')'>" + shorten(game) + "</a>";
-        }).join("<br/>"));
+            return "<li><a href='#"+escape(game)+"')'>" + shorten(game) + "</a></li>";
+        }).join(""));
 
         suggestions.toggle(list.length > 0);
     }
@@ -137,7 +131,7 @@ requirejs([
         runtime.cpu.predictEvent = function() { return 0; }
     });
 
-    $('#screen').click(function () {
+    $('#display').click(function () {
         $(this).toggleClass('double');
     });
 

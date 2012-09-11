@@ -15,15 +15,19 @@ define([
 
     Audio.prototype.clock = function (ticks) {
     };
-    
+
     Audio.prototype.reset = function () {
         var self = this;
+
+        this.NR50 = 0;
+        this.NR51 = 0;
+
         function delegate(i) {
             self.cpu.read[registers.AUD3WAVERAM0+i] = function () {
                 return self.wavetable[i];
             };
             self.cpu.write[registers.AUD3WAVERAM0+i] = function (d) {
-                self.cpu.catchup();
+                self.cpu.catchUp();
                 self.wavetable[i] = d;
             };
         }
@@ -126,10 +130,6 @@ define([
     Audio.prototype.write_NR43 = function (d) {};
     Audio.prototype.write_NR44 = function (d) {};
 
-    Audio.prototype.write_NR50 = function (d) {};
-    Audio.prototype.write_NR51 = function (d) {};
-    Audio.prototype.write_NR52 = function (d) {};
-
     Audio.prototype.read_NR10 = function () { return 0; };
     Audio.prototype.read_NR11 = function () { return 0; };
     Audio.prototype.read_NR12 = function () { return 0; };
@@ -149,8 +149,23 @@ define([
     Audio.prototype.read_NR43 = function () { return 0; };
     Audio.prototype.read_NR44 = function () { return 0; };
 
-    Audio.prototype.read_NR50 = function () { return 0; };
-    Audio.prototype.read_NR51 = function () { return 0; };
+    // --- Control registers
+    Audio.prototype.write_NR50 = function (d) {
+        this.NR50 = d;
+    };
+    Audio.prototype.write_NR51 = function (d) {
+        this.NR51 = d;
+    };
+    Audio.prototype.write_NR52 = function (d) {
+        
+    };
+
+    Audio.prototype.read_NR50 = function () { 
+        return this.NR50;
+    };
+    Audio.prototype.read_NR51 = function () { 
+        return this.NR51;
+    };
     Audio.prototype.read_NR52 = function () { return 0; };
 
     return Audio;

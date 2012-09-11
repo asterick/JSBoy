@@ -1,197 +1,136 @@
+* {
+    color: inherit;
+    text-decoration: inherit;
+}
+
 body {
-    font-family: helvetica;
-    background: rgb(212,244,148)
-}
-
-.center {
-    width: 950px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* --- Information column style --- */
-.main_col {
-    width: 600px;
-    display:inline-block;
-}
-
-.main_col #block {
-    background: rgb(255,255,255);
-    border: solid 1px black;
-    margin-bottom: 4px;
-    width: 100%;
-    overflow-x: hidden;
-}
-
-.main_col #block .group {
-    padding: 10px;
-}
-
-#filename {
-    width: 570px;
-    margin: 4px;
-    border: 1px dashed;
-    border-color: gray;
-}
-
-#suggestions {
-    border: dashed black 1px;
-    margin: 4px;
-    padding: 4px;
-    max-height: 10em;
-    overflow-y: scroll ;
-    overflow-x: hidden ;
-}
-
-/* --- REGISTER VIEWER --- */
-#registers .flag {
-    width: 8px;
-    display: inline-block;
-    background: rgb(220,220,220)
-}
-
-#registers .name {
-    width: 20px;
-    display: inline-block
-}
-
-#registers .value {
-    width: 40px;
-    display: inline-block;
-    text-align: right;
-    background: rgb(220,220,220)
-}
-
-#registers .column {
-    display: inline-block;
-}
-
-#registers {
-    padding: 5px;
-    border: 1px dashed;
-    float: right;
-    margin: 4px 4px;
-    font-family:monospace;
-    color: black;
-}
-
-/* --- DISASSEMBLY VIEWER --- */
-.disassembly {
-    display:inline-block;
-    font-family:monospace;
-    color: black;
-}
-
-.disassembly .address {
-    width: 40px;
-    height: 100%;
-    display:inline-block;
-    text-align: right;
-}
-
-.disassembly .instruction {
-    display:inline-block;
-    text-align: left;
-}
-
-.disassembly .hex {
-    width: 70px;
-    display:inline-block;
-    text-align: left;
-    background: rgb(220,220,220)
-}
-
-/* --- ERROR LOG --- */
-#messageLog {
-    background-color: white;
-    border-top: solid rgb(0,0,0);
-    position: fixed;
-    bottom: 0px;
-    left: 0px;
-    width: 100%;
-    padding: 4px;
-    max-height: 100px;
-    overflow-y: auto
-}
-
-#messageLog span {
-    padding-right: 6px;
-}
-
-#messageLog .number {
-    font-weight: bold;
-}
-#messageLog .object {
-    font-style: italic;
+    font-family: "Helvetica Neue", "Lucida Grande", Helvetica, Arial, Verdana, sans-serif;
 }
 
 /* ------ Gameboy display objects ------- */
-#screenHolder {
-    background: no-repeat url('gameboy.jpg') white;
-    border: dashed 1px black;
-    margin-right: 4px;
+#display {
+    display: inline-block;
+    background: url('gameboy.png');
 
-    width: 340px;
-    height: 560px;
-    display:inline-block;
-    vertical-align: top;
-    position: relative;
+    width: 160px;
+    height: 144px;
+
+    padding: 67px 90px 349px;
 }
 
-.regular {
-    position: relative;
-    left: 90px;
-    top: 67px;
-}
-
-.double {
-    position: relative;
+#display.double {
     width: 320px;
     height: 288px;
-    left: 10px;
-    top: 10px;
+
+    padding: 10px 10px 262px;
 }
 
-#Button_A {
-    font-size: 8pt;
-    width: 80px;
-    text-align: center;
-    vertical-align: middle;
-    
-    position: absolute;
-    top: 380px;
-    left: 247px;
+.center {
+    width: 900px;
+    margin: 0 auto;
 }
 
-#Button_B {
-    font-size: 8pt;
-    width: 80px;
-    text-align: center;
-    vertical-align: middle;
-    
-    position: absolute;
-    top: 400px;
-    left: 190px;
+.debugger .button-group {
+    background: -moz-linear-gradient(top, rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(125,126,125,1)), color-stop(100%,rgba(14,14,14,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%); /* IE10+ */
+    background: linear-gradient(to bottom, rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%); /* W3C */
+
+    color: rgb(220, 220, 220);
+    text-shadow: 0 0.1em rgb(100, 100, 100);
 }
 
-#Button_Select {
-    font-size: 8pt;
-    width: 80px;
-    text-align: center;
-    vertical-align: middle;
-    
-    position: absolute;
-    top: 470px;
-    left: 108px;
+canvas {
+    display: inline-block;
 }
 
-#Button_Start {
-    font-size: 8pt;
-    width: 80px;
-    text-align: center;
-    vertical-align: middle;
-    
-    position: absolute;
-    top: 470px;
-    left: 156px;
+.debugger {
+    display: inline-block;
+    border: 1px solid black;
+    padding: 0;
+    margin: 0;
 }
+
+.debugger .registers, .debugger .disassembly {
+    font-family: "Courier New", Courier, monospace;
+}
+
+.debugger .flag-group {
+    white-space-collapse: discard;
+}
+
+.debugger .flag {
+    width: 1em;
+    background: rgb(20, 20, 20);
+    color: rgb(24,237,47);
+    text-align: center;
+
+    padding: 0;
+    margin: 0;
+}
+
+.debugger .header {
+    width: 100;
+    text-align: center;
+}
+
+.button-group {
+    padding: 0;
+    margin: 0;
+}
+
+.button-group ul {
+    margin: 0;
+    padding: 0;
+}
+
+.button-group li {
+    display: inline-block;
+}
+
+.button-group .button {
+    display: block;
+    height: 100%;
+    border-right: 1px solid black;
+    padding: 2px 8px;
+    margin: 0;
+}
+
+.debugger .column {
+    display: inline-block;
+}
+
+.debugger .registers {
+    display: inline-block;
+    vertical-align: top;
+
+    padding: 0;
+    background: rgb(237, 237, 237);
+    padding: 4px 16px;
+    height: 100%;
+}
+
+.debugger .disassembly {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.debugger .row {
+    width: 100%;
+}
+
+.debugger .addr {
+    display: inline-block;
+    width: 10ex;
+}
+
+.debugger .hex {
+    display: inline-block;
+    width: 16ex;
+}
+
+.debugger .instruction {
+}
+
