@@ -17,9 +17,9 @@
             <input class="span4" id='filename' type="text" placeholder="Load a rom">
             <ul id='suggestions'></ul>
 
-            <canvas id='display' class='' width='160' height='144'></canvas>
+            <canvas id='display' class='' width='160' height='144'></canvas
 
-            <div class='debugger'>
+            ><div class='debugger'>
                 <ul class='button-group'>
                     <li><a class='button' id="run" href="javascript:void 0">Run</a></li
                     ><li><a class='button' id="stop" href="javascript:void 0">Stop</a></li
@@ -34,18 +34,21 @@
                         <div class='header'>CPU Flags</div>
                         <div class='column'>
                             <div>
-                                <span class='name'>BC</span>
+                                <span class='name'>B</span>
                                 <span class='value' data-chip='cpu' data-reg='b'></span>
+                                <span class='name'>C</span>
                                 <span class='value' data-chip='cpu' data-reg='c'></span>
                             </div>
                             <div>
-                                <span class='name'>DE</span>
+                                <span class='name'>D</span>
                                 <span class='value' data-chip='cpu' data-reg='d'></span>
+                                <span class='name'>E</span>
                                 <span class='value' data-chip='cpu' data-reg='e'></span>
                             </div>
                             <div>
-                                <span class='name'>HL</span>
+                                <span class='name'>H</span>
                                 <span class='value' data-chip='cpu' data-reg='h'></span>
+                                <span class='name'>L</span>
                                 <span class='value' data-chip='cpu' data-reg='l'></span>
                             </div>
                             <div>

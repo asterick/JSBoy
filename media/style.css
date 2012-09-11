@@ -1,6 +1,8 @@
 * {
     color: inherit;
     text-decoration: inherit;
+    margin: 0;
+    padding: 0;
 }
 
 body {
@@ -48,9 +50,23 @@ canvas {
 
 .debugger {
     display: inline-block;
+    vertical-align: top;
     border: 1px solid black;
     padding: 0;
     margin: 0;
+
+    width: 540px;
+}
+
+.debugger .name {
+    display: inline-block;
+    width: 30px;
+    text-align: right;
+}
+
+.debugger .value {
+    display: inline-block;
+    width: 30px;
 }
 
 .debugger .registers, .debugger .disassembly {
@@ -58,10 +74,10 @@ canvas {
 }
 
 .debugger .flag-group {
-    white-space-collapse: discard;
 }
 
 .debugger .flag {
+    display: inline-block;
     width: 1em;
     background: rgb(20, 20, 20);
     color: rgb(24,237,47);
@@ -74,6 +90,9 @@ canvas {
 .debugger .header {
     width: 100;
     text-align: center;
+    font-weight: bold;
+    padding: 2px 0 2px;
+    border-bottom: 1px black solid;
 }
 
 .button-group {
@@ -108,7 +127,6 @@ canvas {
 
     padding: 0;
     background: rgb(237, 237, 237);
-    padding: 4px 16px;
     height: 100%;
 }
 
