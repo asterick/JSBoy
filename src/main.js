@@ -12,6 +12,8 @@ requirejs([
     }
 
     function run() {
+        $('#suggestions').hide();
+
         if (!window.location.hash) { return ; }
 
         var name = window.location.hash.substr(1),
@@ -139,8 +141,6 @@ requirejs([
         this.value = '';
     }).keyup(function(e) {
         find(this,'#suggestions');
-    }).blur(function() {
-        $('#suggestions').hide();
     }).show();
 
     window.addEventListener("hashchange", run, false);
