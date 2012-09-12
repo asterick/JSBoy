@@ -94,9 +94,9 @@ requirejs([
             name = field.value.toLowerCase(),
             list;
 
-        list = games.filter(function(game) {
+        list = name ? games.filter(function(game) {
             return game && game.toLowerCase().indexOf(name) >= 0;
-        });
+        }) : [];
 
         suggestions.html(list.map(function(game) {
             return "<li><a href='#"+escape(game)+"')'>" + shorten(game) + "</a></li>";
@@ -137,8 +137,10 @@ requirejs([
 
     $("#filename").focus(function () {
         this.value = '';
-    }).keyup(function () {
+    }).keyup(function(e) {
         find(this,'#suggestions');
+    }).blur(function() {
+        $('#suggestions').hide();
     }).show();
 
     window.addEventListener("hashchange", run, false);

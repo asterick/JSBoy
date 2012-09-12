@@ -14,8 +14,13 @@
     
     <body>
         <div class='center'>
-            <input class="span4" id='filename' type="text" placeholder="Load a rom">
-            <ul id='suggestions'></ul>
+            <div class='title-bar'>
+                <h1>JSBoy</h1>
+                <div class="loader">
+                    <input class="span4" id='filename' type="text" placeholder="Load a rom">
+                    <ul style="display:none;" id='suggestions'></ul>
+                </div>
+            </div>
 
             <canvas id='display' class='' width='160' height='144'></canvas
 
@@ -34,22 +39,16 @@
                         <div class='header'>CPU Flags</div>
                         <div class='column'>
                             <div>
-                                <span class='name'>B</span>
-                                <span class='value' data-chip='cpu' data-reg='b'></span>
-                                <span class='name'>C</span>
-                                <span class='value' data-chip='cpu' data-reg='c'></span>
+                                <span class='name'>BC</span>
+                                <span class='value' data-chip='cpu' data-reg='bc'></span>
                             </div>
                             <div>
-                                <span class='name'>D</span>
-                                <span class='value' data-chip='cpu' data-reg='d'></span>
-                                <span class='name'>E</span>
-                                <span class='value' data-chip='cpu' data-reg='e'></span>
+                                <span class='name'>DE</span>
+                                <span class='value' data-chip='cpu' data-reg='de'></span>
                             </div>
                             <div>
-                                <span class='name'>H</span>
-                                <span class='value' data-chip='cpu' data-reg='h'></span>
-                                <span class='name'>L</span>
-                                <span class='value' data-chip='cpu' data-reg='l'></span>
+                                <span class='name'>HL</span>
+                                <span class='value' data-chip='cpu' data-reg='hl'></span>
                             </div>
                             <div>
                                 <span class='name'>A</span>
@@ -58,12 +57,16 @@
                             <div>
                                 <span class='name'>PC</span>
                                 <span class='value' data-chip='cpu' data-reg='pc'></span>
+                            </div>
+                            <div>
                                 <span class='name'>SP</span>
                                 <span class='value' data-chip='cpu' data-reg='sp'></span>
                             </div>
                             <div>
                                 <span class='name'>IF</span>
                                 <span class='value' data-chip='cpu' data-reg='irq_request'></span>
+                            </div>
+                            <div>
                                 <span class='name'>IE</span>
                                 <span class='value' data-chip='cpu' data-reg='irq_enable'></span>
                             </div>

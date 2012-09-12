@@ -9,6 +9,65 @@ body {
     font-family: "Helvetica Neue", "Lucida Grande", Helvetica, Arial, Verdana, sans-serif;
 }
 
+.center {    
+    width: 900px;
+    margin: 48px auto 0;
+}
+
+/* ------ Title ------ */
+
+.title-bar {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    background: -moz-linear-gradient(top, rgba(142,198,255,1) 0%, rgba(96,171,248,1) 26%, rgba(64,150,238,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(142,198,255,1)), color-stop(26%,rgba(96,171,248,1)), color-stop(100%,rgba(64,150,238,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, rgba(142,198,255,1) 0%,rgba(96,171,248,1) 26%,rgba(64,150,238,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, rgba(142,198,255,1) 0%,rgba(96,171,248,1) 26%,rgba(64,150,238,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, rgba(142,198,255,1) 0%,rgba(96,171,248,1) 26%,rgba(64,150,238,1) 100%); /* IE10+ */
+    background: linear-gradient(to bottom, rgba(142,198,255,1) 0%,rgba(96,171,248,1) 26%,rgba(64,150,238,1) 100%); /* W3C */
+}
+
+.title-bar h1 {
+    display: inline-block;
+    font-size: 20pt;
+    vertical-align: middle;
+    margin: 2px 32px;
+
+    color: white;
+    text-shadow: 0 1px black;
+}
+
+.title-bar #filename {
+    height: 1.5em;
+    border-radius: 0.75em;
+    border: 1px solid rgb(32,32,32);
+    padding: 2px 8px;
+    width: 60ex;
+    vertical-align: middle;
+}
+
+.title-bar .loader {
+    display: inline-block;
+}
+
+.title-bar #suggestions {
+    position: absolute;
+    top: 2em;
+
+    max-height: 15em;
+    overflow-y: scroll;
+    background: white;
+    border: 1px black solid;
+}
+
+#suggestions li {
+    list-style: none;
+    padding: 2px 8px;
+}
+
 /* ------ Gameboy display objects ------- */
 #display {
     display: inline-block;
@@ -25,11 +84,6 @@ body {
     height: 288px;
 
     padding: 10px 10px 262px;
-}
-
-.center {
-    width: 900px;
-    margin: 0 auto;
 }
 
 .debugger .button-group {
@@ -60,13 +114,16 @@ canvas {
 
 .debugger .name {
     display: inline-block;
-    width: 30px;
+    width: 2em;
     text-align: right;
 }
 
 .debugger .value {
     display: inline-block;
-    width: 30px;
+    width: 3em;
+
+    background: rgb(200,200,200);
+    text-align: right;
 }
 
 .debugger .registers, .debugger .disassembly {
@@ -79,8 +136,8 @@ canvas {
 .debugger .flag {
     display: inline-block;
     width: 1em;
-    background: rgb(20, 20, 20);
-    color: rgb(24,237,47);
+    background: rgb(200, 200, 200);
+    color: rgb(24,137,47);
     text-align: center;
 
     padding: 0;
@@ -113,7 +170,7 @@ canvas {
     display: block;
     height: 100%;
     border-right: 1px solid black;
-    padding: 2px 8px;
+    padding: 4px 12px;
     margin: 0;
 }
 
@@ -127,7 +184,7 @@ canvas {
 
     padding: 0;
     background: rgb(237, 237, 237);
-    height: 100%;
+    border-right: 1px solid black;
 }
 
 .debugger .disassembly {
@@ -141,14 +198,16 @@ canvas {
 
 .debugger .addr {
     display: inline-block;
-    width: 10ex;
+    width: 8ex;
 }
 
 .debugger .hex {
     display: inline-block;
-    width: 16ex;
+    width: 12ex;
+    background: rgb(200,200,200);
 }
 
 .debugger .instruction {
+    padding-left: 1ex;
 }
 
