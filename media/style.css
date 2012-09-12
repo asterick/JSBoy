@@ -40,32 +40,43 @@ body {
     text-shadow: 0 1px black;
 }
 
-.title-bar #filename {
-    height: 1.5em;
-    border-radius: 0.75em;
-    border: 1px solid rgb(32,32,32);
-    padding: 2px 8px;
-    width: 60ex;
-    vertical-align: middle;
+.title-bar .loader {
+    position: absolute;
+
+    top: 50%;
+    right: 32px;
+    margin-top: -0.8em;
+
+    height: 1.6em;
 }
 
-.title-bar .loader {
-    display: inline-block;
+.title-bar #filename {
+    height: 1.6em;
+    
+    border-radius: 0.75em;
+    border: 1px solid rgb(32,32,32);
+    padding: 0 8px;
+    width: 60ex;
 }
 
 .title-bar #suggestions {
     position: absolute;
-    top: 2em;
+    top: 1.3em;
+    right: 0;
 
     max-height: 15em;
     overflow-y: scroll;
+    overflow-x: hidden;
     background: white;
     border: 1px black solid;
+    border-radius: 4px;
+    padding: 0 4px;
 }
 
 #suggestions li {
     list-style: none;
     padding: 2px 8px;
+    white-space: nowrap;
 }
 
 /* ------ Gameboy display objects ------- */
@@ -127,7 +138,7 @@ canvas {
 }
 
 .debugger .registers, .debugger .disassembly {
-    font-family: "Courier New", Courier, monospace;
+    font-family: Courier, monospace;
 }
 
 .debugger .flag-group {
@@ -148,7 +159,7 @@ canvas {
     width: 100;
     text-align: center;
     font-weight: bold;
-    padding: 2px 0 2px;
+    padding: 4px 0 2px;
     border-bottom: 1px black solid;
 }
 
@@ -178,11 +189,19 @@ canvas {
     display: inline-block;
 }
 
+.debugger-body {
+    overflow-y: hidden;
+}
+
 .debugger .registers {
     display: inline-block;
     vertical-align: top;
 
     padding: 0;
+
+    padding-bottom: 10000px;
+    margin-bottom: -10000px;
+
     background: rgb(237, 237, 237);
     border-right: 1px solid black;
 }
