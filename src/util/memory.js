@@ -104,19 +104,22 @@ function ramBlock(size, extend, name, mask)
     }
     
     var save = function () {
-        var encoded = JSON.stringify(data);
+        var encoded = "";
+
+        for (var i = 0; i < data.length; i++) {
+            encoded += String.fromCharCode(data[i]);
+        }
+
         window.localStorage.setItem(name,encoded);
     }
     
     var load = function () {
-        try {
-            var encoded = JSON.parse(window.localStorage.getItem(name));
-            
-            for (var i = 0; i < encoded.length; i++) {
-                data[i] = encoded.charCodeAt(i);
-            }
-        } catch (o) {
-            // Unable to decode JSON (old save file)   
+        var encoded = window.localStorage.getItem(name);
+        
+        if (!encoded) { return ; }
+        
+        for (var i = 0; i < encoded.length && i < data.length; i++) {
+            data[i] = encoded.charCodeAt(i);
         }
     }
 

@@ -22,25 +22,29 @@ define([
     }
 
     jsboy.prototype.run = function (state) {
-        if (state == this.running) {
-            return ;
-        }
-    
-        if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
-        }
+        if (this.running === state) { return ; }
 
         this.running = state;
 
         if (this.running) {
-            this.interval = setInterval( this.$('step'), 16 );
+            var requestAnimationFrame = window.requestAnimationFrame ||
+                                        window.mozRequestAnimationFrame ||
+                                        window.webkitRequestAnimationFrame ||
+                                        window.msRequestAnimationFrame,
+                self = this,
+                nextFrame = function () {
+                    if (self.step()) { requestAnimationFrame(nextFrame); }
+                };
+
+            requestAnimationFrame(nextFrame);
         }
     }
 
     jsboy.prototype.step = function () {
         this.cpu.step();
         this.cpu.update();
+        
+        return this.running;
     }
 
     jsboy.prototype.singleStep = function () {

@@ -19,8 +19,6 @@ This emulator features a number of performance optimizations in order to keep
 performance at a maximum;  this includes interrupt prediction and the use of
 memory i/o delegates for fast memory accesses.
 
-All the audio registers are simply ignored.
-
 Usage
 ----------------------------------------
 Due to laziness on my part, I will not be documenting the internal structure

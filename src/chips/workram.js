@@ -31,8 +31,8 @@ define([
     WorkRam.prototype.reset = function()
     {
         // --- Zero page memory (fast)
-        this.cpu.read.copy(0xFF80, this.zeroPage.read );
-        this.cpu.write.copy(0xFF80, this.zeroPage.write );
+        this.cpu.read.copy(0xFF80, this.zeroPage.read);
+        this.cpu.write.copy(0xFF80, this.zeroPage.write);
 
         // --- Map the default 8k memory
         this.cpu.read.copy(0xC000, this.memory.read, 0, 0x2000);

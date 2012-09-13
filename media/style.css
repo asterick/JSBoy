@@ -6,7 +6,7 @@
 }
 
 body {
-    font-family: "Helvetica Neue", "Lucida Grande", Helvetica, Arial, Verdana, sans-serif;
+    font-family: "Lato", "Helvetica Neue", Helvetica, sans-serif;
 }
 
 .center {    
@@ -217,7 +217,7 @@ canvas {
 
 .debugger .addr {
     display: inline-block;
-    width: 8ex;
+    width: 7ex;
 }
 
 .debugger .hex {
