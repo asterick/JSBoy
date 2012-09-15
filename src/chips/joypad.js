@@ -8,8 +8,8 @@ define([
         this.selectDir = 0;
         this.selectButton = 0;
     
-        this.dataDir = 0;
-        this.dataButton = 0;
+        this.dataDir = 0xF;
+        this.dataButton = 0xF;
     
         this.cpu = cpu;
         this.keyboard = new Array();
@@ -33,8 +33,8 @@ define([
     {
         this.selectDir = 0;
         this.selectButton = 0;
-        this.dataDir = 0;
-        this.dataButton = 0;
+        this.dataDir = 0xF;
+        this.dataButton = 0xF;
     
         this.cpu.read[registers.JOYP] = this.$('read_JOYP');
         this.cpu.write[registers.JOYP] = this.$('write_JOYP');

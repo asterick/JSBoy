@@ -5,6 +5,17 @@ define([
     'mappers/mbc3',
     'mappers/mbc5'
 ], function (mapperROM, mapperMBC1, mapperMBC2, mapperMBC3, mapperMBC5) {
+    function byteAlignment(size, base)
+    {
+        if( base === undefined )
+            base = 1;
+
+        while( base < size )
+            base <<= 1;
+
+        return base;
+    }
+
     function mapper( name, cpu, rom )
     {
         var description = {

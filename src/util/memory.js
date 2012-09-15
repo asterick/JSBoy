@@ -35,17 +35,6 @@ Array.prototype.copy = function(dest_pos, source, source_pos, length )
         this[dest_pos++] = source[source_pos++];
 }
 
-function byteAlignment(size, base)
-{
-    if( base === undefined )
-        base = 1;
-
-    while( base < size )
-        base <<= 1;
-    
-    return base;
-}
-
 function romBlock(data, length)
 {
     // Create LUT for rom delegates (avoid using closure data)
@@ -53,21 +42,16 @@ function romBlock(data, length)
         romBlock.delegates = new Array(0x100);
 
         for (var i = 0; i < 0x100; i++) {
-            romBlock.delegates[i] = eval("(function(){return "+i+"})");
+            romBlock.delegates[i] = new Function("return "+i);
         }
     }
 
     var newData = new Array( length || data.length );
-    
-    for (var i = 0; i < data.length; i++) {
-        newData[i] = romBlock.delegates[data[i]];
-    }
-    
-    for (var i = length; i >= data.length; i--) {
-        newData[i-1] = romBlock.delegates[0xFF];
-    }
 
-    return newData;
+    newData.copy(0, data);
+    newData.fill(0xFF, data.length);
+
+    return newData.map(function(d) { return romBlock.delegates[d]; });
 }
 
 function ramBlock(size, extend, name, mask)
@@ -79,8 +63,8 @@ function ramBlock(size, extend, name, mask)
     var write = new Array(extend);
     var data = new Uint8Array(size);
     var delegate;
-    
-    if (mask < 0xFF) {
+
+    if (mask && 0xFF & ~mask) {
         delegate = function (index) {
             data[index] = 0;
             read[index] = function() { return data[index]; }
@@ -117,10 +101,8 @@ function ramBlock(size, extend, name, mask)
         var encoded = window.localStorage.getItem(name);
         
         if (!encoded) { return ; }
-        
-        for (var i = 0; i < encoded.length && i < data.length; i++) {
-            data[i] = encoded.charCodeAt(i);
-        }
+
+        encoded.split('').map(function(c, idx) { data[idx] = c.charCodeAt(0); });
     }
 
     return { read: read, write: write, data: data, save: save, load: load };
