@@ -34,4 +34,4 @@ so you may need to run a lightweight http server to run locally.
 
 Bugs
 ----------------------------------------
-Interrupts for joypad seem off, as a lot of games boot if you press a key
+Predicitions are off
