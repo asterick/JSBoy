@@ -12,7 +12,7 @@ define([
     WorkRam.prototype.write_SVBK = function( data )
     {
         this.bank = data & 0x7;
-        var ea = (this.bank || 1) * 0x1000;
+        var ea = (this.bank || 1) * 0x10;
 
         // Bankable memory
         this.cpu.read.copy(0xD0, this.memory.readChunks, ea, 0x10);
