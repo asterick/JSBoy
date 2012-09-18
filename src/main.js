@@ -14,25 +14,30 @@ requirejs([
     function run() {
         $('#suggestions').hide();
 
-        if (!window.location.hash) { return ; }
+        if (!window.location.hash) {
+            return;
+        }
 
         var name = window.location.hash.substr(1),
             xhr = new XMLHttpRequest();
 
-        if (!name) { return ; }
+        if (!name) {
+            return;
+        }
 
         document.title = unescape(shorten(name));
 
         xhr.open('GET', name, true);
         xhr.responseType = 'arraybuffer';
         xhr.send(null);
-        
+
         runtime.running = false;
-    
-        xhr.onload = function(event) {
+
+        xhr.onload = function (event) {
             // Test ready state
-            if (xhr.readyState != 4 || xhr.status != 200)
+            if (xhr.readyState != 4 || xhr.status != 200) {
                 throw "Error while loading " + url;
+            }
 
             runtime.reset(name, new Uint8Array(xhr.response));
             runtime.running = true;
@@ -42,7 +47,7 @@ requirejs([
     }
 
     function updateRegs(device, state) {
-        var regs = document.querySelectorAll("[data-chip="+device+"]"),
+        var regs = document.querySelectorAll("[data-chip=" + device + "]"),
             e;
 
         for (var i = 0; i < regs.length; i++) {
@@ -50,37 +55,35 @@ requirejs([
                 v = state[e.dataset.reg];
 
             switch (e.getAttribute('class')) {
-                case 'value':
-                    e.innerHTML = v.toString(16).toUpperCase();
-                    break ;
-                case 'flag':
-                    e.innerHTML = (v ? '&#10003;' : '&nbsp;')
-                    break ;
-                default:
-                    e.innerHTML = v;
-                    break ;
+            case 'value':
+                e.innerHTML = v.toString(16).toUpperCase();
+                break;
+            case 'flag':
+                e.innerHTML = (v ? '&#10003;' : '&nbsp;')
+                break;
+            default:
+                e.innerHTML = v;
+                break;
             }
         }
     }
 
-    function update()
-    {
+    function update() {
         var disasm = $('#disassembly'),
             dis = new disassembler(runtime.cpu),
             pc = runtime.cpu.pc;
 
-        updateRegs('cpu',runtime.cpu);
-        updateRegs('gpu',runtime.cpu.gpu);
+        updateRegs('cpu', runtime.cpu);
+        updateRegs('gpu', runtime.cpu.gpu);
 
         disasm.empty();
 
         for (var i = 0; i < 25; i++) {
             var o = dis.disassemble(pc);
-            if(!o)
-                break ;
-        
+            if (!o) { break; }
+
             var a = pc.toString(16);
-            disasm.append("<div class='row'><span class='addr'><a href='javascript:runTo("+pc+")'>" + a + "</a></span><span class='hex'>"+o.hex+"</span><span class='instruction'>"+o.op+"</span></div>");
+            disasm.append("<div class='row'><span class='addr'><a href='javascript:runTo(" + pc + ")'>" + a + "</a></span><span class='hex'>" + o.hex + "</span><span class='instruction'>" + o.op + "</span></div>");
             pc = o.next;
         }
     }
@@ -99,18 +102,18 @@ requirejs([
             name = field.value.toLowerCase(),
             list;
 
-        list = name ? games.filter(function(game) {
+        list = name ? games.filter(function (game) {
             return game && game.toLowerCase().indexOf(name) >= 0;
         }) : [];
 
-        suggestions.html(list.map(function(game) {
-            return "<li><a href='#"+escape(game)+"')'>" + shorten(game) + "</a></li>";
+        suggestions.html(list.map(function (game) {
+            return "<li><a href='#" + escape(game) + "')'>" + shorten(game) + "</a></li>";
         }).join(""));
 
         suggestions.toggle(list.length > 0);
     }
 
-    window.onbeforeunload = function() {
+    window.onbeforeunload = function () {
         runtime.close();
     };
 
@@ -141,10 +144,11 @@ requirejs([
         update();
     });
     $("#frame").click(function () {
-        runtime.step();update();
+        runtime.step();
+        update();
     });
     $("#stop_predictions").click(function () {
-        runtime.cpu.predictEvent = function() { return 0; }
+        runtime.cpu.predictEvent = function () { return 0; };
     });
 
     $('#display').click(function () {
@@ -153,8 +157,8 @@ requirejs([
 
     $("#filename").focus(function () {
         this.value = '';
-    }).keyup(function(e) {
-        find(this,'#suggestions');
+    }).keyup(function (e) {
+        find(this, '#suggestions');
     }).show();
 
     window.addEventListener("hashchange", run, false);
