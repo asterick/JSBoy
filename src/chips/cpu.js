@@ -1,5 +1,5 @@
 define([
-    'chips/ops/core',
+    'chips/core',
     'chips/ops/base',
     'chips/ops/control',
     'chips/ops/shift'

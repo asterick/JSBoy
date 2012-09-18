@@ -32,10 +32,6 @@ define([
         this.bios = new BIOS(this);
         this.rom = null;
 
-        // Our memory delegate holders
-        this.read = new Array(0x10000);
-        this.write = new Array(0x10000);
-
         this.reset();
     }
 
@@ -94,8 +90,15 @@ define([
         function nullBody() { return 0xFF; }
 
         // Reset memory map
-        this.read.fill(nullBody);
-        this.write.fill(nullBody);
+        this.read = (new Array(0x10000)).fill(nullBody).chunk(0x100);
+        this.write = (new Array(0x10000)).fill(nullBody).chunk(0x100);
+
+        this.nullBlock = (new Array(0x100)).fill(nullBody);
+
+        this.registers = {
+            read: this.read[0xFF],
+            write: this.write[0xFF]
+        };
 
         // For debugging purposes, alert me when the system accesses a register it does not recognize
         for (var i = 0xFF00; i < 0xFF80; i++) {
@@ -115,17 +118,17 @@ define([
         this.bios.reset();        
 
         // Map IRQ specific registers into CPU
-        this.read[registers.IE] = this.$('read_IE');
-        this.write[registers.IE] = this.$('write_IE');
-        this.read[registers.IF] = this.$('read_IF');        
-        this.write[registers.IF] = this.$('write_IF');
+        this.registers.read[registers.IE] = this.$('read_IE');
+        this.registers.write[registers.IE] = this.$('write_IE');
+        this.registers.read[registers.IF] = this.$('read_IF');        
+        this.registers.write[registers.IF] = this.$('write_IF');
 
         // Hardware lockout register
-        this.write[registers.LOCK] = this.$('write_LOCK');
+        this.registers.write[registers.LOCK] = this.$('write_LOCK');
     
         // Map speed control register into CPU
-        this.read[registers.KEY1] = this.$('read_KEY1');
-        this.write[registers.KEY1] = this.$('write_KEY1');    
+        this.registers.read[registers.KEY1] = this.$('read_KEY1');
+        this.registers.write[registers.KEY1] = this.$('write_KEY1');    
     }
 
     CPU.prototype.setCPUSpeed = function(fast) {
@@ -136,19 +139,16 @@ define([
     CPU.prototype.alertIllegal = function( addr )
     {
         var addrName = addr.toString(16).toUpperCase();
+        var hi = Math.floor(addr>>8),
+            lo = addr & 0xFF;
     
-        this.read[addr] = function() {
+        this.read[hi][lo] = function() {
             log("ILLEGAL READ: ", addrName);
             return 0xFF;
         }
-        this.write[addr] = function(data) {
+        this.write[hi][lo] = function(data) {
             log("ILLEGAL WRITE: ", addrName, data.toString(16).toUpperCase());
         }
-    }
-
-    CPU.prototype.update = function()
-    {
-        this.gpu.update();
     }
 
     // --- This occurs when the an event causes the IRQ prediction to be invalid
@@ -234,7 +234,7 @@ define([
     {
         // Try to run up to the end of the frame
         var frameCycles = this.gpu.predictEndOfFrame();
-            
+
         while( frameCycles > 0 )
         {
             var clockRate = this.doubleSpeed ? 4 : 8;
@@ -317,12 +317,17 @@ define([
     CPU.prototype.push = function(data)
     {
         this.sp = (this.sp - 1) & 0xFFFF;
-        this.write[this.sp](data);
+        var h = this.sp >> 8,
+            l = this.sp & 0xFF;
+
+        this.write[h][l](data);
     }
 
     CPU.prototype.pop = function()
     {
-        var data = this.read[this.sp]();
+        var h = this.sp >> 8,
+            l = this.sp & 0xFF,
+            data = this.read[h][l]();
         this.sp = (this.sp + 1) & 0xFFFF;
         return data;
     }
@@ -337,12 +342,14 @@ define([
     CPU.prototype.ret = function()
     {
         this.pc = this.pop();
-        this.pc |= this.pop() << 8;        
+        this.pc |= this.pop() << 8;
     }
 
     CPU.prototype.nextByte = function()
     {
-        var op = this.read[this.pc]();
+        var h = this.pc >> 8,
+            l = this.pc & 0xFF;
+        var op = this.read[h][l]();
         this.pc = (this.pc + 1) & 0xFFFF;
         return op;
     }
@@ -368,14 +375,16 @@ define([
         var h = this.nextByte();
         return (h<<8) | l;
     }
-
+    
     CPU.prototype.delayByte = function()
     {
         // This is a cute way of preventing the CPU from incrementing PC for a
         // clock happens on halts and stops with IME disabled
         this.nextByte = function() {
+            var h = this.pc >> 8,
+                l = this.pc & 0xFF;
             delete this.nextByte;
-            return this.read[this.pc]();
+            return this.read[h][l]();
         }
     }
 

@@ -7,14 +7,14 @@ define([
 
     BIOS.prototype.reset = function () {
         // Preserve non-overlay memory
-        this.cart = this.cpu.read.slice( 0, this.COLOR_BIOS.length );
+        this.cart = this.cpu.read.slice(0, this.COLOR_BIOS.length);
 
         // This overlays bios on top of the cart (~2.5k), preserving old cart
         // This also assumes cart will never change bank 0 during startup
         this.cpu.read.copy( 0, this.COLOR_BIOS );
-        this.cpu.read.copy( 0x100, this.cart, 0x100, 0x100 );
+        this.cpu.read[0x01] = this.cart[0x01];
     
-        this.cpu.write[registers.BLCK] = this.$('write_BLCK');
+        this.cpu.registers.write[registers.BLCK] = this.$('write_BLCK');
     };
 
     BIOS.prototype.write_BLCK = function (data) {

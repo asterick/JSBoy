@@ -13,16 +13,16 @@ define([
         this.sourceAddress = 0;
         this.destinationAddress = 0;
 
-        this.cpu.read[registers.HDMA1] = this.$('read_HDMA1');
-        this.cpu.write[registers.HDMA1] = this.$('write_HDMA1');
-        this.cpu.read[registers.HDMA2] = this.$('read_HDMA2');
-        this.cpu.write[registers.HDMA2] = this.$('write_HDMA2');
-        this.cpu.read[registers.HDMA3] = this.$('read_HDMA3');
-        this.cpu.write[registers.HDMA3] = this.$('write_HDMA3');
-        this.cpu.read[registers.HDMA4] = this.$('read_HDMA4');
-        this.cpu.write[registers.HDMA4] = this.$('write_HDMA4');
-        this.cpu.read[registers.HDMA5] = this.$('read_HDMA5');
-        this.cpu.write[registers.HDMA5] = this.$('write_HDMA5');
+        this.cpu.registers.read[registers.HDMA1] = this.$('read_HDMA1');
+        this.cpu.registers.write[registers.HDMA1] = this.$('write_HDMA1');
+        this.cpu.registers.read[registers.HDMA2] = this.$('read_HDMA2');
+        this.cpu.registers.write[registers.HDMA2] = this.$('write_HDMA2');
+        this.cpu.registers.read[registers.HDMA3] = this.$('read_HDMA3');
+        this.cpu.registers.write[registers.HDMA3] = this.$('write_HDMA3');
+        this.cpu.registers.read[registers.HDMA4] = this.$('read_HDMA4');
+        this.cpu.registers.write[registers.HDMA4] = this.$('write_HDMA4');
+        this.cpu.registers.read[registers.HDMA5] = this.$('read_HDMA5');
+        this.cpu.registers.write[registers.HDMA5] = this.$('write_HDMA5');
     }
 
     DMA.prototype.read_HDMA1 = function () {
@@ -94,12 +94,15 @@ define([
  
         this.cpu.catchUp();
         
-        var src = this.sourceAddress & 0xFFF0;
-        var dst = 0x8000 | (this.destinationAddress & 0x1FF0);
-        var size = 0x10;
-    
-        while( size-- )
-            this.cpu.write[dst++]( this.cpu.read[src++]() );
+        var src_h = this.sourceAddress >> 8,
+            src_l = this.sourceAddress & 0xF0,
+            dst_h = 0x80 | ((this.destinationAddress >> 8) & 0x1F),
+            dst_l = this.destinationAddress & 0xF0,
+            size = 0x10;
+
+        while (size--) {
+            this.cpu.write[dst_h][dst_l++](this.cpu.read[src_h][src_l++]());
+        }
 
         this.sourceAddress = (this.sourceAddress + 0x0010) & 0xFFFF;
         this.destinationAddress = (this.destinationAddress + 0x0010) & 0xFFFF;

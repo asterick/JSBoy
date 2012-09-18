@@ -21,6 +21,8 @@ Array.prototype.fill = function(value, pos, length)
     
     while(length-- > 0 && pos < this.length)
         this[pos++] = value;
+
+    return this;
 }
 
 Array.prototype.copy = function(dest_pos, source, source_pos, length )
@@ -33,25 +35,24 @@ Array.prototype.copy = function(dest_pos, source, source_pos, length )
         
     while( length-- > 0 && source_pos < source.length )
         this[dest_pos++] = source[source_pos++];
+    
+    return this;
 }
 
 function romBlock(data, length)
 {
-    // Create LUT for rom delegates (avoid using closure data)
-    if (romBlock.delegates === undefined) {
-        romBlock.delegates = new Array(0x100);
-
-        for (var i = 0; i < 0x100; i++) {
-            romBlock.delegates[i] = new Function("return "+i);
-        }
-    }
-
-    var newData = new Array( length || data.length );
+    var newData = new Array (length || data.length);
 
     newData.copy(0, data);
     newData.fill(0xFF, data.length);
 
-    return newData.map(function(d) { return romBlock.delegates[d]; });
+    return newData.map(function(d) { return romBlock.delegates[d]; }).chunk(0x100);
+}
+
+romBlock.delegates = new Array(0x100);
+
+for (var i = 0; i < 0x100; i++) {
+    romBlock.delegates[i] = new Function("return "+i);
 }
 
 function ramBlock(size, extend, name, mask)
@@ -105,6 +106,14 @@ function ramBlock(size, extend, name, mask)
         encoded.split('').map(function(c, idx) { data[idx] = c.charCodeAt(0); });
     }
 
-    return { read: read, write: write, data: data, save: save, load: load };
+    return {
+        readChunks: read.chunk(0x100),
+        writeChunks: write.chunk(0x100),
+        read: read,
+        write: write,
+        data: data,
+        save: save,
+        load: load
+    };
 }
 

@@ -8,7 +8,7 @@
 define([], function () {
     function mapperMBC5( name, cpu, rom, ramSize, flags, description ) {
         this.ram = ramBlock( ramSize, 0x2000, name );
-        this.banks = rom.chunk(0x4000);
+        this.banks = rom.chunk(0x40);
     
         this.cpu = cpu;
         this.flags = flags;
@@ -30,30 +30,32 @@ define([], function () {
         this.ramBank = 0;
 
         // --- Static mapping
-        this.cpu.read.copy( 0, this.banks[0] );
-    
-        this.cpu.write.fill(this.$('ramEnableReg'),       0x0000, 0x2000);
-        this.cpu.write.fill(this.$('lowerRomBankSelect'), 0x2000, 0x2000);
-        this.cpu.write.fill(this.$('upperRomBankSelect'), 0x4000, 0x2000);
-        this.cpu.write.fill(this.$('ramBankSelectReg'),   0x6000, 0x2000);
+        this.cpu.read.copy(0, this.banks[0]);
+
+        var ramEnableReg = (new Array(0x100)).fill(this.$('ramEnableReg')),
+            lowerRomBankSelect = (new Array(0x100)).fill(this.$('lowerRomBankSelect')),
+            upperRomBankSelect = (new Array(0x100)).fill(this.$('upperRomBankSelect')),
+            ramBankSelectReg = (new Array(0x100)).fill(this.$('ramBankSelectReg'));
+
+        this.cpu.write.fill(ramEnableReg,       0x00, 0x20);
+        this.cpu.write.fill(lowerRomBankSelect, 0x20, 0x20);
+        this.cpu.write.fill(upperRomBankSelect, 0x40, 0x20);
+        this.cpu.write.fill(ramBankSelectReg,   0x60, 0x20);
 
         this.updateMemoryMap();
     }
 
     mapperMBC5.prototype.updateMemoryMap = function()
     {
-        this.cpu.read.copy( 0x4000, this.banks[(this.romBank || 1) % this.banks.length] );
+        this.cpu.read.copy( 0x40, this.banks[(this.romBank || 1) % this.banks.length] );
     
-        if( this.ram && this.ramEnabled )
-        {
-            var ramBankAddr = (this.ramBank * 0x2000) % this.ram.data.length;
-            this.cpu.read.copy( 0xA000, this.ram.read, ramBankAddr, 0x2000 );
-            this.cpu.write.copy( 0xA000, this.ram.write, ramBankAddr, 0x2000 );
-        } 
-        else
-        {
-            this.cpu.read.fill( function() { return 0xFF; }, 0xA000, 0x2000 );
-            this.cpu.write.fill( function() {}, 0xA000, 0x2000 );
+        if (this.ram && this.ramEnabled) {
+            var ramBankAddr = (this.ramBank * 0x20) % this.ram.data.length;
+            this.cpu.read.copy( 0xA0, this.ram.readChunks, ramBankAddr, 0x20 );
+            this.cpu.write.copy( 0xA0, this.ram.writeChunks, ramBankAddr, 0x20 );
+        } else {
+            this.cpu.read.fill(this.cpu.nullBlock, 0xA0, 0x20);
+            this.cpu.write.fill(this.cpu.nullBlock, 0xA0, 0x20);
         }
     }
 

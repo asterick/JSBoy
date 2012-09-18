@@ -6,12 +6,9 @@ define([
 
         // --- Create a blank palette
         var palMemory = new ArrayBuffer(0x100);
-        this.byteMemory = new Uint8Array(palMemory);
         this.paletteMemory = new Uint16Array(palMemory);
-
-        for (var i = 0; i < this.paletteMemory.length; i++) {
-            this.paletteMemory[i] = 0x7FFF;
-        }
+        this.tilePalette = new Uint8Array(palMemory, 0, 0x40);
+        this.spritePalette = new Uint8Array(palMemory, 0x40, 0x40);
 
         // DMG Palette registers
         this.reg_BGP = 0;
@@ -27,22 +24,22 @@ define([
 
     Palette.prototype.reset = function (){
         // DMG Palette registers
-        this.cpu.read[registers.BGP] = this.$('read_BGP');
-        this.cpu.write[registers.BGP] = this.$('write_BGP');
-        this.cpu.read[registers.OBP0] = this.$('read_OBP0');
-        this.cpu.write[registers.OBP0] = this.$('write_OBP0');
-        this.cpu.read[registers.OBP1] = this.$('read_OBP1');
-        this.cpu.write[registers.OBP1] = this.$('write_OBP1');
+        this.cpu.registers.read[registers.BGP] = this.$('read_BGP');
+        this.cpu.registers.write[registers.BGP] = this.$('write_BGP');
+        this.cpu.registers.read[registers.OBP0] = this.$('read_OBP0');
+        this.cpu.registers.write[registers.OBP0] = this.$('write_OBP0');
+        this.cpu.registers.read[registers.OBP1] = this.$('read_OBP1');
+        this.cpu.registers.write[registers.OBP1] = this.$('write_OBP1');
 
         // CGB Palette registers
-        this.cpu.read[registers.BCPS] = this.$('read_BCPS');
-        this.cpu.write[registers.BCPS] = this.$('write_BCPS');
-        this.cpu.read[registers.BCPD] = this.$('read_BCPD');
-        this.cpu.write[registers.BCPD] = this.$('write_BCPD');
-        this.cpu.read[registers.OCPS] = this.$('read_OCPS');
-        this.cpu.write[registers.OCPS] = this.$('write_OCPS');
-        this.cpu.read[registers.OCPD] = this.$('read_OCPD');
-        this.cpu.write[registers.OCPD] = this.$('write_OCPD');
+        this.cpu.registers.read[registers.BCPS] = this.$('read_BCPS');
+        this.cpu.registers.write[registers.BCPS] = this.$('write_BCPS');
+        this.cpu.registers.read[registers.BCPD] = this.$('read_BCPD');
+        this.cpu.registers.write[registers.BCPD] = this.$('write_BCPD');
+        this.cpu.registers.read[registers.OCPS] = this.$('read_OCPS');
+        this.cpu.registers.write[registers.OCPS] = this.$('write_OCPS');
+        this.cpu.registers.read[registers.OCPD] = this.$('read_OCPD');
+        this.cpu.registers.write[registers.OCPD] = this.$('write_OCPD');
     };
 
     // --- DMG Palette paletteMemory registers
@@ -93,13 +90,13 @@ define([
     };
 
     Palette.prototype.read_BCPD = function () {
-        return this.byteMemory[this.reg_BCPS];
+        return this.tilePalette[this.reg_BCPS];
     };
 
     Palette.prototype.write_BCPD = function (data) {
         this.cpu.catchUp();
 
-        this.byteMemory[this.reg_BCPS] = data;
+        this.tilePalette[this.reg_BCPS] = data;
 
         if (this.reg_BCPS_increment) {
             this.reg_BCPS = (this.reg_BCPS+1) & 0x3F;
@@ -107,13 +104,13 @@ define([
     };
 
     Palette.prototype.read_OCPD = function () {
-        return this.byteMemory[0x40|this.reg_OCPS];
+        return this.spritePalette[this.reg_OCPS];
     };
 
     Palette.prototype.write_OCPD = function (data) {
         this.cpu.catchUp();
 
-        this.byteMemory[0x40|this.reg_OCPS] = data;
+        this.spritePalette[this.reg_OCPS] = data;
     
         if (this.reg_OCPS_increment) {
             this.reg_OCPS = (this.reg_OCPS+1) & 0x3F;
