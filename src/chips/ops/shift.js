@@ -143,7 +143,7 @@ define([
             this.l = this.rlc(this.l);
             return 2;
         case 0x06:
-            this.writeHL(this.rlc(this.readHL()));
+            this.write[this.h][this.l](this.rlc(this.read[this.h][this.l]()));
             return 4;
         case 0x07:
             this.a = this.rlc(this.a);
@@ -167,7 +167,7 @@ define([
             this.l = this.rrc(this.l);
             return 2;
         case 0x0E:
-            this.writeHL(this.rrc(this.readHL()));
+            this.write[this.h][this.l](this.rrc(this.read[this.h][this.l]()));
             return 4;
         case 0x0F:
             this.a = this.rrc(this.a);
@@ -191,7 +191,7 @@ define([
             this.l = this.rl(this.l);
             return 2;
         case 0x16:
-            this.writeHL(this.rl(this.readHL()));
+            this.write[this.h][this.l](this.rl(this.read[this.h][this.l]()));
             return 4;
         case 0x17:
             this.a = this.rl(this.a);
@@ -215,7 +215,7 @@ define([
             this.l = this.rr(this.l);
             return 2;
         case 0x1E:
-            this.writeHL(this.rr(this.readHL()));
+            this.write[this.h][this.l](this.rr(this.read[this.h][this.l]()));
             return 4;
         case 0x1F:
             this.a = this.rr(this.a);
@@ -246,7 +246,7 @@ define([
             return 2;
 
         case 0x26:
-            this.writeHL(this.sla(this.readHL()));
+            this.write[this.h][this.l](this.sla(this.read[this.h][this.l]()));
             return 4;
 
         case 0x27:
@@ -278,7 +278,7 @@ define([
             return 2;
 
         case 0x2E:
-            this.writeHL(this.sra(this.readHL()));
+            this.write[this.h][this.l](this.sra(this.read[this.h][this.l]()));
             return 4;
 
         case 0x2F:
@@ -310,7 +310,7 @@ define([
             return 2;
 
         case 0x36:
-            this.writeHL(this.swap(this.readHL()));
+            this.write[this.h][this.l](this.swap(this.read[this.h][this.l]()));
             return 4;
 
         case 0x37:
@@ -342,7 +342,7 @@ define([
             return 2;
 
         case 0x3E:
-            this.writeHL(this.srl(this.readHL()));
+            this.write[this.h][this.l](this.srl(this.read[this.h][this.l]()));
             return 4;
 
         case 0x3F:
@@ -374,7 +374,7 @@ define([
             return 2;
 
         case 0x46:
-            this.bit(this.readHL(),0)
+            this.bit(this.read[this.h][this.l](),0)
             return 3;
 
         case 0x47:
@@ -406,7 +406,7 @@ define([
             return 2;
 
         case 0x4E:
-            this.bit(this.readHL(),1)
+            this.bit(this.read[this.h][this.l](),1)
             return 3;
 
         case 0x4F:
@@ -438,7 +438,7 @@ define([
             return 2;
 
         case 0x56:
-            this.bit(this.readHL(),2)
+            this.bit(this.read[this.h][this.l](),2)
             return 3;
 
         case 0x57:
@@ -470,7 +470,7 @@ define([
             return 2;
 
         case 0x5E:
-            this.bit(this.readHL(),3)
+            this.bit(this.read[this.h][this.l](),3)
             return 3;
 
         case 0x5F:
@@ -502,7 +502,7 @@ define([
             return 2;
 
         case 0x66:
-            this.bit(this.readHL(),4)
+            this.bit(this.read[this.h][this.l](),4)
             return 3;
 
         case 0x67:
@@ -534,7 +534,7 @@ define([
             return 2;
 
         case 0x6E:
-            this.bit(this.readHL(),5)
+            this.bit(this.read[this.h][this.l](),5)
             return 3;
 
         case 0x6F:
@@ -566,7 +566,7 @@ define([
             return 2;
 
         case 0x76:
-            this.bit(this.readHL(),6)
+            this.bit(this.read[this.h][this.l](),6)
             return 3;
 
         case 0x77:
@@ -598,7 +598,7 @@ define([
             return 2;
 
         case 0x7E:
-            this.bit(this.readHL(),7)
+            this.bit(this.read[this.h][this.l](),7)
             return 3;
 
         case 0x7F:
@@ -630,7 +630,7 @@ define([
             return 2;
 
         case 0x86:
-            this.writeHL(this.rst(this.readHL(),0));
+            this.write[this.h][this.l](this.rst(this.read[this.h][this.l](),0));
             return 4;
 
         case 0x87:
@@ -662,7 +662,7 @@ define([
             return 2;
 
         case 0x8E:
-            this.writeHL(this.rst(this.readHL(),1));
+            this.write[this.h][this.l](this.rst(this.read[this.h][this.l](),1));
             return 4;
 
         case 0x8F:
@@ -694,7 +694,7 @@ define([
             return 2;
 
         case 0x96:
-            this.writeHL(this.rst(this.readHL(),2));
+            this.write[this.h][this.l](this.rst(this.read[this.h][this.l](),2));
             return 4;
 
         case 0x97:
@@ -726,7 +726,7 @@ define([
             return 2;
 
         case 0x9E:
-            this.writeHL(this.rst(this.readHL(),3));
+            this.write[this.h][this.l](this.rst(this.read[this.h][this.l](),3));
             return 4;
 
         case 0x9F:
@@ -758,7 +758,7 @@ define([
             return 2;
 
         case 0xA6:
-            this.writeHL(this.rst(this.readHL(),4));
+            this.write[this.h][this.l](this.rst(this.read[this.h][this.l](),4));
             return 4;
 
         case 0xA7:
@@ -790,7 +790,7 @@ define([
             return 2;
 
         case 0xAE:
-            this.writeHL(this.rst(this.readHL(),5));
+            this.write[this.h][this.l](this.rst(this.read[this.h][this.l](),5));
             return 4;
 
         case 0xAF:
@@ -822,7 +822,7 @@ define([
             return 2;
 
         case 0xB6:
-            this.writeHL(this.rst(this.readHL(),6));
+            this.write[this.h][this.l](this.rst(this.read[this.h][this.l](),6));
             return 4;
 
         case 0xB7:
@@ -854,7 +854,7 @@ define([
             return 2;
 
         case 0xBE:
-            this.writeHL(this.rst(this.readHL(),7));
+            this.write[this.h][this.l](this.rst(this.read[this.h][this.l](),7));
             return 4;
 
         case 0xBF:
@@ -886,7 +886,7 @@ define([
             return 2;
 
         case 0xC6:
-            this.writeHL(this.set(this.readHL(),0));
+            this.write[this.h][this.l](this.set(this.read[this.h][this.l](),0));
             return 4;
 
         case 0xC7:
@@ -918,7 +918,7 @@ define([
             return 2;
 
         case 0xCE:
-            this.writeHL(this.set(this.readHL(),1));
+            this.write[this.h][this.l](this.set(this.read[this.h][this.l](),1));
             return 4;
 
         case 0xCF:
@@ -950,7 +950,7 @@ define([
             return 2;
 
         case 0xD6:
-            this.writeHL(this.set(this.readHL(),2));
+            this.write[this.h][this.l](this.set(this.read[this.h][this.l](),2));
             return 4;
 
         case 0xD7:
@@ -982,7 +982,7 @@ define([
             return 2;
 
         case 0xDE:
-            this.writeHL(this.set(this.readHL(),3));
+            this.write[this.h][this.l](this.set(this.read[this.h][this.l](),3));
             return 4;
 
         case 0xDF:
@@ -1014,7 +1014,7 @@ define([
             return 2;
 
         case 0xE6:
-            this.writeHL(this.set(this.readHL(),4));
+            this.write[this.h][this.l](this.set(this.read[this.h][this.l](),4));
             return 4;
 
         case 0xE7:
@@ -1046,7 +1046,7 @@ define([
             return 2;
 
         case 0xEE:
-            this.writeHL(this.set(this.readHL(),5));
+            this.write[this.h][this.l](this.set(this.read[this.h][this.l](),5));
             return 4;
 
         case 0xEF:
@@ -1078,7 +1078,7 @@ define([
             return 2;
 
         case 0xF6:
-            this.writeHL(this.set(this.readHL(),6));
+            this.write[this.h][this.l](this.set(this.read[this.h][this.l](),6));
             return 4;
 
         case 0xF7:
@@ -1110,7 +1110,7 @@ define([
             return 2;
 
         case 0xFE:
-            this.writeHL(this.set(this.readHL(),7));
+            this.write[this.h][this.l](this.set(this.read[this.h][this.l](),7));
             return 4;
 
         case 0xFF:

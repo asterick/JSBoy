@@ -257,7 +257,7 @@ define([
             this.b = this.l;
             return 1;
         case 0x46:
-            this.b = this.readHL();
+            this.b = this.read[this.h][this.l]();
             return 2;
         case 0x47:
             this.b = this.a;
@@ -280,7 +280,7 @@ define([
             this.c = this.l;
             return 1;
         case 0x4E:
-            this.c = this.readHL();
+            this.c = this.read[this.h][this.l]();
             return 2;
         case 0x4F:
             this.c = this.a;
@@ -303,7 +303,7 @@ define([
             this.d = this.l;
             return 1;
         case 0x56:
-            this.d = this.readHL();
+            this.d = this.read[this.h][this.l]();
             return 2;
         case 0x57:
             this.d = this.a;
@@ -326,7 +326,7 @@ define([
             this.e = this.l;
             return 1;
         case 0x5E:
-            this.e = this.readHL();
+            this.e = this.read[this.h][this.l]();
             return 2;
         case 0x5F:
             this.e = this.a;
@@ -349,7 +349,7 @@ define([
             this.h = this.l;
             return 1;
         case 0x66:
-            this.h = this.readHL();
+            this.h = this.read[this.h][this.l]();
             return 2;
         case 0x67:
             this.h = this.a;
@@ -372,31 +372,31 @@ define([
         case 0x6D:
             return 1;
         case 0x6E:
-            this.l = this.readHL();
+            this.l = this.read[this.h][this.l]();
             return 2;
         case 0x6F:
             this.l = this.a;
             return 1;
         case 0x70:
-            this.writeHL(this.b);
+            this.write[this.h][this.l](this.b);
             return 2;
         case 0x71:
-            this.writeHL(this.c);
+            this.write[this.h][this.l](this.c);
             return 2;
         case 0x72:
-            this.writeHL(this.d);
+            this.write[this.h][this.l](this.d);
             return 2;
         case 0x73:
-            this.writeHL(this.e);
+            this.write[this.h][this.l](this.e);
             return 2;
         case 0x74:
-            this.writeHL(this.h);
+            this.write[this.h][this.l](this.h);
             return 2;
         case 0x75:
-            this.writeHL(this.l);
+            this.write[this.h][this.l](this.l);
             return 2;
         case 0x77:
-            this.writeHL(this.a);
+            this.write[this.h][this.l](this.a);
             return 2;
         case 0x78:
             this.a = this.b;
@@ -417,7 +417,7 @@ define([
             this.a = this.l;
             return 1;
         case 0x7E:
-            this.a = this.readHL();
+            this.a = this.read[this.h][this.l]();
             return 2;
         case 0x7F:
             return 1;
@@ -441,7 +441,7 @@ define([
             this.l = this.nextByte();
             return 2;
         case 0x36:
-            this.writeHL(this.nextByte());
+            this.write[this.h][this.l](this.nextByte());
             return 3;
         case 0x3E:
             this.a = this.nextByte();
@@ -509,19 +509,19 @@ define([
     
         // --- LDI and LDD instructions
         case 0x22:
-            this.writeHL(this.a);
+            this.write[this.h][this.l](this.a);
             this.incHL();
             return 2;
         case 0x2A:
-            this.a = this.readHL();
+            this.a = this.read[this.h][this.l]();
             this.incHL();
             return 2;
         case 0x32:
-            this.writeHL(this.a);
+            this.write[this.h][this.l](this.a);
             this.decHL();
             return 2;
         case 0x3A:
-            this.a = this.readHL();
+            this.a = this.read[this.h][this.l]();
             this.decHL();
             return 2;
 
@@ -545,7 +545,7 @@ define([
             this.add(this.l);
             return 1;
         case 0x86:
-            this.add(this.readHL());
+            this.add(this.read[this.h][this.l]());
             return 2;
         case 0x87:
             this.add(this.a);
@@ -569,7 +569,7 @@ define([
             this.adc(this.l);
             return 1;
         case 0x8E:
-            this.adc(this.readHL());
+            this.adc(this.read[this.h][this.l]());
             return 2;
         case 0x8F:
             this.adc(this.a);
@@ -593,7 +593,7 @@ define([
             this.sub(this.l);
             return 1;
         case 0x96:
-            this.sub(this.readHL());
+            this.sub(this.read[this.h][this.l]());
             return 2;
         case 0x97:
             this.sub(this.a);
@@ -617,7 +617,7 @@ define([
             this.sbc(this.l);
             return 1;
         case 0x9E:
-            this.sbc(this.readHL());
+            this.sbc(this.read[this.h][this.l]());
             return 2;
         case 0x9F:
             this.sbc(this.a);
@@ -641,7 +641,7 @@ define([
             this.and(this.l);
             return 1;
         case 0xA6:
-            this.and(this.readHL());
+            this.and(this.read[this.h][this.l]());
             return 2;
         case 0xA7:
             this.and(this.a);
@@ -665,7 +665,7 @@ define([
             this.xor(this.l);
             return 1;
         case 0xAE:
-            this.xor(this.readHL());
+            this.xor(this.read[this.h][this.l]());
             return 2;
         case 0xAF:
             this.xor(this.a);
@@ -689,7 +689,7 @@ define([
             this.or(this.l);
             return 1;
         case 0xB6:
-            this.or(this.readHL());
+            this.or(this.read[this.h][this.l]());
             return 2;
         case 0xB7:
             this.or(this.a);
@@ -713,7 +713,7 @@ define([
             this.cp(this.l);
             return 1;
         case 0xBE:
-            this.cp(this.readHL());
+            this.cp(this.read[this.h][this.l]());
             return 2;
         case 0xBF:
             this.cp(this.a);
@@ -883,10 +883,10 @@ define([
             this.l = this.dec(this.l);
             return 1;
         case 0x34:
-            this.writeHL(this.inc(this.readHL()));
+            this.write[this.h][this.l](this.inc(this.read[this.h][this.l]()));
             return 3;
         case 0x35:
-            this.writeHL(this.dec(this.readHL()));
+            this.write[this.h][this.l](this.dec(this.read[this.h][this.l]()));
             return 3;
         case 0x3C:
             this.a = this.inc(this.a);

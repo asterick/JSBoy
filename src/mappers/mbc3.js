@@ -37,10 +37,10 @@ define([], function () {
             ramBankSelectReg = (new Array(0x100)).fill(this.$('ramBankSelectReg')),
             clockLatchReg = (new Array(0x100)).fill(this.$('clockLatchReg'));
 
-        this.cpu.write.fill(ramEnableReg),     0x00, 0x20);
-        this.cpu.write.fill(romBankSelectReg), 0x20, 0x20);
-        this.cpu.write.fill(ramBankSelectReg), 0x40, 0x20);
-        this.cpu.write.fill(clockLatchReg),    0x60, 0x20);
+        this.cpu.write.fill(ramEnableReg,     0x00, 0x20);
+        this.cpu.write.fill(romBankSelectReg, 0x20, 0x20);
+        this.cpu.write.fill(ramBankSelectReg, 0x40, 0x20);
+        this.cpu.write.fill(clockLatchReg,    0x60, 0x20);
 
         this.updateMemoryMap();
     }

@@ -49,7 +49,8 @@ define([], function () {
             var l = i & 0xFF;
         
             for (var b = 0; b < 8; b++)
-                this.tileDecodeForward[i][7-b] = this.tileDecodeReverse[i][b] = ((h >> b) & 2) | ((l >> b) & 1);
+                this.tileDecodeForward[i][7-b] = 
+                this.tileDecodeReverse[i][b] = ((h >> b) & 2) | ((l >> b) & 1);
         }
     }
 

@@ -35,8 +35,8 @@ define([
         this.cpu.registers.write.copy(0x80, this.zeroPage.write);
 
         // --- Map the default 8k memory
-        this.cpu.read.copy(0xC0, this.memory.read, 0, 0x20);
-        this.cpu.write.copy(0xC0, this.memory.write, 0, 0x20);
+        this.cpu.read.copy(0xC0, this.memory.readChunks, 0, 0x20);
+        this.cpu.write.copy(0xC0, this.memory.writeChunks, 0, 0x20);
 
         // --- Shadow memory
         this.cpu.read.copy(0xE0, this.cpu.read, 0xC0, 0x1E);

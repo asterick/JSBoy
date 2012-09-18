@@ -571,7 +571,7 @@ define([
     GPU.prototype.write_VBK = function( data )
     {
         this.vbk = data & 1;
-        bank = this.vbk * 0x2000;
+        bank = this.vbk * 0x20;
 
         this.cpu.read.copy(0x80, this.videoMemory.readChunks, bank, 0x20);
         this.cpu.write.copy(0x80, this.videoMemory.writeChunks, bank, 0x20);
@@ -586,9 +586,10 @@ define([
     {
         this.cpu.catchUp();
 
-        var oam = this.oamMemory.data;
+        var oam = this.oamMemory.data,
+            src = this.cpu.read[data];
         for( var i = 0; i < 0xA0; i++ )
-            oam[i] = this.cpu.read[data][i]();
+            oam[i] = src[i]();
     }
 
     GPU.prototype.write_LCD_MODE = function(data)

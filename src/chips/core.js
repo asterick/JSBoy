@@ -376,14 +376,6 @@ define([
         return (h<<8) | l;
     }
     
-    CPU.prototype.readHL = function () {
-        return this.read[this.h][this.l]();
-    };
-    
-    CPU.prototype.writeHL = function (d) {
-        this.write[this.h][this.l](d);
-    };
-
     CPU.prototype.delayByte = function()
     {
         // This is a cute way of preventing the CPU from incrementing PC for a
