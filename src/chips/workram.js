@@ -4,8 +4,8 @@ define([
     function WorkRam(cpu)
     {
         this.cpu = cpu;
-        this.memory = ramBlock( 0x8000 );
-        this.zeroPage = ramBlock( 0x7F );
+        this.memory = ramBlock(0x8000);
+        this.zeroPage = ramBlock(0x7F);
         this.bank = 0;
     }
 
@@ -31,8 +31,8 @@ define([
     WorkRam.prototype.reset = function()
     {
         // --- Zero page memory (fast)
-        this.cpu.read[0xFF].copy(0x80, this.zeroPage.read);
-        this.cpu.write[0xFF].copy(0x80, this.zeroPage.write);
+        this.cpu.registers.read.copy(0x80, this.zeroPage.read);
+        this.cpu.registers.write.copy(0x80, this.zeroPage.write);
 
         // --- Map the default 8k memory
         this.cpu.read.copy(0xC0, this.memory.read, 0, 0x20);
@@ -41,7 +41,7 @@ define([
         // --- Shadow memory
         this.cpu.read.copy(0xE0, this.cpu.read, 0xC0, 0x1E);
         this.cpu.write.copy(0xE0, this.cpu.write, 0xC0, 0x1E);
-        this.write_SVBK(0);
+        this.bank = 0;
 
         this.cpu.registers.read[registers.SVBK] = this.$('read_SVBK');
         this.cpu.registers.write[registers.SVBK] = this.$('write_SVBK');

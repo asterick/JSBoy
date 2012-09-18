@@ -93,6 +93,8 @@ define([
         this.read = (new Array(0x10000)).fill(nullBody).chunk(0x100);
         this.write = (new Array(0x10000)).fill(nullBody).chunk(0x100);
 
+        this.nullBlock = (new Array(0x100)).fill(nullBody);
+
         this.registers = {
             read: this.read[0xFF],
             write: this.write[0xFF]
