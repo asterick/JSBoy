@@ -42,14 +42,12 @@ define([
 
     jsboy.prototype.step = function () {
         this.cpu.step();
-        this.cpu.update();
-        
+
         return this.running;
     }
 
     jsboy.prototype.singleStep = function () {
         this.cpu.singleStep();
-        this.cpu.update();
     }
 
     return jsboy;

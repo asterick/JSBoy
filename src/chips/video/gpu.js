@@ -99,34 +99,34 @@ define([
     
         for( var i = 0; i < 0xA0; i++ )
         {
-            this.cpu.read[0xFE00 | i] = this.oamMemory.read[i];
-            this.cpu.write[0xFE00 | i] = this.oamMemory.write[i];
+            this.cpu.read[0xFE][i] = this.oamMemory.read[i];
+            this.cpu.write[0xFE][i] = this.oamMemory.write[i];
         }
     
-        this.cpu.write[registers.DMA] = this.$('write_DMA');
+        this.cpu.registers.write[registers.DMA] = this.$('write_DMA');
     
-        this.cpu.read[registers.LCDC] = this.$('read_LCDC');
-        this.cpu.write[registers.LCDC] = this.$('write_LCDC');
-        this.cpu.read[registers.STAT] = this.$('read_STAT');
-        this.cpu.write[registers.STAT] = this.$('write_STAT');
+        this.cpu.registers.read[registers.LCDC] = this.$('read_LCDC');
+        this.cpu.registers.write[registers.LCDC] = this.$('write_LCDC');
+        this.cpu.registers.read[registers.STAT] = this.$('read_STAT');
+        this.cpu.registers.write[registers.STAT] = this.$('write_STAT');
 
-        this.cpu.read[registers.SCX] = this.$('read_SCX');
-        this.cpu.write[registers.SCX] = this.$('write_SCX');
-        this.cpu.read[registers.SCY] = this.$('read_SCY');
-        this.cpu.write[registers.SCY] = this.$('write_SCY');
-        this.cpu.read[registers.WX] = this.$('read_WX');
-        this.cpu.write[registers.WX] = this.$('write_WX');
-        this.cpu.read[registers.WY] = this.$('read_WY');
-        this.cpu.write[registers.WY] = this.$('write_WY');
+        this.cpu.registers.read[registers.SCX] = this.$('read_SCX');
+        this.cpu.registers.write[registers.SCX] = this.$('write_SCX');
+        this.cpu.registers.read[registers.SCY] = this.$('read_SCY');
+        this.cpu.registers.write[registers.SCY] = this.$('write_SCY');
+        this.cpu.registers.read[registers.WX] = this.$('read_WX');
+        this.cpu.registers.write[registers.WX] = this.$('write_WX');
+        this.cpu.registers.read[registers.WY] = this.$('read_WY');
+        this.cpu.registers.write[registers.WY] = this.$('write_WY');
     
-        this.cpu.read[registers.LY] = this.$('read_LY');
-        this.cpu.read[registers.LYC] = this.$('read_LYC');
-        this.cpu.write[registers.LYC] = this.$('write_LYC');
+        this.cpu.registers.read[registers.LY] = this.$('read_LY');
+        this.cpu.registers.read[registers.LYC] = this.$('read_LYC');
+        this.cpu.registers.write[registers.LYC] = this.$('write_LYC');
     
-        this.cpu.read[registers.VBK] = this.$('read_VBK');
-        this.cpu.write[registers.VBK] = this.$('write_VBK');
+        this.cpu.registers.read[registers.VBK] = this.$('read_VBK');
+        this.cpu.registers.write[registers.VBK] = this.$('write_VBK');
     
-        this.cpu.write[registers.LCD_MODE] = this.$('write_LCD_MODE');
+        this.cpu.registers.write[registers.LCD_MODE] = this.$('write_LCD_MODE');
     }
 
     GPU.prototype.drawMapTile = function(mapAddr, tpx, tpy)
@@ -421,6 +421,7 @@ define([
     
                     lines -= blankLines;
                     currentLine = 0;
+                    this.lcd.update();
                 }
                 // Draw a regular raster
                 else
@@ -433,13 +434,6 @@ define([
         }
 
         this.pixelClock = (this.pixelClock + cycles) % TICKS_PER_FRAME;
-    }
-
-    // --- Mapping code
-    // --- Runtime body
-    GPU.prototype.update = function()
-    {
-        this.lcd.update();
     }
 
     // --- Video control register
@@ -553,7 +547,7 @@ define([
 
     GPU.prototype.activeLine = function()
     {
-        return Math.floor(this.pixelClock/TICKS_PER_LINE);    
+        return Math.floor(this.pixelClock/TICKS_PER_LINE);
     }
 
     GPU.prototype.read_LY = function()
@@ -591,11 +585,10 @@ define([
     GPU.prototype.write_DMA = function( data )
     {
         this.cpu.catchUp();
-        data = data << 8;
-    
+
         var oam = this.oamMemory.data;
         for( var i = 0; i < 0xA0; i++ )
-            oam[i] = this.cpu.read[data++]();
+            oam[i] = this.cpu.read[data][i]();
     }
 
     GPU.prototype.write_LCD_MODE = function(data)

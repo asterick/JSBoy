@@ -107,18 +107,18 @@ define([
         this.scalar = 0;
         this.enabled = false;
     
-        this.cpu.read[registers.TIMA] = this.$('read_TIMA');
-        this.cpu.write[registers.TIMA] = this.$('write_TIMA');
-        this.cpu.read[registers.TMA] = this.$('read_TMA');
-        this.cpu.write[registers.TMA] = this.$('write_TMA');
-        this.cpu.read[registers.TAC] = this.$('read_TAC');
-        this.cpu.write[registers.TAC] = this.$('write_TAC');
+        this.cpu.registers.read[registers.TIMA] = this.$('read_TIMA');
+        this.cpu.registers.write[registers.TIMA] = this.$('write_TIMA');
+        this.cpu.registers.read[registers.TMA] = this.$('read_TMA');
+        this.cpu.registers.write[registers.TMA] = this.$('write_TMA');
+        this.cpu.registers.read[registers.TAC] = this.$('read_TAC');
+        this.cpu.registers.write[registers.TAC] = this.$('write_TAC');
 
         // Map DIV register
         this.div = 0;
 
-        this.cpu.read[registers.DIV] = this.$('read_DIV');
-        this.cpu.write[registers.DIV] = this.$('write_DIV');
+        this.cpu.registers.read[registers.DIV] = this.$('read_DIV');
+        this.cpu.registers.write[registers.DIV] = this.$('write_DIV');
     };
 
     // Determine how many cycles until the next interrupt

@@ -537,15 +537,21 @@ define([], function() {
             return o;
         }
 
-        var op = this.cpu.read[pc](),
+        var that = this;
+        
+        function readPC() {
+            var h = pc >> 8,
+                l = pc & 0xFF;
+            pc = (pc+1) & 0xFFFF;
+            return that.cpu.read[h][l]();
+        }
+        
+        var op = readPC(),
             bytes = hex(op,2),
             template;
 
-        pc = (pc+1) & 0xFFFF;
-
         if (op == 0xCB) {
-            op = this.cpu.read[pc]();
-            pc = (pc+1) & 0xFFFF;
+            op = readPC();
             bytes += " " + hex(op,2);
             template = EXTENDED_INSTRUCTION_SET[op];
         } else {
@@ -559,24 +565,20 @@ define([], function() {
         switch( template.arg )
         {
             case WORD:
-                var b = this.cpu.read[pc]();
-                pc = (pc+1) & 0xFFFF;
-                var a = this.cpu.read[pc]();
-                pc = (pc+1) & 0xFFFF;
+                var b = readPC();
+                var a = readPC();
                 bytes += " " + hex(b,2) + " " + hex(a,2);
 
                 var d = (a << 8) | b;
             
                 return { op: template.format.split("%").join(hex(d,4)), hex: bytes, next: pc };
             case BYTE:
-                var a = this.cpu.read[pc]();
-                pc = (pc+1) & 0xFFFF;
+                var a = readPC();
                 bytes += " " + hex(a,2);
             
                 return { op: template.format.split("%").join(hex(a,2)), hex: bytes, next: pc };
             case SIGNED:
-                var a = this.cpu.read[pc]();
-                pc = (pc+1) & 0xFFFF;
+                var a = readPC();
                 bytes += " " + hex(a,2);
             
                 if(a & 0x80)
@@ -584,8 +586,7 @@ define([], function() {
             
                 return { op: template.format.split("%").join(a), hex: bytes, next: pc };
             case RELATIVE_PC:
-                var a = this.cpu.read[pc]();
-                pc = (pc+1) & 0xFFFF;
+                var a = readPC();
                 bytes += " " + hex(a,2);
 
                 if(a & 0x80)

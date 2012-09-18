@@ -23,64 +23,64 @@ define([
         this.NR51 = 0;
 
         function delegate(i) {
-            self.cpu.read[registers.AUD3WAVERAM0+i] = function () {
+            self.cpu.registers.read[registers.AUD3WAVERAM0+i] = function () {
                 return self.wavetable[i];
             };
-            self.cpu.write[registers.AUD3WAVERAM0+i] = function (d) {
+            self.cpu.registers.write[registers.AUD3WAVERAM0+i] = function (d) {
                 self.cpu.catchUp();
                 self.wavetable[i] = d;
             };
         }
         for (var i = 0; i < 16; i++) { delegate(i); }
         
-        this.cpu.read[registers.NR10] = this.$('read_NR10');
-        this.cpu.read[registers.NR11] = this.$('read_NR11');
-        this.cpu.read[registers.NR12] = this.$('read_NR12');
-        this.cpu.read[registers.NR14] = this.$('read_NR14');
+        this.cpu.registers.read[registers.NR10] = this.$('read_NR10');
+        this.cpu.registers.read[registers.NR11] = this.$('read_NR11');
+        this.cpu.registers.read[registers.NR12] = this.$('read_NR12');
+        this.cpu.registers.read[registers.NR14] = this.$('read_NR14');
 
-        this.cpu.read[registers.NR21] = this.$('read_NR21');
-        this.cpu.read[registers.NR22] = this.$('read_NR22');
-        this.cpu.read[registers.NR24] = this.$('read_NR24');
+        this.cpu.registers.read[registers.NR21] = this.$('read_NR21');
+        this.cpu.registers.read[registers.NR22] = this.$('read_NR22');
+        this.cpu.registers.read[registers.NR24] = this.$('read_NR24');
 
-        this.cpu.read[registers.NR30] = this.$('read_NR30');
-        this.cpu.read[registers.NR31] = this.$('read_NR31');
-        this.cpu.read[registers.NR32] = this.$('read_NR32');
-        this.cpu.read[registers.NR34] = this.$('read_NR34');
+        this.cpu.registers.read[registers.NR30] = this.$('read_NR30');
+        this.cpu.registers.read[registers.NR31] = this.$('read_NR31');
+        this.cpu.registers.read[registers.NR32] = this.$('read_NR32');
+        this.cpu.registers.read[registers.NR34] = this.$('read_NR34');
 
-        this.cpu.read[registers.NR41] = this.$('read_NR41');
-        this.cpu.read[registers.NR42] = this.$('read_NR42');
-        this.cpu.read[registers.NR43] = this.$('read_NR43');
-        this.cpu.read[registers.NR44] = this.$('read_NR44');
+        this.cpu.registers.read[registers.NR41] = this.$('read_NR41');
+        this.cpu.registers.read[registers.NR42] = this.$('read_NR42');
+        this.cpu.registers.read[registers.NR43] = this.$('read_NR43');
+        this.cpu.registers.read[registers.NR44] = this.$('read_NR44');
 
-        this.cpu.read[registers.NR50] = this.$('read_NR50');
-        this.cpu.read[registers.NR51] = this.$('read_NR51');
-        this.cpu.read[registers.NR52] = this.$('read_NR52');
+        this.cpu.registers.read[registers.NR50] = this.$('read_NR50');
+        this.cpu.registers.read[registers.NR51] = this.$('read_NR51');
+        this.cpu.registers.read[registers.NR52] = this.$('read_NR52');
 
-        this.cpu.write[registers.NR10] = this.$('write_NR10');
-        this.cpu.write[registers.NR11] = this.$('write_NR11');
-        this.cpu.write[registers.NR12] = this.$('write_NR12');
-        this.cpu.write[registers.NR13] = this.$('write_NR13');
-        this.cpu.write[registers.NR14] = this.$('write_NR14');
+        this.cpu.registers.write[registers.NR10] = this.$('write_NR10');
+        this.cpu.registers.write[registers.NR11] = this.$('write_NR11');
+        this.cpu.registers.write[registers.NR12] = this.$('write_NR12');
+        this.cpu.registers.write[registers.NR13] = this.$('write_NR13');
+        this.cpu.registers.write[registers.NR14] = this.$('write_NR14');
 
-        this.cpu.write[registers.NR21] = this.$('write_NR21');
-        this.cpu.write[registers.NR22] = this.$('write_NR22');
-        this.cpu.write[registers.NR23] = this.$('write_NR23');
-        this.cpu.write[registers.NR24] = this.$('write_NR24');
+        this.cpu.registers.write[registers.NR21] = this.$('write_NR21');
+        this.cpu.registers.write[registers.NR22] = this.$('write_NR22');
+        this.cpu.registers.write[registers.NR23] = this.$('write_NR23');
+        this.cpu.registers.write[registers.NR24] = this.$('write_NR24');
 
-        this.cpu.write[registers.NR30] = this.$('write_NR30');
-        this.cpu.write[registers.NR31] = this.$('write_NR31');
-        this.cpu.write[registers.NR32] = this.$('write_NR32');
-        this.cpu.write[registers.NR33] = this.$('write_NR33');
-        this.cpu.write[registers.NR34] = this.$('write_NR34');
+        this.cpu.registers.write[registers.NR30] = this.$('write_NR30');
+        this.cpu.registers.write[registers.NR31] = this.$('write_NR31');
+        this.cpu.registers.write[registers.NR32] = this.$('write_NR32');
+        this.cpu.registers.write[registers.NR33] = this.$('write_NR33');
+        this.cpu.registers.write[registers.NR34] = this.$('write_NR34');
 
-        this.cpu.write[registers.NR41] = this.$('write_NR41');
-        this.cpu.write[registers.NR42] = this.$('write_NR42');
-        this.cpu.write[registers.NR43] = this.$('write_NR43');
-        this.cpu.write[registers.NR44] = this.$('write_NR44');
+        this.cpu.registers.write[registers.NR41] = this.$('write_NR41');
+        this.cpu.registers.write[registers.NR42] = this.$('write_NR42');
+        this.cpu.registers.write[registers.NR43] = this.$('write_NR43');
+        this.cpu.registers.write[registers.NR44] = this.$('write_NR44');
 
-        this.cpu.write[registers.NR50] = this.$('write_NR50');
-        this.cpu.write[registers.NR51] = this.$('write_NR51');
-        this.cpu.write[registers.NR52] = this.$('write_NR52');
+        this.cpu.registers.write[registers.NR50] = this.$('write_NR50');
+        this.cpu.registers.write[registers.NR51] = this.$('write_NR51');
+        this.cpu.registers.write[registers.NR52] = this.$('write_NR52');
     };
 
     // Don't assume audio is available, 

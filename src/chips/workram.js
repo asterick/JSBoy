@@ -43,8 +43,8 @@ define([
         this.cpu.write.copy(0xE000, this.cpu.write, 0xC000, 0x1E00);
         this.bank = 0;
 
-        this.cpu.read[registers.SVBK] = this.$('read_SVBK');
-        this.cpu.write[registers.SVBK] = this.$('write_SVBK');
+        this.cpu.registers.read[registers.SVBK] = this.$('read_SVBK');
+        this.cpu.registers.write[registers.SVBK] = this.$('write_SVBK');
     }
 
     return WorkRam;

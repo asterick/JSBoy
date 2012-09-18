@@ -36,8 +36,8 @@ define([
         this.dataDir = 0xF;
         this.dataButton = 0xF;
     
-        this.cpu.read[registers.JOYP] = this.$('read_JOYP');
-        this.cpu.write[registers.JOYP] = this.$('write_JOYP');
+        this.cpu.registers.read[registers.JOYP] = this.$('read_JOYP');
+        this.cpu.registers.write[registers.JOYP] = this.$('write_JOYP');
     }
 
     Joypad.prototype.disableActions = function(keyEventArgs)

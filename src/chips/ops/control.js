@@ -1,5 +1,5 @@
 define([
-    'chips/ops/core',
+    'chips/core',
     "chips/registers"
 ], function (CPU, registers) {
     // --- CPU Level hardware registers (IEQ, Speed and CPU dependant timer)
@@ -48,9 +48,9 @@ define([
         // it locks, don't disable the advanced registers
 
         var self = this;
-        var lock = this.write[registers.BLCK];
+        var lock = this.registers.write[registers.BLCK];
 
-        this.write[registers.BLCK] = function(data)
+        this.write[registers.registers.BLCK] = function(data)
         {
             if( data != 0x11 )
                 return ;

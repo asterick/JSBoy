@@ -13,16 +13,16 @@ define([
         this.sourceAddress = 0;
         this.destinationAddress = 0;
 
-        this.cpu.read[registers.HDMA1] = this.$('read_HDMA1');
-        this.cpu.write[registers.HDMA1] = this.$('write_HDMA1');
-        this.cpu.read[registers.HDMA2] = this.$('read_HDMA2');
-        this.cpu.write[registers.HDMA2] = this.$('write_HDMA2');
-        this.cpu.read[registers.HDMA3] = this.$('read_HDMA3');
-        this.cpu.write[registers.HDMA3] = this.$('write_HDMA3');
-        this.cpu.read[registers.HDMA4] = this.$('read_HDMA4');
-        this.cpu.write[registers.HDMA4] = this.$('write_HDMA4');
-        this.cpu.read[registers.HDMA5] = this.$('read_HDMA5');
-        this.cpu.write[registers.HDMA5] = this.$('write_HDMA5');
+        this.cpu.registers.read[registers.HDMA1] = this.$('read_HDMA1');
+        this.cpu.registers.write[registers.HDMA1] = this.$('write_HDMA1');
+        this.cpu.registers.read[registers.HDMA2] = this.$('read_HDMA2');
+        this.cpu.registers.write[registers.HDMA2] = this.$('write_HDMA2');
+        this.cpu.registers.read[registers.HDMA3] = this.$('read_HDMA3');
+        this.cpu.registers.write[registers.HDMA3] = this.$('write_HDMA3');
+        this.cpu.registers.read[registers.HDMA4] = this.$('read_HDMA4');
+        this.cpu.registers.write[registers.HDMA4] = this.$('write_HDMA4');
+        this.cpu.registers.read[registers.HDMA5] = this.$('read_HDMA5');
+        this.cpu.registers.write[registers.HDMA5] = this.$('write_HDMA5');
     }
 
     DMA.prototype.read_HDMA1 = function () {
