@@ -573,8 +573,8 @@ define([
         this.vbk = data & 1;
         bank = this.vbk * 0x2000;
 
-        this.cpu.read.copy( 0x8000, this.videoMemory.read, bank, 0x2000 );
-        this.cpu.write.copy( 0x8000, this.videoMemory.write, bank, 0x2000 );
+        this.cpu.read.copy(0x80, this.videoMemory.readChunks, bank, 0x20);
+        this.cpu.write.copy(0x80, this.videoMemory.writeChunks, bank, 0x20);
     }
 
     GPU.prototype.read_VBK = function()

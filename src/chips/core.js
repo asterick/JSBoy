@@ -32,14 +32,6 @@ define([
         this.bios = new BIOS(this);
         this.rom = null;
 
-        // Our memory delegate holders
-        this.read = (new Array(0x10000)).chunk(0x100);
-        this.write = (new Array(0x10000)).chunk(0x100);
-        this.registers = {
-            read: this.read[0xFF],
-            write: this.write[0xFF]
-        };
-
         this.reset();
     }
 
@@ -98,8 +90,13 @@ define([
         function nullBody() { return 0xFF; }
 
         // Reset memory map
-        this.read.fill(nullBody);
-        this.write.fill(nullBody);
+        this.read = (new Array(0x10000)).fill(nullBody).chunk(0x100);
+        this.write = (new Array(0x10000)).fill(nullBody).chunk(0x100);
+
+        this.registers = {
+            read: this.read[0xFF],
+            write: this.write[0xFF]
+        };
 
         // For debugging purposes, alert me when the system accesses a register it does not recognize
         for (var i = 0xFF00; i < 0xFF80; i++) {

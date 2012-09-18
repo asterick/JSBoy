@@ -8,7 +8,7 @@
 define([], function () {
     function mapperMBC5( name, cpu, rom, ramSize, flags, description ) {
         this.ram = ramBlock( ramSize, 0x2000, name );
-        this.banks = rom.chunk(0x4000);
+        this.banks = rom.chunk(0x40);
     
         this.cpu = cpu;
         this.flags = flags;
