@@ -42,8 +42,8 @@ define([], function () {
         this.tileDecodeReverse = new Array(0x10000);
 
         for (var i = 0; i < 0x10000; i++) {
-            this.tileDecodeForward[i] = new Array(8);
-            this.tileDecodeReverse[i] = new Array(8);
+            this.tileDecodeForward[i] = new Uint8Array(8);
+            this.tileDecodeReverse[i] = new Uint8Array(8);
 
             var h = (i & 0xFF00) >> 7;
             var l = i & 0xFF;

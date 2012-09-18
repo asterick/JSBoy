@@ -50,7 +50,7 @@ define([
         var self = this;
         var lock = this.registers.write[registers.BLCK];
 
-        this.write[registers.registers.BLCK] = function(data)
+        this.registers.write[registers.BLCK] = function(data)
         {
             if( data != 0x11 )
                 return ;

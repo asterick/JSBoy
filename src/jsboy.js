@@ -33,7 +33,6 @@ define([
 
     jsboy.prototype.reset = function( name, data ) {
         if (data) {
-            this.cpu.close();
             this.cpu.insert(mapper(name, this.cpu, data));
         } else {
             this.cpu.reset();
