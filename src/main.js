@@ -26,6 +26,8 @@ requirejs([
         xhr.open('GET', name, true);
         xhr.responseType = 'arraybuffer';
         xhr.send(null);
+        
+        runtime.running = false;
     
         xhr.onload = function(event) {
             // Test ready state
@@ -33,7 +35,8 @@ requirejs([
                 throw "Error while loading " + url;
 
             runtime.reset(name, new Uint8Array(xhr.response));
-            runtime.run(true);
+            runtime.running = true;
+            updateButtons();
             update();
         };
     }
@@ -111,13 +114,24 @@ requirejs([
         runtime.close();
     };
 
+    // Bind to run state buttons
+    function updateButtons() {
+        $("#run").toggle(!runtime.running);
+        $("#stop").toggle(runtime.running);
+    }
+
     $("#run").click(function () {
-        runtime.run(true);
+        runtime.running = true;
+        updateButtons();
     });
     $("#stop").click(function () {
-        runtime.run(false);
+        runtime.running = false;
         update();
+        updateButtons();
     });
+    updateButtons();
+
+
     $("#reset").click(function () {
         runtime.reset();
         update();

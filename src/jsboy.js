@@ -5,7 +5,30 @@ define([
     function jsboy(context) {
         // Bios will auto reset when the system initializes
         this.cpu = new CPU(context);
-        this.running = false;
+
+        var running = false;
+        Object.defineProperty(this, 'running', {
+            get: function () {
+                return running;
+            },
+            set: function (state) {
+                if (this.running === state) { return ; }
+
+                if (running = state) {
+                    var requestAnimationFrame = window.requestAnimationFrame ||
+                                                window.mozRequestAnimationFrame ||
+                                                window.webkitRequestAnimationFrame ||
+                                                window.msRequestAnimationFrame,
+                        self = this,
+                        nextFrame = function () {
+                            self.step();
+                            if (running) { requestAnimationFrame(nextFrame); }
+                        };
+
+                    requestAnimationFrame(nextFrame);
+                }
+            }
+        });
     }
 
     jsboy.prototype.reset = function( name, data ) {
@@ -21,29 +44,8 @@ define([
         this.cpu.close();
     }
 
-    jsboy.prototype.run = function (state) {
-        if (this.running === state) { return ; }
-
-        this.running = state;
-
-        if (this.running) {
-            var requestAnimationFrame = window.requestAnimationFrame ||
-                                        window.mozRequestAnimationFrame ||
-                                        window.webkitRequestAnimationFrame ||
-                                        window.msRequestAnimationFrame,
-                self = this,
-                nextFrame = function () {
-                    if (self.step()) { requestAnimationFrame(nextFrame); }
-                };
-
-            requestAnimationFrame(nextFrame);
-        }
-    }
-
     jsboy.prototype.step = function () {
         this.cpu.step();
-
-        return this.running;
     }
 
     jsboy.prototype.singleStep = function () {

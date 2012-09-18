@@ -435,7 +435,7 @@ define([
         }
 
         this.pixelClock = (this.pixelClock + cycles) % TICKS_PER_FRAME;
-    }
+    };
 
     // --- Video control register
     GPU.prototype.read_LCDC = function()
@@ -448,7 +448,7 @@ define([
             (this.obj_size ? 0x04 : 0) |
             (this.obj_enable ? 0x02 : 0) |
             (this.bg_display ? 0x01 : 0);
-    }
+    };
 
     GPU.prototype.write_LCDC = function(data)
     {
@@ -462,7 +462,7 @@ define([
         this.obj_size = data & 0x04;
         this.obj_enable = data & 0x02;
         this.bg_display = data & 0x01;
-    }
+    };
 
     // --- Video stat register
     GPU.prototype.read_STAT = function()
@@ -489,7 +489,7 @@ define([
         }
         // Vertical blank period
         return data | 1;
-    }
+    };
 
     GPU.prototype.write_STAT = function(data)
     {
@@ -499,78 +499,71 @@ define([
         this.mode2IRQ = data & 0x20;
         this.mode1IRQ = data & 0x10;
         this.mode0IRQ = data & 0x08;
-    }
+    };
 
     // --- Video position / clock values
     GPU.prototype.read_WX = function()
     {
         return this.wx;
-    }
+    };
 
     GPU.prototype.write_WX = function(data)
     {
         this.cpu.catchUp();
         this.wx = data;
-    }
+    };
 
     GPU.prototype.read_WY = function()
     {
         return this.wy;
-    }
+    };
 
     GPU.prototype.write_WY = function(data)
     {
         this.cpu.catchUp();
         this.wy = data;
-    }
+    };
 
     GPU.prototype.read_SCX = function()
     {
         return this.scx;
-    }
+    };
 
     GPU.prototype.write_SCX = function(data)
     {
         this.cpu.catchUp();
         this.scx = data;
-    }
+    };
 
-    GPU.prototype.read_SCY = function()
-    {
+    GPU.prototype.read_SCY = function () {
         return this.scy;
-    }
+    };
 
-    GPU.prototype.write_SCY = function(data)
-    {
+    GPU.prototype.write_SCY = function (data) {
         this.cpu.catchUp();
         this.scy = data;
-    }
+    };
 
-    GPU.prototype.activeLine = function()
-    {
+    GPU.prototype.activeLine = function () {
         return Math.floor(this.pixelClock/TICKS_PER_LINE);
-    }
+    };
 
-    GPU.prototype.read_LY = function()
-    {
+    GPU.prototype.read_LY = function () {
         this.cpu.catchUp();
         return this.activeLine();
-    }
+    };
 
-    GPU.prototype.read_LYC = function()
-    {
+    GPU.prototype.read_LYC = function () {
         return this.lyc;
-    }
+    };
 
-    GPU.prototype.write_LYC = function(data)
-    {
+    GPU.prototype.write_LYC = function (data) {
         this.cpu.catchUp();
         this.lyc = data;
-    }
+    };
 
     // --- Bank register
-    GPU.prototype.write_VBK = function( data )
-    {
+    GPU.prototype.write_VBK = function (data) {
         this.vbk = data & 1;
         bank = this.vbk * 0x20;
 
@@ -578,15 +571,13 @@ define([
 
         this.cpu.read.copy(0x80, this.videoMemory.readChunks, bank, 0x20);
         this.cpu.write.copy(0x80, this.videoMemory.writeChunks, bank, 0x20);
-    }
+    };
 
-    GPU.prototype.read_VBK = function()
-    {
+    GPU.prototype.read_VBK = function () {
         return this.vbk;
-    }
+    };
 
-    GPU.prototype.write_DMA = function( data )
-    {
+    GPU.prototype.write_DMA = function (data) {
         this.cpu.catchUp();
 
         var oam = this.oamMemory.data,
@@ -595,16 +586,16 @@ define([
         for (var i = 0; i < 0xA0; i++) {
             oam[i] = src[i]();
         }
-    }
+    };
 
-    GPU.prototype.write_LCD_MODE = function(data)
-    {
+    GPU.prototype.write_LCD_MODE = function(data) {
         // I don't know how this is actually supose to work.
-        if( data != 4 )
+        if (data != 4) {
             return ;
-    
+        }
+
         this.drawScanline = this.drawLegacyScanline;
-    }
+    };
 
     return GPU;
 });
