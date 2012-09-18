@@ -1,7 +1,8 @@
 define([
     "chips/registers"
 ], function (registers) {
-    function DMA (cpu) {
+    function DMA (gpu, cpu) {
+        this.gpu = gpu;
         this.cpu = cpu;
     }
 
@@ -96,12 +97,11 @@ define([
         
         var src_h = this.sourceAddress >> 8,
             src_l = this.sourceAddress & 0xF0,
-            dst_h = 0x80 | ((this.destinationAddress >> 8) & 0x1F),
-            dst_l = this.destinationAddress & 0xF0,
+            dst   = this.destinationAddress & 0x1FF0;
             size = 0x10;
 
         while (size--) {
-            this.cpu.write[dst_h][dst_l++](this.cpu.read[src_h][src_l++]());
+            this.gpu.vbk_cell[dst++] = this.cpu.read[src_h][src_l++]();
         }
 
         this.sourceAddress = (this.sourceAddress + 0x0010) & 0xFFFF;

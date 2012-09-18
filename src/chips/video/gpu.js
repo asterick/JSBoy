@@ -18,13 +18,14 @@ define([
 
     function GPU(context, cpu)
     {    
-        // --- System registers    
+        // --- System registers
         this.videoMemory = ramBlock(0x4000);
         this.oamMemory = ramBlock(0xA0);
         this.palette = new Palette(cpu);
         this.lcd = new LCD(context, this.palette.paletteMemory);
-        this.dma = new DMA(cpu);
+        this.dma = new DMA(this, cpu);
         this.cpu = cpu;
+        this.videoBanks = [this.videoMemory.data, this.videoMemory.data.subarray(0x2000)];
 
         // Video registers
         this.vbk = 0;
@@ -573,6 +574,8 @@ define([
         this.vbk = data & 1;
         bank = this.vbk * 0x20;
 
+        this.vbk_cell = this.videoBanks[this.vbk];
+
         this.cpu.read.copy(0x80, this.videoMemory.readChunks, bank, 0x20);
         this.cpu.write.copy(0x80, this.videoMemory.writeChunks, bank, 0x20);
     }
@@ -588,8 +591,10 @@ define([
 
         var oam = this.oamMemory.data,
             src = this.cpu.read[data];
-        for( var i = 0; i < 0xA0; i++ )
+
+        for (var i = 0; i < 0xA0; i++) {
             oam[i] = src[i]();
+        }
     }
 
     GPU.prototype.write_LCD_MODE = function(data)

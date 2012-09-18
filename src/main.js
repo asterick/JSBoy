@@ -48,7 +48,7 @@ requirejs([
 
             switch (e.getAttribute('class')) {
                 case 'value':
-                    e.innerHTML = v.toString(16);
+                    e.innerHTML = v.toString(16).toUpperCase();
                     break ;
                 case 'flag':
                     e.innerHTML = (v ? '&#10003;' : '&nbsp;')

@@ -358,15 +358,13 @@ define([
     {
         // Sign extend byte
         var b = this.nextByte();
-        if( b & 0x80 )
-            return b - 0x100;
-        return b;
+        return (b & 0x7F) - (b & 0x80);
     }
 
     CPU.prototype.nextRelative = function()
     {
-        var o = this.nextSignedByte();
-        return (this.pc + o) & 0xFFFF;
+        var b = this.nextSignedByte();
+        return (this.pc + (b & 0x7F) - (b & 0x80)) & 0xFFFF;
     }
 
     CPU.prototype.nextWord = function()

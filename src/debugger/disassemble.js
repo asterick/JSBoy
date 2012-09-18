@@ -530,7 +530,7 @@ define([], function() {
     disassembler.prototype.disassemble = function(pc)
     {
         function hex(v, p) {
-            var o = v.toString(16);
+            var o = v.toString(16).toUpperCase();
         
             while( o.length < p )
                 o = "0"+o;
@@ -579,6 +579,7 @@ define([], function() {
                 return { op: template.format.split("%").join(hex(a,2)), hex: bytes, next: pc };
             case SIGNED:
                 var a = readPC();
+                a = (a & 0x7F) - (a & 0x80);
                 bytes += " " + hex(a,2);
             
                 if(a & 0x80)
@@ -587,10 +588,8 @@ define([], function() {
                 return { op: template.format.split("%").join(a), hex: bytes, next: pc };
             case RELATIVE_PC:
                 var a = readPC();
+                a = (a & 0x7F) - (a & 0x80);
                 bytes += " " + hex(a,2);
-
-                if(a & 0x80)
-                    a |= 0xFFFFFF00;
 
                 a = (pc + a) & 0xFFFF;
             
