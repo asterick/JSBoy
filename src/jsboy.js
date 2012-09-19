@@ -7,23 +7,36 @@ define([
         this.cpu = new CPU(context);
 
         var running = false;
-        Object.defineProperty(this, 'running', {
+        Object.defineProperty(jsboy.prototype, 'running', {
             get: function () {
                 return running;
             },
             set: function (state) {
-                if (this.running === state) { return ; }
+                if (running === state) { return ; }
+
+                var requestAnimationFrame = window.requestAnimationFrame ||
+                                            window.mozRequestAnimationFrame ||
+                                            window.webkitRequestAnimationFrame ||
+                                            window.msRequestAnimationFrame,
+                    lastTime = (new Date()).getTime(),
+                    fraction = 0,
+                    self = this;
 
                 if (running = state) {
-                    var requestAnimationFrame = window.requestAnimationFrame ||
-                                                window.mozRequestAnimationFrame ||
-                                                window.webkitRequestAnimationFrame ||
-                                                window.msRequestAnimationFrame,
-                        self = this,
-                        nextFrame = function () {
-                            self.step();
-                            if (running) { requestAnimationFrame(nextFrame); }
-                        };
+                     function nextFrame() {
+                        if (!running) { return ; }
+
+                        var nextTime = (new Date()).getTime(),
+                            ticks = nextTime - lastTime,
+                            advance = Math.min(150000, ticks * 8388.608 + fraction),
+                            cycles = Math.floor(advance);
+
+                        fraction = advance - cycles;
+                        lastTime = nextTime;
+
+                        requestAnimationFrame(nextFrame);
+                        self.cpu.step(cycles);
+                    };
 
                     requestAnimationFrame(nextFrame);
                 }
@@ -41,10 +54,6 @@ define([
 
     jsboy.prototype.close = function () {
         this.cpu.close();
-    }
-
-    jsboy.prototype.step = function () {
-        this.cpu.step();
     }
 
     jsboy.prototype.singleStep = function () {

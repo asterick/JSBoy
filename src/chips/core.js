@@ -4,7 +4,7 @@ define([
     "chips/joypad",
     "chips/bios",
     "chips/video/gpu",
-    "chips/audio",
+    "chips/audio/audio",
     "chips/registers"
 ], function(Timer, WorkRam, Joypad, BIOS, GPU, Audio, registers) {
     function CPU(context) {
@@ -218,10 +218,7 @@ define([
     };
 
     // --- Step the CPU to the next event point
-    CPU.prototype.step = function () {
-        // Try to run up to the end of the frame
-        var frameCycles = this.gpu.predictEndOfFrame();
-
+    CPU.prototype.step = function (frameCycles) {
         while( frameCycles > 0 )
         {
             var clockRate = this.doubleSpeed ? 4 : 8;

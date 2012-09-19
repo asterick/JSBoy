@@ -12,10 +12,7 @@ var TIMER = 4;
 var RUMBLE = 8;
 
 Object.prototype.$ = function (name) {
-    var self = this,
-        call = this[name];
-
-    return function () { return call.apply(self,arguments); }
+    return this[name].bind(this);
 };
 
 function log (/*...*/) {

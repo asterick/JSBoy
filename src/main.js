@@ -143,10 +143,6 @@ requirejs([
         runtime.singleStep();
         update();
     });
-    $("#frame").click(function () {
-        runtime.step();
-        update();
-    });
     $("#stop_predictions").click(function () {
         runtime.cpu.predictEvent = function () { return 0; };
     });

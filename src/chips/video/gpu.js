@@ -97,13 +97,10 @@ define([
         this.mode0IRQ = false;
 
         this.write_VBK(0);
-    
-        for( var i = 0; i < 0xA0; i++ )
-        {
-            this.cpu.read[0xFE][i] = this.oamMemory.read[i];
-            this.cpu.write[0xFE][i] = this.oamMemory.write[i];
-        }
-    
+
+        this.cpu.read[0xFE].copy(0, this.oamMemory.read);
+        this.cpu.write[0xFE].copy(0, this.oamMemory.write);
+
         this.cpu.registers.write[registers.DMA] = this.$('write_DMA');
     
         this.cpu.registers.read[registers.LCDC] = this.$('read_LCDC');
