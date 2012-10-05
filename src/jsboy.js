@@ -28,7 +28,7 @@ define([
 
                         var nextTime = (new Date()).getTime(),
                             ticks = nextTime - lastTime,
-                            advance = Math.min(150000, ticks * 8388.608 + fraction),
+                            advance = Math.min(300000, ticks * 8388.608 + fraction),
                             cycles = Math.floor(advance);
 
                         fraction = advance - cycles;
@@ -39,6 +39,9 @@ define([
                     };
 
                     requestAnimationFrame(nextFrame);
+                    this.cpu.audio.play();
+                } else {
+                    this.cpu.audio.mute();
                 }
             }
         });

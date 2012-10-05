@@ -4,11 +4,14 @@ define([
     "chips/audio/waveform",
     "chips/audio/noise"
 ], function (registers, SquareChannel, WaveformChannel, NoiseChannel) {
-    var BUFFER_LENGTH = 2048,
-        FRAME_COUNTER = 16384;
+    var BUFFER_LENGTH = 2048,               // ~91ms buffer
+        LONG_BUFFER   = BUFFER_LENGTH * 4;  // Render to a much larger buffer
+        WRAP_MASK     = (LONG_BUFFER-1),    // ... and don't get bigger than this value (power of 2 for masking)
+        BLOCK_MASK    = ~(BUFFER_LENGTH-1), // ... and mask 
+        CLOCK_RATE    = 8388608;
 
     /*
-    8 cycles between frequency steps
+    8 cycles between square steps
     4 cycles between wave table steps
     16 cycles between noise table steps
     32768 cycles between length checks
@@ -29,16 +32,46 @@ define([
             this.node = this.context.createJavaScriptNode(BUFFER_LENGTH);
             this.node.onaudioprocess = this.$('process');
         }
+        
+        // Playback buffering
+        this.activeSample = 0;      // Next sample written
+        this.sampleTime = 0;        // Bresenham sample counter
+        
+        this.leftBuffer = new Float32Array(LONG_BUFFER);
+        this.rightBuffer = new Float32Array(LONG_BUFFER);
     }
 
     Audio.prototype.clock = function (ticks) {
+        this.square1.clock(ticks);
+        this.square2.clock(ticks);
+        this.waveform.clock(ticks);
+        this.noise.clock(ticks);
+
+        this.sampleTime += ticks * this.context.sampleRate;
+        
+        while (this.sampleTime >= CLOCK_RATE) {
+            var s = this.activeSample;
+
+            // TODO: ACTUALLY RETRIEVE SAMPLES;
+            this.rightBuffer[s] = this.leftBuffer[s] = 0;
+
+            // Advance counters;
+            this.activeSample = (this.activeSample+1) & WRAP_MASK;
+            this.sampleTime -= CLOCK_RATE;
+        }
     };
 
     Audio.prototype.reset = function () {
         var self = this;
 
+        this.square1.reset();
+        this.square2.reset();
+        this.waveform.reset();
+        this.noise.reset();
+
         this.NR50 = 0;
         this.NR51 = 0;
+        this.NR52 = 0;
 
         this.cpu.registers.read.copy(registers.AUD3WAVERAM0, this.waveform.wavetable.read);
         this.cpu.registers.write.copy(registers.AUD3WAVERAM0, this.waveform.wavetable.write);
@@ -116,9 +149,14 @@ define([
     Audio.prototype.process = function (e) {
         var left = e.outputBuffer.getChannelData(0),
             right = e.outputBuffer.getChannelData(1),
-            length = left.length;
+            length = left.length,
+            s = (this.activeSample - BUFFER_LENGTH) & BLOCK_MASK,
+            i = 0;
 
-        for (var i = 0; i < length; i++) { left[i] = right[i] = 0; }
+        for(; i < length; i++, s++) {
+            left[i] = this.leftBuffer[s];
+            right[i] = this.rightBuffer[s];
+        }
     }
 
     // --- Control registers
@@ -129,6 +167,7 @@ define([
         this.NR51 = d;
     };
     Audio.prototype.write_NR52 = function (d) {
+        this.NR52 = d & 0x80;
     };
 
     Audio.prototype.read_NR50 = function () { 
@@ -138,7 +177,7 @@ define([
         return this.NR51;
     };
     Audio.prototype.read_NR52 = function () { 
-        return 0; 
+        return this.NR52;
     };
 
     return Audio;
