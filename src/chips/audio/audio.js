@@ -50,10 +50,15 @@ define([
         this.sampleTime += ticks * this.context.sampleRate;
         
         while (this.sampleTime >= CLOCK_RATE) {
-            var s = this.activeSample;
+            var s = this.activeSample,
+                ch0 = this.square1.level(),
+                ch1 = this.square2.level(),
+                ch2 = this.waveform.level(),
+                ch3 = this.noise.level()
 
-            // TODO: ACTUALLY RETRIEVE SAMPLES;
-            this.rightBuffer[s] = this.leftBuffer[s] = 0;
+            // TODO: VOLUMES + ENABLES
+            this.rightBuffer[s] = ch0 + ch1 + ch2 + ch3;
+            this.leftBuffer[s] = ch0 + ch1 + ch2 + ch3;
 
             // Advance counters;
             this.activeSample = (this.activeSample+1) & WRAP_MASK;

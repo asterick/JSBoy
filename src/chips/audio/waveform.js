@@ -9,6 +9,10 @@ define([], function () {
     WaveformChannel.prototype.clock = function (ticks) {
     };
 
+    WaveformChannel.prototype.level = function () {
+        return 0;
+    };
+
     // --- Registers
     WaveformChannel.prototype.write_enable = function (d) {
     };

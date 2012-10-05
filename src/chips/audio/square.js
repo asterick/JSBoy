@@ -7,6 +7,10 @@ define([], function () {
 
     SquareChannel.prototype.clock = function (ticks) {
     };
+    
+    SquareChannel.prototype.level = function () {
+        return 0;
+    };
 
     // --- Registers
     SquareChannel.prototype.write_sweep = function (d) {

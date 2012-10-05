@@ -9,6 +9,10 @@ define([], function () {
     NoiseChannel.prototype.clock = function (ticks) {
     };
 
+    NoiseChannel.prototype.level = function () {
+        return 0;
+    };
+
     // --- Registers
     NoiseChannel.prototype.write_length = function (d) {
     };
