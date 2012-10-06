@@ -111,7 +111,7 @@ define([
         this.cpu.catchUp();
 
         this.spritePalette[this.reg_OCPS] = data;
-    
+
         if (this.reg_OCPS_increment) {
             this.reg_OCPS = (this.reg_OCPS+1) & 0x3F;
         }

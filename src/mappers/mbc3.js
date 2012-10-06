@@ -16,7 +16,7 @@ define([], function () {
         if( this.flags & BATTERY )
             this.ram.load();
     }
-    
+
     mapperMBC3.prototype.close = function()
     {
         if( this.flags & BATTERY )
@@ -31,7 +31,7 @@ define([], function () {
 
         // --- Static mapping
         this.cpu.read.copy( 0, this.banks[0] );
-    
+
         var ramEnableReg = (new Array(0x100)).fill(this.$('ramEnableReg')),
             romBankSelectReg = (new Array(0x100)).fill(this.$('romBankSelectReg')),
             ramBankSelectReg = (new Array(0x100)).fill(this.$('ramBankSelectReg')),
@@ -48,13 +48,13 @@ define([], function () {
     mapperMBC3.prototype.updateMemoryMap = function()
     {
         this.cpu.read.copy( 0x40, this.banks[this.romBank] );
-    
+
         if( this.ram && this.ramEnabled && this.ramBank <= 3 )
         {
             var ramBankAddr = this.ramBank * 0x20;
             this.cpu.read.copy( 0xA0, this.ram.readChunks, ramBankAddr, 0x20 );
             this.cpu.write.copy( 0xA0, this.ram.writeChunks, ramBankAddr, 0x20 );
-        }        
+        }
         // TODO: TIMER
         else
         {
@@ -67,13 +67,13 @@ define([], function () {
     {
         if( !this.ram )
             return ;
-    
+
         this.ramEnabled = (data & 0xF == 0xA);
         this.updateMemoryMap();
     }
 
     mapperMBC3.prototype.romBankSelectReg = function( data )
-    {            
+    {
         this.romBank = ((data & 0x7F) % this.banks.length) || 1;
         this.updateMemoryMap();
     }

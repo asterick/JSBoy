@@ -531,21 +531,21 @@ define([], function() {
     {
         function hex(v, p) {
             var o = v.toString(16).toUpperCase();
-        
+
             while( o.length < p )
                 o = "0"+o;
             return o;
         }
 
         var that = this;
-        
+
         function readPC() {
             var h = pc >> 8,
                 l = pc & 0xFF;
             pc = (pc+1) & 0xFFFF;
             return that.cpu.read[h][l]();
         }
-        
+
         var op = readPC(),
             bytes = hex(op,2),
             template;
@@ -570,21 +570,21 @@ define([], function() {
                 bytes += " " + hex(b,2) + " " + hex(a,2);
 
                 var d = (a << 8) | b;
-            
+
                 return { op: template.format.split("%").join(hex(d,4)), hex: bytes, next: pc };
             case BYTE:
                 var a = readPC();
                 bytes += " " + hex(a,2);
-            
+
                 return { op: template.format.split("%").join(hex(a,2)), hex: bytes, next: pc };
             case SIGNED:
                 var a = readPC();
                 a = (a & 0x7F) - (a & 0x80);
                 bytes += " " + hex(a,2);
-            
+
                 if(a & 0x80)
                     a |= 0xFFFFFF00;
-            
+
                 return { op: template.format.split("%").join(a), hex: bytes, next: pc };
             case RELATIVE_PC:
                 var a = readPC();
@@ -592,13 +592,13 @@ define([], function() {
                 bytes += " " + hex(a,2);
 
                 a = (pc + a) & 0xFFFF;
-            
+
                 return { op: template.format.split("%").join(hex(a,4)), hex: bytes, next: pc };
             // Implied
             default:
                 return { op: template.format, hex: bytes, next: pc };
         }
     }
-    
+
     return disassembler;
 });

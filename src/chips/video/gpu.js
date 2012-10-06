@@ -2,7 +2,7 @@ define([
     'chips/video/lcd',
     'chips/video/dma',
     'chips/video/palette',
-    'chips/registers'    
+    'chips/registers'
 ], function (LCD, DMA, Palette, registers) {
     // These clocks are in GBC machine instruction cycles (Double speed)
     // IE: 4MHZ / 4 * 2
@@ -17,7 +17,7 @@ define([
         TICKS_PER_FRAME = SCANLINES * TICKS_PER_LINE;
 
     function GPU(context, cpu)
-    {    
+    {
         // --- System registers
         this.videoMemory = ramBlock(0x4000);
         this.oamMemory = ramBlock(0xA0);
@@ -73,7 +73,7 @@ define([
 
         this.dma.reset();
         this.palette.reset();
-    
+
         this.lyc = 0;
         this.pixelClock = 0;
 
@@ -102,7 +102,7 @@ define([
         this.cpu.write[0xFE].copy(0, this.oamMemory.write);
 
         this.cpu.registers.write[registers.DMA] = this.$('write_DMA');
-    
+
         this.cpu.registers.read[registers.LCDC] = this.$('read_LCDC');
         this.cpu.registers.write[registers.LCDC] = this.$('write_LCDC');
         this.cpu.registers.read[registers.STAT] = this.$('read_STAT');
@@ -116,14 +116,14 @@ define([
         this.cpu.registers.write[registers.WX] = this.$('write_WX');
         this.cpu.registers.read[registers.WY] = this.$('read_WY');
         this.cpu.registers.write[registers.WY] = this.$('write_WY');
-    
+
         this.cpu.registers.read[registers.LY] = this.$('read_LY');
         this.cpu.registers.read[registers.LYC] = this.$('read_LYC');
         this.cpu.registers.write[registers.LYC] = this.$('write_LYC');
-    
+
         this.cpu.registers.read[registers.VBK] = this.$('read_VBK');
         this.cpu.registers.write[registers.VBK] = this.$('write_VBK');
-    
+
         this.cpu.registers.write[registers.LCD_MODE] = this.$('write_LCD_MODE');
     }
 
@@ -150,7 +150,7 @@ define([
 
     GPU.prototype.drawLegacyMapTile = function(mapAddr, tpx, tpy)
     {
-        var tile = this.videoMemory.data[mapAddr] << 4;    
+        var tile = this.videoMemory.data[mapAddr] << 4;
 
         var tileAddr = (tpy & 7) << 1;
 
@@ -171,7 +171,7 @@ define([
         var mapLine = this.scy + line;
         var mapAddr = (this.background_map ? 0x1C00 : 0x1800) | (((mapLine & 0xFF) >> 3) << 5);
         var tpx = 8-(this.scx & 7);
-        var tx  = this.scx >> 3;    
+        var tx  = this.scx >> 3;
 
         for( ; tpx < 168; tpx += 8, tx++ )
             this.drawMapTile( mapAddr | (tx & 0x1F), tpx, mapLine );
@@ -183,40 +183,40 @@ define([
             mapAddr = (this.window_map ? 0x1C00 : 0x1800) | (((mapLine & 0xFF) >> 3) << 5);
             tpx = this.wx + 1;
             tx = 0;
-        
+
             for( ; tpx < 168; tpx += 8, tx++ )
-                this.drawMapTile( mapAddr | (tx & 0x1F), tpx, mapLine );        
+                this.drawMapTile( mapAddr | (tx & 0x1F), tpx, mapLine );
         }
 
         if( this.obj_enable )
         {
             var sprites = 0;
             var spriteBound = this.obj_size ? 15 : 7;
-        
+
             var oam = this.oamMemory.data;
             for( var i = 0; i < 0xA0 && sprites < 10; i += 4 )
             {
                 var y = line + 16 - oam[i];
-            
+
                 if( y < 0 || y > spriteBound )
                     continue;
-            
+
                 sprites++;
-            
+
                 var x = oam[i+1];
                 var tile = oam[i+2];
                 var attr = oam[i+3];
-            
+
                 var priority = this.bg_display && (attr & 128);
                 var yflip = attr & 64;
                 var hflip = attr & 32;
                 var bank = (attr & 8) ? 0x2000 : 0x0000;
                 var pal = attr & 7;
-            
+
                 tpy = yflip ? (y ^ spriteBound) : (y);
 
                 var tileAddr = bank | (tpy << 1) | (tile << 4);
-                    
+
                 this.lcd.copyTileOBJ( x, this.videoMemory.data[tileAddr], this.videoMemory.data[tileAddr+1], pal, hflip, priority )
             }
         }
@@ -233,70 +233,70 @@ define([
             this.lcd.copyScanline(line);
             return ;
         }
-   
+
         // Locate the base line for the tile map
         if( this.bg_display )
         {
             var mapLine = this.scy + line;
             var mapAddr = (this.background_map ? 0x1C00 : 0x1800) | (((mapLine & 0xFF) >> 3) << 5);
             var tpx = 8-(this.scx & 7);
-            var tx  = this.scx >> 3;    
+            var tx  = this.scx >> 3;
 
             for( ; tpx < 168; tpx += 8, tx++ )
                 this.drawLegacyMapTile( mapAddr | (tx & 0x1F), tpx, mapLine );
         }
         else
         {
-            this.lcd.clear();        
+            this.lcd.clear();
         }
 
         // Draw the window when it's enabled
         var mapLine = line - this.wy;
         if( this.window_enable && mapLine >= 0 )
-        {    
+        {
             var mapAddr = (this.window_map ? 0x1C00 : 0x1800) | (((mapLine & 0xFF) >> 3) << 5);
             var tpx = this.wx + 1;
             var tx = 0;
-        
+
             for( ; tpx < 168; tpx += 8, tx++ )
-                this.drawLegacyMapTile( mapAddr | (tx & 0x1F), tpx, mapLine );        
+                this.drawLegacyMapTile( mapAddr | (tx & 0x1F), tpx, mapLine );
         }
-    
+
         if( this.obj_enable )
         {
             // Sort sprite index list based on their X coordinate
             var oam = this.oamMemory.data;
             var order = this.legacySpriteOrder;
             order.sort( this.legacySorter );
-    
+
             var sprites = 0;
             var spriteBound = this.obj_size ? 15 : 7;
-        
+
             for( var s = 0; s < 40 && sprites < 10; s ++ )
             {
                 // Use the X sorted sprite array
                 var i = order[s];
-            
+
                 var y = line + 16 - oam[i];
-            
+
                 if( y < 0 || y > spriteBound )
                     continue;
-            
+
                 sprites++;
-            
+
                 var x = oam[i+1];
                 var tile = oam[i+2];
                 var attr = oam[i+3];
-            
+
                 var priority = attr & 128;
                 var yflip = attr & 64;
                 var hflip = attr & 32;
                 var pal = attr & 16;
-            
+
                 tpy = yflip ? (y ^ spriteBound) : (y);
 
                 var tileAddr = (tpy << 1) | (tile << 4);
-                    
+
                 this.lcd.copyTileOBJ( x, this.videoMemory.data[tileAddr], this.videoMemory.data[tileAddr+1], pal, hflip, priority );
             }
         }
@@ -323,7 +323,7 @@ define([
             var b = this.timeUntilDrawClock(MODE_2_TIME + MODE_3_TIME, phase);
         if( this.lycIRQ )
             var c = this.timeUntilLine(this.lyc);
-        
+
         // Note: This relies a lot on 'undefined' comparison behavior
         if( a < b && a < c )
             return a;
@@ -358,9 +358,9 @@ define([
     {
         if( line >= SCANLINES )
             return ;
-    
+
         var bias = TICKS_PER_LINE * line;
-    
+
         if( this.pixelClock < bias )
             return bias - this.pixelClock;
         else
@@ -377,11 +377,11 @@ define([
                 this.cpu.trigger( IRQ_LCD_STAT );
             this.cpu.trigger( IRQ_VBLANK );
         }
-    
+
         // LCD-Stat registers
         if( this.lycIRQ )
-        {        
-            var ttl = this.timeUntilLine(this.lyc);        
+        {
+            var ttl = this.timeUntilLine(this.lyc);
             if( ttl !== null && ttl <= cycles )
                 this.cpu.trigger( IRQ_LCD_STAT );
         }
@@ -393,19 +393,19 @@ define([
         {
             this.cpu.trigger( IRQ_LCD_STAT );
         }
-    
+
         // Ticks until the next line begins (End of mode 2)
         var nextDraw = MODE_2_TIME - phase;
         if( nextDraw < 0 )
             nextDraw += TICKS_PER_LINE;
 
         if( cycles >= nextDraw )
-        {        
+        {
             // Attempt to discover which line we are drawing
             var currentLine = this.activeLine();
             if( phase >= MODE_2_TIME )
                 currentLine = (currentLine + 1) % SCANLINES;
-        
+
             var lines = Math.floor( (cycles - nextDraw) / TICKS_PER_LINE ) + 1;
 
             while( lines )
@@ -416,14 +416,14 @@ define([
                     var blankLines = (SCANLINES-currentLine);
                     if( lines < blankLines )
                         break ;
-    
+
                     lines -= blankLines;
                     currentLine = 0;
                     this.lcd.update();
                 }
                 // Draw a regular raster
                 else
-                {         
+                {
                     this.drawScanline(currentLine++);
                     this.dma.moveBlock();   // Perform H-Blank DMA
                     lines--;
@@ -450,7 +450,7 @@ define([
     GPU.prototype.write_LCDC = function(data)
     {
         this.cpu.catchUp();
- 
+
         this.lcd_enable = data & 0x80;
         this.window_map = data & 0x40;
         this.window_enable = data & 0x20;
@@ -471,12 +471,12 @@ define([
             (this.mode2IRQ ? 0x20 : 0) |
             (this.mode1IRQ ? 0x10 : 0) |
             (this.mode0IRQ ? 0x08 : 0);
-    
+
         // Drawing period (3 state phase)
         if( this.pixelClock < DRAW_PHASE )
         {
             var phase = this.pixelClock % TICKS_PER_LINE;
-        
+
             if( phase < MODE_2_TIME )
                 return data | 2;
             else if( phase < MODE_2_TIME + MODE_3_TIME )
@@ -491,7 +491,7 @@ define([
     GPU.prototype.write_STAT = function(data)
     {
         this.cpu.catchUp();
-    
+
         this.lycIRQ = data & 0x40;
         this.mode2IRQ = data & 0x20;
         this.mode1IRQ = data & 0x10;

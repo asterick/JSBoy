@@ -13,7 +13,7 @@ define([
         // This also assumes cart will never change bank 0 during startup
         this.cpu.read.copy( 0, this.COLOR_BIOS );
         this.cpu.read[0x01] = this.cart[0x01];
-    
+
         this.cpu.registers.write[registers.BLCK] = this.$('write_BLCK');
     };
 

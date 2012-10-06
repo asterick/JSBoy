@@ -15,7 +15,7 @@ Array.prototype.fill = function (value, pos, length) {
     if(pos === undefined) { pos = 0; }
     if(length === undefined) { length = this.length; }
 
-    while(length-- > 0 && pos < this.length) { 
+    while(length-- > 0 && pos < this.length) {
         this[pos++] = value;
     }
 

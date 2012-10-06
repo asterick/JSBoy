@@ -14,7 +14,7 @@ define([
         this.hf = false;
         this.nf = false;
         this.cf = false;
-    
+
         return n;
     }
 
@@ -26,7 +26,7 @@ define([
         this.hf = false;
         this.nf = false;
         this.cf = (v & 0x80);
-    
+
         return n;
     }
 
@@ -38,7 +38,7 @@ define([
         this.hf = false;
         this.nf = false;
         this.cf = (v & 1);
-    
+
         return n;
     }
 
@@ -50,7 +50,7 @@ define([
         this.hf = false;
         this.nf = false;
         this.cf = (v & 1);
-    
+
         return n;
     }
 
@@ -62,7 +62,7 @@ define([
         this.hf = false;
         this.nf = false;
         this.cf = (v & 1);
-    
+
         return n;
     }
 
@@ -74,7 +74,7 @@ define([
         this.hf = false;
         this.nf = false;
         this.cf = (v & 0x80);
-    
+
         return n;
     }
 
@@ -86,7 +86,7 @@ define([
         this.hf = false;
         this.nf = false;
         this.cf = (v & 1);
-    
+
         return n;
     }
 
@@ -98,7 +98,7 @@ define([
         this.hf = false;
         this.nf = false;
         this.cf = (v & 0x80);
-    
+
         return n;
     }
 

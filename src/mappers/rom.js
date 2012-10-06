@@ -6,7 +6,7 @@
  ***/
 
 define([], function () {
-    function mapperROM( name, cpu, rom, ramSize, flags, description ) {    
+    function mapperROM( name, cpu, rom, ramSize, flags, description ) {
         this.rom = rom;
         this.ram = ramBlock( ramSize, 0x2000, name );
         this.cpu = cpu;

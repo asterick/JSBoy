@@ -27,7 +27,7 @@ define([
     {
         return this.bank;
     }
-    
+
     WorkRam.prototype.reset = function()
     {
         // --- Zero page memory (fast)

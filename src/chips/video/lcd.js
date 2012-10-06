@@ -47,9 +47,9 @@ define([], function () {
 
             var h = (i & 0xFF00) >> 7;
             var l = i & 0xFF;
-        
+
             for (var b = 0; b < 8; b++)
-                this.tileDecodeForward[i][7-b] = 
+                this.tileDecodeForward[i][7-b] =
                 this.tileDecodeReverse[i][b] = ((h >> b) & 2) | ((l >> b) & 1);
         }
     }
@@ -69,11 +69,11 @@ define([], function () {
             over = (pal << PALETTE_SHIFT) | (pri ? PRIORITY : 0),
             scanline = this.scanline,
             b = 8;
-    
+
         while (b) {
             scanline[x++] = px[--b] | over;
         }
-    
+
         return x;
     }
 
@@ -82,7 +82,7 @@ define([], function () {
             over = (pal << PALETTE_SHIFT) | SPRITE_FLAG,
             scanline = this.scanline;
 
-        // Draw OAM when tile has priority 
+        // Draw OAM when tile has priority
         for (var b = 8; b; x++)
         {
             var npx = px[--b], opx = scanline[x];
@@ -123,7 +123,7 @@ define([], function () {
         for (var b = 8; b < 168; b++) {
             var px = scanline[b];
             var c = ((px & PIXELS) << 1);
-        
+
             if( px & SPRITE_FLAG ) {
                 if (px & PALETTE) {
                     c = ((op1 >> c) & 3) | SPRITE_FLAG;

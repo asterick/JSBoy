@@ -3,14 +3,14 @@ define([
     "chips/registers"
 ], function(keyboard, registers) {
     function Joypad(cpu)
-    {    
+    {
         // --- Internal data storage
         this.selectDir = 0;
         this.selectButton = 0;
-    
+
         this.dataDir = 0xF;
         this.dataButton = 0xF;
-    
+
         this.cpu = cpu;
         this.keyboard = new Array();
 
@@ -35,7 +35,7 @@ define([
         this.selectButton = 0;
         this.dataDir = 0xF;
         this.dataButton = 0xF;
-    
+
         this.cpu.registers.read[registers.JOYP] = this.$('read_JOYP');
         this.cpu.registers.write[registers.JOYP] = this.$('write_JOYP');
     }
@@ -70,18 +70,18 @@ define([
     Joypad.prototype.update = function()
     {
         var oD = this.dataDir, oB = this.dataButton;
-    
+
         this.dataDir = 0xF;
         this.dataButton = 0xF;
 
         if( this.keyboard[this.mapping_A] )
             this.dataButton &= ~1;
         if( this.keyboard[this.mapping_B] )
-            this.dataButton &= ~2;        
+            this.dataButton &= ~2;
         if( this.keyboard[this.mapping_Select])
             this.dataButton &= ~4;
         if( this.keyboard[this.mapping_Start] )
-            this.dataButton &= ~8;        
+            this.dataButton &= ~8;
 
         // --- NOTE: Exclusively encoded
         if( this.keyboard[this.mapping_Right] )
@@ -92,7 +92,7 @@ define([
             this.dataDir &= ~4;
         else if( this.keyboard[this.mapping_Down] )
             this.dataDir &= ~8;
-    
+
         if( (oD ^ this.dataDir) || (oB ^ this.dataButton) )
             this.cpu.trigger(IRQ_JOYSTICK);
     }
@@ -100,12 +100,12 @@ define([
     Joypad.prototype.read_JOYP = function()
     {
         var data = 0xF;
-    
+
         if( !this.selectDir )
             data &= this.dataDir;
         if( !this.selectButton )
             data &= this.dataButton;
-    
+
         return data |
                (this.selectDir ? 0x10 : 0) |
                (this.selectButton ? 0x20 : 0);

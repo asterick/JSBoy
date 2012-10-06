@@ -43,11 +43,11 @@ define([
 
     CPU.prototype.insert = function (cartridge) {
         this.close();
-    
+
         if (cartridge !== undefined) {
             this.rom = cartridge;
         }
-    
+
         this.reset();
     };
 
@@ -56,11 +56,11 @@ define([
         this.irq_enable = 0;
         this.irq_request = 0;
         this.irq_master = false;
-    
+
         // KEY1 register
         this.setCPUSpeed(false);
         this.invalidate();
-    
+
         // CPU registers
         this.a = 0;
         this.b = 0;
@@ -79,10 +79,10 @@ define([
         this.nf = false;
 
         this.halted = false;
-    
+
         // CPU timing / runtime variables
         this.cycles = 0;
-    
+
         function nullBody() { return 0xFF; }
 
         // Reset memory map
@@ -110,20 +110,20 @@ define([
         this.joypad.reset();
         this.wram.reset();
         this.timer.reset();
-        this.bios.reset();        
+        this.bios.reset();
 
         // Map IRQ specific registers into CPU
         this.registers.read[registers.IE] = this.$('read_IE');
         this.registers.write[registers.IE] = this.$('write_IE');
-        this.registers.read[registers.IF] = this.$('read_IF');        
+        this.registers.read[registers.IF] = this.$('read_IF');
         this.registers.write[registers.IF] = this.$('write_IF');
 
         // Hardware lockout register
         this.registers.write[registers.LOCK] = this.$('write_LOCK');
-    
+
         // Map speed control register into CPU
         this.registers.read[registers.KEY1] = this.$('read_KEY1');
-        this.registers.write[registers.KEY1] = this.$('write_KEY1');    
+        this.registers.write[registers.KEY1] = this.$('write_KEY1');
     };
 
     CPU.prototype.setCPUSpeed = function (fast) {
@@ -135,7 +135,7 @@ define([
         var addrName = addr.toString(16).toUpperCase(),
             hi = addr>>8,
             lo = addr & 0xFF;
-    
+
         this.read[hi][lo] = function () {
             log("ILLEGAL READ: ", addrName);
             return 0xFF;
@@ -226,7 +226,7 @@ define([
 
             if( predict > frameCycles )
                 predict = frameCycles;
-        
+
             // CPU is stopped, or halted, simply clock the machine up to
             // the predicted value
             if( this.halted )
@@ -237,22 +237,22 @@ define([
             {
                 this.predictDivided = predict / clockRate;
                 var cycles = 0;
-            
+
                 // CPU is running, run up until the IRQ prediction mark
                 do {
                     cycles += this.stepBase();
                 } while( this.predictDivided > cycles );
-            
+
                 this.cycles += cycles * clockRate;
             }
-        
+
             frameCycles -= this.cycles;
 
             this.catchUp();
             this.interrupt();
         }
     };
-    
+
     CPU.prototype.singleStep = function () {
         var clockSpeed = (this.doubleSpeed ? 4 : 8)
 
@@ -291,7 +291,7 @@ define([
             (this.hf ? 0x20 : 0) |
             (this.cf ? 0x10 : 0);
     };
-    
+
     CPU.prototype.push = function (data) {
         this.sp = (this.sp - 1) & 0xFFFF;
         var h = this.sp >> 8,
@@ -343,7 +343,7 @@ define([
         var h = this.nextByte();
         return (h<<8) | l;
     };
-    
+
     CPU.prototype.delayByte = function () {
         // This is a cute way of preventing the CPU from incrementing PC for a
         // clock happens on halts and stops with IME disabled

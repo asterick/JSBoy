@@ -9,14 +9,14 @@ define([], function () {
     function mapperMBC5( name, cpu, rom, ramSize, flags, description ) {
         this.ram = ramBlock( ramSize, 0x2000, name );
         this.banks = rom.chunk(0x40);
-    
+
         this.cpu = cpu;
         this.flags = flags;
 
         if( this.flags & BATTERY )
             this.ram.load();
     }
-    
+
     mapperMBC5.prototype.close = function()
     {
         if( this.flags & BATTERY )
@@ -48,7 +48,7 @@ define([], function () {
     mapperMBC5.prototype.updateMemoryMap = function()
     {
         this.cpu.read.copy( 0x40, this.banks[(this.romBank || 1) % this.banks.length] );
-    
+
         if (this.ram && this.ramEnabled) {
             var ramBankAddr = (this.ramBank * 0x20) % this.ram.data.length;
             this.cpu.read.copy( 0xA0, this.ram.readChunks, ramBankAddr, 0x20 );
@@ -63,19 +63,19 @@ define([], function () {
     {
         if( !this.ram )
             return ;
-    
+
         this.ramEnabled = (data == 0xA);
         this.updateMemoryMap();
     }
 
     mapperMBC5.prototype.lowerRomBankSelect = function( data )
-    {            
+    {
         this.romBank = (this.romBank & 0xFF00) | (data);
         this.updateMemoryMap();
     }
 
     mapperMBC5.prototype.upperRomBankSelect = function( data )
-    {            
+    {
         this.romBank = (this.romBank & 0x00FF) | (data << 8);
         this.updateMemoryMap();
     }

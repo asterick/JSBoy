@@ -27,18 +27,18 @@ define([
     {
         this.div = (this.div + cycles) & 0xFFFF;
     };
-    
+
     Timer.prototype.clock = function(cycles)
     {
         if( !this.enabled )
             return ;
-    
+
         var wrap = this.PRESCALARS[this.scalar];
-    
-        this.divider += cycles; 
+
+        this.divider += cycles;
         this.timer += (this.divider / wrap);
         this.divider %= wrap;
-    
+
         // Timer overflow
         if( this.timer >= 0x100 )
         {
@@ -50,14 +50,14 @@ define([
     Timer.prototype.read_TIMA = function()
     {
         this.cpu.catchUp();
-    
+
         return this.timer;
     };
 
     Timer.prototype.write_TIMA = function(data)
     {
         this.cpu.catchUp();
-    
+
         this.timer = data;
     };
 
@@ -69,7 +69,7 @@ define([
     Timer.prototype.write_TAC = function(data)
     {
         this.cpu.catchUp();
-    
+
         this.scalar = data & 3;
         this.enabled = data & 4;
         this.divider = 0;
@@ -106,7 +106,7 @@ define([
         this.divider = 0;
         this.scalar = 0;
         this.enabled = false;
-    
+
         this.cpu.registers.read[registers.TIMA] = this.$('read_TIMA');
         this.cpu.registers.write[registers.TIMA] = this.$('write_TIMA');
         this.cpu.registers.read[registers.TMA] = this.$('read_TMA');
@@ -126,7 +126,7 @@ define([
     {
         if( !this.enabled )
             return ;
-    
+
         return this.PRESCALARS[this.scalar] * (0x100 - this.timer) - this.divider;
     };
 

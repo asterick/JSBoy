@@ -31,18 +31,18 @@ define([
             this.node = this.context.createJavaScriptNode(BUFFER_LENGTH);
             this.node.onaudioprocess = this.$('process');
         }
-        
+
         // Playback buffering
         this.activeSample = 0;      // Next sample written
         this.sampleTime = 0;        // Bresenham sample counter
-        
+
         this.leftBuffer = new Float32Array(LONG_BUFFER);
         this.rightBuffer = new Float32Array(LONG_BUFFER);
     }
 
     Audio.prototype.clock = function (ticks) {
         this.sampleTime += ticks * this.context.sampleRate;
-        
+
         while (this.sampleTime >= CLOCK_RATE) {
             var s = this.activeSample,
                 ch0 = this.square1.level(),
@@ -61,15 +61,15 @@ define([
             }
 
             this.rightBuffer[s] = (
-                ch0*this.ch0right + 
-                ch1*this.ch1right + 
-                ch2*this.ch2right + 
+                ch0*this.ch0right +
+                ch1*this.ch1right +
+                ch2*this.ch2right +
                 ch3*this.ch3right) * this.rightVolume;
 
             this.leftBuffer[s] = (
-                ch0*this.ch0left + 
-                ch1*this.ch1left + 
-                ch2*this.ch2left + 
+                ch0*this.ch0left +
+                ch1*this.ch1left +
+                ch2*this.ch2left +
                 ch3*this.ch3left) * this.leftVolume;
 
         }
@@ -108,7 +108,7 @@ define([
 
         this.cpu.registers.read.copy(registers.AUD3WAVERAM0, this.waveform.wavetable.read);
         this.cpu.registers.write.copy(registers.AUD3WAVERAM0, this.waveform.wavetable.write);
-        
+
         // --- Square register channels
         this.cpu.registers.write[registers.NR10] = this.square1.$('write_sweep');
         this.cpu.registers.write[registers.NR11] = this.square1.$('write_length');
@@ -164,7 +164,7 @@ define([
     };
 
     // Don't assume audio is available
-    Audio.prototype.context = 
+    Audio.prototype.context =
         window.webkitAudioContext && (new webkitAudioContext());
 
     Audio.prototype.mute = function () {
@@ -172,7 +172,7 @@ define([
 
         this.node.disconnect();
     };
-    
+
     Audio.prototype.play = function () {
         if (!this.node) { return ; }
 
@@ -218,17 +218,17 @@ define([
         this.masterEnable = d & 0x80;
     };
 
-    Audio.prototype.read_NR50 = function () { 
+    Audio.prototype.read_NR50 = function () {
         return this.NR50;
     };
 
-    Audio.prototype.read_NR51 = function () { 
+    Audio.prototype.read_NR51 = function () {
         return this.NR51;
     };
 
-    Audio.prototype.read_NR52 = function () { 
+    Audio.prototype.read_NR52 = function () {
         if (!this.masterEnable) { return 0; }
-        
+
         return this.masterEnable |
               (this.square1.active() ? 1 : 0) |
               (this.square2.active() ? 2 : 0) |

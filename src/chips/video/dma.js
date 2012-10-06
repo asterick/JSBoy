@@ -10,7 +10,7 @@ define([
     {
         this.active = false;
         this.blocksLeft = 0;
-    
+
         this.sourceAddress = 0;
         this.destinationAddress = 0;
 
@@ -70,7 +70,7 @@ define([
         if( masked == 0x8000 || masked == 0xE000 )
             log('Source address is outside valid memory')
 
-        // --- 
+        // ---
         if( !(data & 0x80) )
         {
             while( this.active )
@@ -86,15 +86,15 @@ define([
         // DMA is no longer active
         if( !this.active )
             return ;
-    
+
         if( this.blocksLeft-- == 0 )
         {
             this.blocksLeft = 0xFF;
             this.active = false;
         }
- 
+
         this.cpu.catchUp();
-        
+
         var src_h = this.sourceAddress >> 8,
             src_l = this.sourceAddress & 0xF0,
             dst   = this.destinationAddress & 0x1FF0;

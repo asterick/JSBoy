@@ -8,7 +8,7 @@ define([
         this.zf = false;
         this.nf = false;
         this.hf = false;
-        this.a = n;    
+        this.a = n;
     }
 
     CPU.prototype.rrca = function() {
@@ -17,7 +17,7 @@ define([
         this.zf = false;
         this.nf = false;
         this.hf = false;
-        this.a = n;    
+        this.a = n;
     }
 
     CPU.prototype.rla = function() {
@@ -43,7 +43,7 @@ define([
         var r = q + v;
 
         this.nf = false;
-        this.hf = ((q & 0xFFF) + (v & 0xFFF)) >= 0x1000;    
+        this.hf = ((q & 0xFFF) + (v & 0xFFF)) >= 0x1000;
         this.cf = r >= 0x10000;
 
         this.h = (r >> 8) & 0xFF;
@@ -222,7 +222,7 @@ define([
             if ( this.cf || result > 0x9F )
                 result += 0x60;
         }
-    
+
         this.a = result & 0xFF;
         this.zf = (this.a == 0);
         this.cf = this.cf || ((result & 0xFF00) != 0);
@@ -232,7 +232,7 @@ define([
     CPU.prototype.stepBase = function(){
         var opCode = this.nextByte(),
             h, l;
-    
+
         switch(opCode)
         {
         case 0x00:
@@ -446,7 +446,7 @@ define([
         case 0x3E:
             this.a = this.nextByte();
             return 2;
-    
+
         case 0x01:
             this.c = this.nextByte(); this.b = this.nextByte();
             return 3;
@@ -506,7 +506,7 @@ define([
             h += ((++l) >> 8);
             this.write[h&0xFF][l&0xFF](this.sp>>8);
             return 5;
-    
+
         // --- LDI and LDD instructions
         case 0x22:
             this.write[this.h][this.l](this.a);
@@ -742,22 +742,22 @@ define([
         case 0xFE:
             this.cp(this.nextByte());
             return 2;
-    
+
         // --- Branch Instructions
         case 0x18:
             this.pc = this.nextRelative();
             return 3;
         case 0x20:
-            var o = this.nextRelative(); 
+            var o = this.nextRelative();
             if(!this.zf) { this.pc = o; return 3; } else return 2;
         case 0x28:
-            var o = this.nextRelative(); 
+            var o = this.nextRelative();
             if(this.zf) { this.pc = o; return 3; } else return 2;
         case 0x30:
-            var o = this.nextRelative(); 
+            var o = this.nextRelative();
             if(!this.cf) { this.pc = o; return 3; } else return 2;
         case 0x38:
-            var o = this.nextRelative(); 
+            var o = this.nextRelative();
             if(this.cf) { this.pc = o; return 3; } else return 2;
         case 0xC3:
             this.pc = this.nextWord();
@@ -773,7 +773,7 @@ define([
         case 0xE9:
             this.pc = this.hl;
             return 1;
-    
+
         // --- RST Instructions
         case 0xC7:
             this.call(0x00);
@@ -830,7 +830,7 @@ define([
             if(!this.cf) { this.ret(); return 5; } else return 2;
         case 0xD8:
             if(this.cf) { this.ret(); return 5; } else return 2;
-    
+
         // --- Halt instructions
         case 0x10:
             // Put the CPU in halt mode
@@ -976,8 +976,8 @@ define([
             this.sp = this.addSP();
             return 4;
         case 0xF8:
-            var o = this.addSP(); 
-            this.l = o & 0xFF; 
+            var o = this.addSP();
+            this.l = o & 0xFF;
             this.h = o >> 8;
             return 3;
 

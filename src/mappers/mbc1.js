@@ -36,12 +36,12 @@ define([], function() {
             romBankSelectReg = (new Array(0x100)).fill(this.$('romBankSelectReg')),
             upperBankSelectReg = (new Array(0x100)).fill(this.$('upperBankSelectReg')),
             ramModeSelectReg = (new Array(0x100)).fill(this.$('ramModeSelectReg'));
-    
+
         this.cpu.write.fill(ramEnableReg,       0x00, 0x20);
         this.cpu.write.fill(romBankSelectReg,   0x20, 0x20);
         this.cpu.write.fill(upperBankSelectReg, 0x40, 0x20);
         this.cpu.write.fill(ramModeSelectReg,   0x60, 0x20);
-    
+
         this.updateMemoryMap();
     }
 
@@ -51,7 +51,7 @@ define([], function() {
         var romBankAddr = this.romBank | (this.ramSelect ? 0 : (this.upperBank << 5));
 
         this.cpu.read.copy( 0x40, this.banks[romBankAddr % this.banks.length] );
-    
+
         // --- Ram enable!
         if( this.ram )
         {
@@ -72,7 +72,7 @@ define([], function() {
     {
         if( !this.ram )
             return ;
-    
+
         this.ramEnabled = (data & 0xF == 0xA);
         this.updateMemoryMap();
     }
@@ -81,13 +81,13 @@ define([], function() {
     {
         if( !this.ram )
             return ;
-    
+
         this.ramSelect = data & 1;
         this.updateMemoryMap();
     }
 
     mapperMBC1.prototype.romBankSelectReg = function( data )
-    {            
+    {
         this.romBank = (data & 0x1F) || 1;
         this.updateMemoryMap();
     }
@@ -100,4 +100,3 @@ define([], function() {
 
     return mapperMBC1;
 });
-
