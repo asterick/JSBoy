@@ -13,6 +13,10 @@ define([], function () {
         return 0;
     };
 
+    WaveformChannel.prototype.active = function () {
+        return false;
+    }
+
     // --- Registers
     WaveformChannel.prototype.write_enable = function (d) {
     };

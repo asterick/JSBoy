@@ -13,6 +13,10 @@ define([], function () {
         return 0;
     };
 
+    NoiseChannel.prototype.active = function () {
+        return false;
+    }
+
     // --- Registers
     NoiseChannel.prototype.write_length = function (d) {
     };

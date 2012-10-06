@@ -5,9 +5,8 @@ define([
     "chips/audio/noise"
 ], function (registers, SquareChannel, WaveformChannel, NoiseChannel) {
     var BUFFER_LENGTH = 2048,               // ~91ms buffer
-        LONG_BUFFER   = BUFFER_LENGTH * 4;  // Render to a much larger buffer
-        WRAP_MASK     = (LONG_BUFFER-1),    // ... and don't get bigger than this value (power of 2 for masking)
-        BLOCK_MASK    = ~(BUFFER_LENGTH-1), // ... and mask 
+        LONG_BUFFER   = BUFFER_LENGTH * 2;  // Render to a much larger buffer
+        WRAP_MASK     = LONG_BUFFER - 1,    // ... and don't get bigger than this value
         CLOCK_RATE    = 8388608;
 
     /*
@@ -42,11 +41,6 @@ define([
     }
 
     Audio.prototype.clock = function (ticks) {
-        this.square1.clock(ticks);
-        this.square2.clock(ticks);
-        this.waveform.clock(ticks);
-        this.noise.clock(ticks);
-
         this.sampleTime += ticks * this.context.sampleRate;
         
         while (this.sampleTime >= CLOCK_RATE) {
@@ -56,14 +50,36 @@ define([
                 ch2 = this.waveform.level(),
                 ch3 = this.noise.level()
 
-            // TODO: VOLUMES + ENABLES
-            this.rightBuffer[s] = ch0 + ch1 + ch2 + ch3;
-            this.leftBuffer[s] = ch0 + ch1 + ch2 + ch3;
-
-            // Advance counters;
-            this.activeSample = (this.activeSample+1) & WRAP_MASK;
             this.sampleTime -= CLOCK_RATE;
+            this.activeSample = (this.activeSample+1) & WRAP_MASK;
+
+            if (!this.masterEnable) {
+                this.rightBuffer[s] = 0;
+                this.leftBuffer[s] = 0;
+
+                continue ;
+            }
+
+            this.rightBuffer[s] = (
+                ch0*this.ch0right + 
+                ch1*this.ch1right + 
+                ch2*this.ch2right + 
+                ch3*this.ch3right) * this.rightVolume;
+
+            this.leftBuffer[s] = (
+                ch0*this.ch0left + 
+                ch1*this.ch1left + 
+                ch2*this.ch2left + 
+                ch3*this.ch3left) * this.leftVolume;
+
         }
+
+        if (!this.masterEnable) return ;
+
+        this.square1.clock(ticks);
+        this.square2.clock(ticks);
+        this.waveform.clock(ticks);
+        this.noise.clock(ticks);
     };
 
     Audio.prototype.reset = function () {
@@ -76,7 +92,19 @@ define([
 
         this.NR50 = 0;
         this.NR51 = 0;
-        this.NR52 = 0;
+
+        this.leftVolume = 0;
+        this.rightVolume = 0;
+        this.masterEnable = 0;
+
+        this.ch0right = 0;
+        this.ch1right = 0;
+        this.ch2right = 0;
+        this.ch3right = 0;
+        this.ch0left  = 0;
+        this.ch1left  = 0;
+        this.ch2left  = 0;
+        this.ch3left  = 0;
 
         this.cpu.registers.read.copy(registers.AUD3WAVERAM0, this.waveform.wavetable.read);
         this.cpu.registers.write.copy(registers.AUD3WAVERAM0, this.waveform.wavetable.write);
@@ -135,7 +163,7 @@ define([
         this.cpu.registers.read[registers.NR52] = this.$('read_NR52');
     };
 
-    // Don't assume audio is available, 
+    // Don't assume audio is available
     Audio.prototype.context = 
         window.webkitAudioContext && (new webkitAudioContext());
 
@@ -155,7 +183,7 @@ define([
         var left = e.outputBuffer.getChannelData(0),
             right = e.outputBuffer.getChannelData(1),
             length = left.length,
-            s = (this.activeSample - BUFFER_LENGTH) & BLOCK_MASK,
+            s = (this.activeSample & BUFFER_LENGTH) ^ BUFFER_LENGTH,
             i = 0;
 
         for(; i < length; i++, s++) {
@@ -167,22 +195,45 @@ define([
     // --- Control registers
     Audio.prototype.write_NR50 = function (d) {
         this.NR50 = d;
+
+        // Nothing uses VIN, ignored for now
+        this.leftVolume =  (d & 0x70) / 112.0;
+        this.rightVolume = (d & 0x07) / 7.0;
     };
+
     Audio.prototype.write_NR51 = function (d) {
         this.NR51 = d;
+
+        this.ch0right = (d >> 0) & 1;
+        this.ch1right = (d >> 1) & 1;
+        this.ch2right = (d >> 2) & 1;
+        this.ch3right = (d >> 3) & 1;
+        this.ch0left  = (d >> 4) & 1;
+        this.ch1left  = (d >> 5) & 1;
+        this.ch2left  = (d >> 6) & 1;
+        this.ch3left  = (d >> 7) & 1;
     };
+
     Audio.prototype.write_NR52 = function (d) {
-        this.NR52 = d & 0x80;
+        this.masterEnable = d & 0x80;
     };
 
     Audio.prototype.read_NR50 = function () { 
         return this.NR50;
     };
+
     Audio.prototype.read_NR51 = function () { 
         return this.NR51;
     };
+
     Audio.prototype.read_NR52 = function () { 
-        return this.NR52;
+        if (!this.masterEnable) { return 0; }
+        
+        return this.masterEnable |
+              (this.square1.active() ? 1 : 0) |
+              (this.square2.active() ? 2 : 0) |
+              (this.waveform.active() ? 4 : 0) |
+              (this.noise.active() ? 8 : 0);
     };
 
     return Audio;
