@@ -22,10 +22,10 @@ define([
 
     function Audio(cpu) {
         this.cpu = cpu;
-        this.square1 = new SquareChannel();
-        this.square2 = new SquareChannel();
-        this.waveform = new WaveformChannel();
-        this.noise = new NoiseChannel();
+        this.square1 = new SquareChannel(cpu);
+        this.square2 = new SquareChannel(cpu);
+        this.waveform = new WaveformChannel(cpu);
+        this.noise = new NoiseChannel(cpu);
 
         if (this.context) {
             this.node = this.context.createJavaScriptNode(BUFFER_LENGTH);
@@ -48,7 +48,7 @@ define([
                 ch0 = this.square1.level(),
                 ch1 = this.square2.level(),
                 ch2 = this.waveform.level(),
-                ch3 = this.noise.level()
+                ch3 = this.noise.level();
 
             this.sampleTime -= CLOCK_RATE;
             this.activeSample = (this.activeSample+1) & WRAP_MASK;

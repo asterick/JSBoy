@@ -1,5 +1,5 @@
 define([], function () {
-    function NoiseChannel() {
+    function NoiseChannel(cpu) {
         this.wavetable = ramBlock(0x16);
     }
 

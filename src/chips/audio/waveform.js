@@ -1,5 +1,5 @@
 define([], function () {
-    function WaveformChannel() {
+    function WaveformChannel(cpu) {
         this.wavetable = ramBlock(0x16);
     }
 
