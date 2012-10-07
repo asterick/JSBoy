@@ -25,18 +25,18 @@ define([], function () {
 
         // Determine our current sample
         this.frequencyCounter += ticks;
-        var shifts = Math.floor(this.frequencyCounter / this.overflow);
+        var shifts = this.frequencyCounter / this.overflow;
         this.frequencyCounter %= this.overflow;
 
         if (shifts) {
             if (this.polyform) {
-                while (shifts--) {
+                while (shifts-- > 0) {
                     shifted = this.lsfr >>> 1,
                     bit = (this.lsfr ^ shifted) & 1;
                     this.lsfr = (shifted & 0x3FBF) | (bit << 6);
                 }
             } else {
-                while (shifts--) {
+                while (shifts-- > 0) {
                     shifted = this.lsfr >>> 1;
                     bit = (this.lsfr ^ shifted) & 1;
                     this.lsfr = shifted | (bit << 14);

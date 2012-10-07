@@ -35,3 +35,5 @@ so you may need to run a lightweight http server to run locally.
 Bugs
 ----
 Predicitions are off
+Noise playback frequency is wrong (a guess at best)
+
