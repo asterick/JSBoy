@@ -45,9 +45,9 @@ define([
 
         while (this.sampleTime >= CLOCK_RATE) {
             var s = this.activeSample,
-                ch0 = this.square1.level(),
-                ch1 = this.square2.level(),
-                ch2 = this.waveform.level(),
+                ch0 = 0,//this.square1.level(),
+                ch1 = 0,//this.square2.level(),
+                ch2 = 0,//this.waveform.level(),
                 ch3 = this.noise.level();
 
             this.sampleTime -= CLOCK_RATE;
@@ -138,7 +138,6 @@ define([
         this.cpu.registers.write[registers.NR34] = this.waveform.$('write_freq_hi');
 
         this.cpu.registers.read[registers.NR30] = this.waveform.$('read_enable');
-        this.cpu.registers.read[registers.NR31] = this.waveform.$('read_length');
         this.cpu.registers.read[registers.NR32] = this.waveform.$('read_level');
         this.cpu.registers.read[registers.NR34] = this.waveform.$('read_freq_hi');
 
@@ -148,7 +147,6 @@ define([
         this.cpu.registers.write[registers.NR43] = this.noise.$('write_poly');
         this.cpu.registers.write[registers.NR44] = this.noise.$('write_control');
 
-        this.cpu.registers.read[registers.NR41] = this.noise.$('read_length');
         this.cpu.registers.read[registers.NR42] = this.noise.$('read_volume');
         this.cpu.registers.read[registers.NR43] = this.noise.$('read_poly');
         this.cpu.registers.read[registers.NR44] = this.noise.$('read_control');

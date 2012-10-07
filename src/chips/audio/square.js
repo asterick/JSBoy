@@ -76,7 +76,7 @@ define([], function () {
 
                     if (this.activeFrequency >= 2048) { this.enabled = false; }
 
-                    this.overflow = (2048 - this.frequency) * 8;
+                    this.overflow = (2048 - this.activeFrequency) * 8;
                     this.sweepTick = 0;
                 }
 
@@ -150,7 +150,7 @@ define([], function () {
 
             this.enabled = true;
             this.activeFrequency = this.frequency;
-            this.overflow = (2048 - this.frequency) * 8;
+            this.overflow = (2048 - this.activeFrequency) * 8;
 
             this.frequencyCounter = 0;
             this.lengthCounter = 0;
