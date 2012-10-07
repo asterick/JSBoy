@@ -41,24 +41,36 @@ define([
     }
 
     Audio.prototype.clock = function (ticks) {
+        var s;
+        
         this.sampleTime += ticks * this.context.sampleRate;
 
+        if (!this.masterEnable) {
+            while (this.sampleTime >= CLOCK_RATE) {
+                s = this.activeSample;
+                
+                this.sampleTime -= CLOCK_RATE;
+                this.activeSample = (this.activeSample+1) & WRAP_MASK;
+                this.rightBuffer[s] = 0;
+                this.leftBuffer[s] = 0;
+            }
+            return ;
+        }
+
+        this.square1.clock(ticks);
+        this.square2.clock(ticks);
+        this.waveform.clock(ticks);
+        this.noise.clock(ticks);
+
         while (this.sampleTime >= CLOCK_RATE) {
-            var s = this.activeSample,
-                ch0 = this.square1.level(),
+            var ch0 = this.square1.level(),
                 ch1 = this.square2.level(),
                 ch2 = this.waveform.level(),
                 ch3 = this.noise.level();
 
+            s = this.activeSample;
             this.sampleTime -= CLOCK_RATE;
             this.activeSample = (this.activeSample+1) & WRAP_MASK;
-
-            if (!this.masterEnable) {
-                this.rightBuffer[s] = 0;
-                this.leftBuffer[s] = 0;
-
-                continue ;
-            }
 
             this.rightBuffer[s] = (
                 ch0*this.ch0right +
@@ -73,13 +85,6 @@ define([
                 ch3*this.ch3left) * this.leftVolume * 0.25;
 
         }
-
-        if (!this.masterEnable) return ;
-
-        this.square1.clock(ticks);
-        this.square2.clock(ticks);
-        this.waveform.clock(ticks);
-        this.noise.clock(ticks);
     };
 
     Audio.prototype.reset = function () {
@@ -195,7 +200,7 @@ define([
         this.NR50 = d;
 
         // Nothing uses VIN, ignored for now
-        this.leftVolume =  (d & 0x70) / 112.0;
+        this.leftVolume =  ((d & 0x70) >> 4) / 7.0;
         this.rightVolume = (d & 0x07) / 7.0;
     };
 
@@ -227,6 +232,7 @@ define([
     Audio.prototype.read_NR52 = function () {
         if (!this.masterEnable) { return 0; }
 
+        this.cpu.catchUp();
         return this.masterEnable |
               (this.square1.active() ? 1 : 0) |
               (this.square2.active() ? 2 : 0) |

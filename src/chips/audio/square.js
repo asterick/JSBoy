@@ -38,7 +38,7 @@ define([], function () {
         this.frequencyCounter += ticks;
 
         // Length counter
-        if (this.lengthEnabled) { 
+        if (this.lengthEnable) { 
             this.lengthCounter += ticks; 
             if (this.lengthCounter >= 32768) {
                 this.length = (this.length + 1) & 0x3F;
