@@ -6,21 +6,9 @@ define([
 ], function (registers, SquareChannel, WaveformChannel, NoiseChannel) {
     var BUFFER_LENGTH = 2048,               // ~91ms buffer
         LONG_BUFFER   = BUFFER_LENGTH * 2;  // Render to a much larger buffer
-        WRAP_MASK     = LONG_BUFFER - 1,    // ... and don't get bigger than this value
         CLOCK_RATE    = 8388608;
 
-    /*
-    8 cycles between square steps
-    4 cycles between wave table steps
-    16 cycles between noise table steps
-    32768 cycles between length checks
-    65535 cycles between sweep counters
-    131072 cycles between envelope checks
-
-    Frame counter period (16384 cycles)
-    */
-
-    function Audio(cpu) {
+    function Sound(cpu) {
         this.cpu = cpu;
         this.square1 = new SquareChannel(cpu);
         this.square2 = new SquareChannel(cpu);
@@ -30,29 +18,41 @@ define([
         if (this.context) {
             this.node = this.context.createJavaScriptNode(BUFFER_LENGTH);
             this.node.onaudioprocess = this.$('process');
+            this.sampleRate = Sound.prototype.context.sampleRate;
+            this.clock = this.audioContextClock;
+
+            this.leftBuffer = new Float32Array(LONG_BUFFER);
+            this.rightBuffer = new Float32Array(LONG_BUFFER);
+        } else {
+            this.audio = new Audio();
+            this.audio.mozSetup(2, 44100);
+            this.sampleRate = 44100;
+            this.clock = this.mozillaClock;
+            
+            this.audioBuffer = new Float32Array(LONG_BUFFER);
         }
 
         // Playback buffering
         this.activeSample = 0;      // Next sample written
         this.sampleTime = 0;        // Bresenham sample counter
-
-        this.leftBuffer = new Float32Array(LONG_BUFFER);
-        this.rightBuffer = new Float32Array(LONG_BUFFER);
     }
 
-    Audio.prototype.clock = function (ticks) {
+    Sound.prototype.audioContextClock = function (ticks) {
         var s;
         
-        this.sampleTime += ticks * this.context.sampleRate;
+        this.sampleTime += ticks * this.sampleRate;
 
         if (!this.masterEnable) {
             while (this.sampleTime >= CLOCK_RATE) {
                 s = this.activeSample;
                 
                 this.sampleTime -= CLOCK_RATE;
-                this.activeSample = (this.activeSample+1) & WRAP_MASK;
                 this.rightBuffer[s] = 0;
                 this.leftBuffer[s] = 0;
+
+                if (++this.activeSample >= LONG_BUFFER) {
+                    this.activeSample = 0;
+                }
             }
             return ;
         }
@@ -70,7 +70,6 @@ define([
 
             s = this.activeSample;
             this.sampleTime -= CLOCK_RATE;
-            this.activeSample = (this.activeSample+1) & WRAP_MASK;
 
             this.rightBuffer[s] = (
                 ch0*this.ch0right +
@@ -84,10 +83,67 @@ define([
                 ch2*this.ch2left +
                 ch3*this.ch3left) * this.leftVolume * 0.25;
 
+            if (++this.activeSample >= LONG_BUFFER) {
+                this.activeSample = 0;
+            }
         }
     };
 
-    Audio.prototype.reset = function () {
+    Sound.prototype.mozillaClock = function (ticks) {
+        var s;
+        
+        this.sampleTime += ticks * this.sampleRate;
+
+        if (!this.masterEnable) {
+            while (this.sampleTime >= CLOCK_RATE) {
+                s = this.activeSample;
+                
+                this.sampleTime -= CLOCK_RATE;
+                this.audioBuffer[this.activeSample++] = 0;
+                this.audioBuffer[this.activeSample++] = 0;
+
+                if (this.activeSample >= LONG_BUFFER) {
+                    this.audio.mozWriteAudio(tthis.audioBuffer);
+                    this.activeSample = 0;
+                }
+            }
+            return ;
+        }
+
+        this.square1.clock(ticks);
+        this.square2.clock(ticks);
+        this.waveform.clock(ticks);
+        this.noise.clock(ticks);
+
+        while (this.sampleTime >= CLOCK_RATE) {
+            var ch0 = this.square1.level(),
+                ch1 = this.square2.level(),
+                ch2 = this.waveform.level(),
+                ch3 = this.noise.level();
+
+            s = this.activeSample;
+            this.sampleTime -= CLOCK_RATE;
+
+            this.audioBuffer[this.activeSample++] = (
+                ch0*this.ch0right +
+                ch1*this.ch1right +
+                ch2*this.ch2right +
+                ch3*this.ch3right) * this.rightVolume * 0.25;
+
+            this.audioBuffer[this.activeSample++] = (
+                ch0*this.ch0left +
+                ch1*this.ch1left +
+                ch2*this.ch2left +
+                ch3*this.ch3left) * this.leftVolume * 0.25;
+
+            if (this.activeSample >= LONG_BUFFER) {
+                this.audio.mozWriteAudio(this.audioBuffer);
+                this.activeSample = 0;
+            }
+        }
+    };
+
+    Sound.prototype.reset = function () {
         var self = this;
 
         this.square1.reset();
@@ -167,22 +223,22 @@ define([
     };
 
     // Don't assume audio is available
-    Audio.prototype.context =
+    Sound.prototype.context =
         window.webkitAudioContext && (new webkitAudioContext());
 
-    Audio.prototype.mute = function () {
+    Sound.prototype.mute = function () {
         if (!this.node) { return ; }
 
         this.node.disconnect();
     };
 
-    Audio.prototype.play = function () {
+    Sound.prototype.play = function () {
         if (!this.node) { return ; }
 
         this.node.connect(this.context.destination);
     };
 
-    Audio.prototype.process = function (e) {
+    Sound.prototype.process = function (e) {
         var left = e.outputBuffer.getChannelData(0),
             right = e.outputBuffer.getChannelData(1),
             length = left.length,
@@ -196,7 +252,7 @@ define([
     }
 
     // --- Control registers
-    Audio.prototype.write_NR50 = function (d) {
+    Sound.prototype.write_NR50 = function (d) {
         this.NR50 = d;
 
         // Nothing uses VIN, ignored for now
@@ -204,7 +260,7 @@ define([
         this.rightVolume = (d & 0x07) / 7.0;
     };
 
-    Audio.prototype.write_NR51 = function (d) {
+    Sound.prototype.write_NR51 = function (d) {
         this.NR51 = d;
 
         this.ch0right = (d >> 0) & 1;
@@ -217,19 +273,19 @@ define([
         this.ch3left  = (d >> 7) & 1;
     };
 
-    Audio.prototype.write_NR52 = function (d) {
+    Sound.prototype.write_NR52 = function (d) {
         this.masterEnable = d & 0x80;
     };
 
-    Audio.prototype.read_NR50 = function () {
+    Sound.prototype.read_NR50 = function () {
         return this.NR50;
     };
 
-    Audio.prototype.read_NR51 = function () {
+    Sound.prototype.read_NR51 = function () {
         return this.NR51;
     };
 
-    Audio.prototype.read_NR52 = function () {
+    Sound.prototype.read_NR52 = function () {
         if (!this.masterEnable) { return 0; }
 
         this.cpu.catchUp();
@@ -240,5 +296,5 @@ define([
               (this.noise.active() ? 8 : 0);
     };
 
-    return Audio;
+    return Sound;
 });
