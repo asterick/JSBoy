@@ -45,9 +45,9 @@ define([
 
         while (this.sampleTime >= CLOCK_RATE) {
             var s = this.activeSample,
-                ch0 = 0,//this.square1.level(),
-                ch1 = 0,//this.square2.level(),
-                ch2 = 0,//this.waveform.level(),
+                ch0 = this.square1.level(),
+                ch1 = this.square2.level(),
+                ch2 = this.waveform.level(),
                 ch3 = this.noise.level();
 
             this.sampleTime -= CLOCK_RATE;
