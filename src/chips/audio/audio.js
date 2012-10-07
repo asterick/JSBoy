@@ -64,13 +64,13 @@ define([
                 ch0*this.ch0right +
                 ch1*this.ch1right +
                 ch2*this.ch2right +
-                ch3*this.ch3right) * this.rightVolume;
+                ch3*this.ch3right) * this.rightVolume * 0.25;
 
             this.leftBuffer[s] = (
                 ch0*this.ch0left +
                 ch1*this.ch1left +
                 ch2*this.ch2left +
-                ch3*this.ch3left) * this.leftVolume;
+                ch3*this.ch3left) * this.leftVolume * 0.25;
 
         }
 
