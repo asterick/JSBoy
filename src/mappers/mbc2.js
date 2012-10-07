@@ -31,7 +31,7 @@ define([], function () {
 
         // --- Static mapping
         for( var i = 0; i < 0x100; i++ )
-            writeMap = (i & 1) ? re : rb;
+            writeMap[i] = (i & 1) ? re : rb;
 
         this.cpu.write.fill(writeMap, 0, 0x80);
         this.cpu.read.copy( 0, this.rom, 0, 0x40 );
