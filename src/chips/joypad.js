@@ -1,121 +1,126 @@
-define([
-    "util/keyboard",
-    "chips/registers"
-], function(keyboard, registers) {
-    function Joypad(cpu)
-    {
-        // --- Internal data storage
-        this.selectDir = 0;
-        this.selectButton = 0;
+var registers = require("./registers");
+var keyboard = require("../util/keyboard"),
+    consts = require("./consts");
 
-        this.dataDir = 0xF;
-        this.dataButton = 0xF;
+function Joypad(cpu)
+{
+    // --- Internal data storage
+    this.selectDir = 0;
+    this.selectButton = 0;
 
-        this.cpu = cpu;
-        this.keyboard = new Array();
+    this.dataDir = 0xF;
+    this.dataButton = 0xF;
 
-        window.addEventListener( 'keydown', this.$('keydown'), false);
-        window.addEventListener( 'keyup', this.$('keyup'), false);
-    }
+    this.cpu = cpu;
+    this.keyboard = [];
 
-    // default joystick to keyboard mapping
-    Joypad.prototype.mapping_A = keyboard.X;
-    Joypad.prototype.mapping_B = keyboard.Z;
-    Joypad.prototype.mapping_Select = keyboard.SHIFT;
-    Joypad.prototype.mapping_Start = keyboard.ENTER;
+    window.addEventListener( 'keydown', this.keydown.bind(this), false);
+    window.addEventListener( 'keyup', this.keyup.bind(this), false);
+}
 
-    Joypad.prototype.mapping_Up = keyboard.UP_ARROW;
-    Joypad.prototype.mapping_Down = keyboard.DOWN_ARROW;
-    Joypad.prototype.mapping_Left = keyboard.LEFT_ARROW;
-    Joypad.prototype.mapping_Right = keyboard.RIGHT_ARROW;
+// default joystick to keyboard mapping
+Joypad.prototype.mapping = {
+    A: keyboard.X,
+    B: keyboard.Z,
+    Select: keyboard.SHIFT,
+    Start: keyboard.ENTER,
+    Up: keyboard.UP_ARROW,
+    Down: keyboard.DOWN_ARROW,
+    Left: keyboard.LEFT_ARROW,
+    Right: keyboard.RIGHT_ARROW
+};
 
-    Joypad.prototype.reset = function()
-    {
-        this.selectDir = 0;
-        this.selectButton = 0;
-        this.dataDir = 0xF;
-        this.dataButton = 0xF;
+Joypad.prototype.reset = function()
+{
+    this.selectDir = 0;
+    this.selectButton = 0;
+    this.dataDir = 0xF;
+    this.dataButton = 0xF;
 
-        this.cpu.registers.read[registers.JOYP] = this.$('read_JOYP');
-        this.cpu.registers.write[registers.JOYP] = this.$('write_JOYP');
-    }
+    this.cpu.registers.read[registers.JOYP] = this.read_JOYP.bind(this);
+    this.cpu.registers.write[registers.JOYP] = this.write_JOYP.bind(this);
+};
 
-    Joypad.prototype.disableActions = function(keyEventArgs)
-    {
-        var root = document.getElementsByTagName('body')[0];
+Joypad.prototype.disableActions = function(keyEventArgs)
+{
+    var prevent = false;
 
-        if( root === document.activeElement )
-        {
-            keyEventArgs.preventDefault();
-            return false;
+    Object.keys(this.mapping).forEach(function (key) {
+        if (this.mapping[key] === keyEventArgs.keyCode) {
+            prevent = true;
         }
+    }, this);
+
+    if (prevent) {
+        keyEventArgs.preventDefault();
+        return false;
     }
+};
 
-    Joypad.prototype.keydown = function(keyEventArgs)
-    {
-        this.keyboard[keyEventArgs.keyCode] = true;
-        this.update();
+Joypad.prototype.keydown = function(keyEventArgs)
+{
+    this.keyboard[keyEventArgs.keyCode] = true;
+    this.update();
 
-        return this.disableActions(keyEventArgs);
-    }
+    return this.disableActions(keyEventArgs);
+};
 
-    Joypad.prototype.keyup = function(keyEventArgs)
-    {
-        this.keyboard[keyEventArgs.keyCode] = false;
-        this.update();
+Joypad.prototype.keyup = function(keyEventArgs)
+{
+    this.keyboard[keyEventArgs.keyCode] = false;
+    this.update();
 
-        return this.disableActions(keyEventArgs);
-    }
+    return this.disableActions(keyEventArgs);
+};
 
-    Joypad.prototype.update = function()
-    {
-        var oD = this.dataDir, oB = this.dataButton;
+Joypad.prototype.update = function()
+{
+    var oD = this.dataDir, oB = this.dataButton;
 
-        this.dataDir = 0xF;
-        this.dataButton = 0xF;
+    this.dataDir = 0xF;
+    this.dataButton = 0xF;
 
-        if( this.keyboard[this.mapping_A] )
-            this.dataButton &= ~1;
-        if( this.keyboard[this.mapping_B] )
-            this.dataButton &= ~2;
-        if( this.keyboard[this.mapping_Select])
-            this.dataButton &= ~4;
-        if( this.keyboard[this.mapping_Start] )
-            this.dataButton &= ~8;
+    if( this.keyboard[this.mapping.A] )
+        this.dataButton &= ~1;
+    if( this.keyboard[this.mapping.B] )
+        this.dataButton &= ~2;
+    if( this.keyboard[this.mapping.Select])
+        this.dataButton &= ~4;
+    if( this.keyboard[this.mapping.Start] )
+        this.dataButton &= ~8;
 
-        // --- NOTE: Exclusively encoded
-        if( this.keyboard[this.mapping_Right] )
-            this.dataDir &= ~1;
-        else if( this.keyboard[this.mapping_Left] )
-            this.dataDir &= ~2;
-        if( this.keyboard[this.mapping_Up] )
-            this.dataDir &= ~4;
-        else if( this.keyboard[this.mapping_Down] )
-            this.dataDir &= ~8;
+    // --- NOTE: Exclusively encoded
+    if( this.keyboard[this.mapping.Right] )
+        this.dataDir &= ~1;
+    else if( this.keyboard[this.mapping.Left] )
+        this.dataDir &= ~2;
+    if( this.keyboard[this.mapping.Up] )
+        this.dataDir &= ~4;
+    else if( this.keyboard[this.mapping.Down] )
+        this.dataDir &= ~8;
 
-        if( (oD ^ this.dataDir) || (oB ^ this.dataButton) )
-            this.cpu.trigger(IRQ_JOYSTICK);
-    }
+    if( (oD ^ this.dataDir) || (oB ^ this.dataButton) )
+        this.cpu.trigger(consts.IRQ_JOYSTICK);
+};
 
-    Joypad.prototype.read_JOYP = function()
-    {
-        var data = 0xF;
+Joypad.prototype.read_JOYP = function()
+{
+    var data = 0xF;
 
-        if( !this.selectDir )
-            data &= this.dataDir;
-        if( !this.selectButton )
-            data &= this.dataButton;
+    if( !this.selectDir )
+        data &= this.dataDir;
+    if( !this.selectButton )
+        data &= this.dataButton;
 
-        return data |
-               (this.selectDir ? 0x10 : 0) |
-               (this.selectButton ? 0x20 : 0);
-    }
+    return data |
+           (this.selectDir ? 0x10 : 0) |
+           (this.selectButton ? 0x20 : 0);
+};
 
-    Joypad.prototype.write_JOYP = function(data)
-    {
-        this.selectDir = data & 0x10;
-        this.selectButton = data & 0x20;
-    }
+Joypad.prototype.write_JOYP = function(data)
+{
+    this.selectDir = data & 0x10;
+    this.selectButton = data & 0x20;
+};
 
-    return Joypad;
-});
+module.exports = Joypad;

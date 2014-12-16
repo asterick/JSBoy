@@ -1,39 +1,6 @@
 /***
  *  JSBoy Memory block helper functions
  */
-Array.prototype.chunk = function (stride) {
-    var chunks = new Array();
-
-    for(var i = 0; i < this.length; i += stride) {
-        chunks.push(this.slice(i, i + stride));
-    }
-
-    return chunks;
-}
-
-Array.prototype.fill = function (value, pos, length) {
-    if(pos === undefined) { pos = 0; }
-    if(length === undefined) { length = this.length; }
-
-    while(length-- > 0 && pos < this.length) {
-        this[pos++] = value;
-    }
-
-    return this;
-}
-
-Array.prototype.copy = function (dest_pos, source, source_pos, length) {
-    if(source_pos === undefined) { source_pos = 0; }
-
-    if(length === undefined) { length = source.length; }
-
-    while(length-- > 0 && source_pos < source.length) {
-        this[dest_pos++] = source[source_pos++];
-    }
-
-    return this;
-}
-
 function romBlock(data, length) {
     var newData = new Array(length || data.length);
 
@@ -64,20 +31,20 @@ function ramBlock(size, extend, name, mask) {
             data[index] = 0;
             read[index] = function () {
                 return data[index];
-            }
+            };
             write[index] = function (value) {
                 data[index] = value & mask;
-            }
+            };
         };
     } else {
         delegate = function (index) {
             data[index] = 0;
             read[index] = function () {
                 return data[index];
-            }
+            };
             write[index] = function (value) {
                 data[index] = value;
-            }
+            };
         };
     }
 
@@ -85,7 +52,7 @@ function ramBlock(size, extend, name, mask) {
         delegate(i);
     }
 
-    for(var i = size; i < extend; i++) {
+    for(i = size; i < extend; i++) {
         read[i] = read[i % size];
         write[i] = write[i % size];
     }
@@ -98,7 +65,7 @@ function ramBlock(size, extend, name, mask) {
         }
 
         window.localStorage.setItem(name, encoded);
-    }
+    };
 
     var load = function () {
         var encoded = window.localStorage.getItem(name);
@@ -110,7 +77,7 @@ function ramBlock(size, extend, name, mask) {
         encoded.split('').map(function (c, idx) {
             data[idx] = c.charCodeAt(0);
         });
-    }
+    };
 
     return {
         readChunks: read.chunk(0x100),
@@ -122,3 +89,8 @@ function ramBlock(size, extend, name, mask) {
         load: load
     };
 }
+
+module.exports = {
+    romBlock: romBlock,
+    ramBlock: ramBlock
+};
