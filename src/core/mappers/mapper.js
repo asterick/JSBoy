@@ -1,5 +1,5 @@
 var flags = require("./flags"),
-    memory = require("../util/memory"),
+    memory = require("../../util/memory"),
     mapperROM = require("./rom"),
     mapperMBC1 = require("./mbc1"),
     mapperMBC2 = require("./mbc2"),
@@ -62,7 +62,7 @@ function mapper( name, cpu, rom )
         '254': { call:   mapperHuC3, flags:                           flags.NONE },
         '255': { call:   mapperHuC1, flags:              flags.RAM|flags.BATTERY },
 */
-          '0': { call:    mapperROM, flags:                     flags.NONE }
+          '0': { call:    mapperROM, flags:                           flags.NONE }
     };
 
     // Convert rom into data delegates (padded out to 32k, or next highest power of 2)

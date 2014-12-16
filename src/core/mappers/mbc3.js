@@ -1,12 +1,12 @@
 /***
  ***   MBC3 based mapper:  Contains no bank switching logic
  ***
- ***   Capabilities supported  RAM, flags.BATTERY, TIMER
+ ***   Capabilities supported  RAM, BATTERY, TIMER
  ***
  ***/
 
 var flags = require("./flags"),
-    memory = require("../util/memory");
+    memory = require("../../util/memory");
 
 function mapperMBC3( name, cpu, rom, ramSize, flags, description ) {
     this.ram = memory.ramBlock( ramSize, 0x2000, name );

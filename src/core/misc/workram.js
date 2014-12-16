@@ -1,5 +1,5 @@
-var registers = require("./registers"),
-    memory = require("../util/memory");
+var registers = require("../registers"),
+    memory = require("../../util/memory");
 
 function WorkRam(cpu)
 {

@@ -2,13 +2,6 @@ var React = require("react/addons"),
     Disassembler = require("../debugger/disassemble.js");
 
 var Instruction = React.createClass({
-    runTo: function (addr) {
-        var that = this;
-        return function () {
-            // TODO
-        }
-    },
-
     disassemble: function () {
         var results = [],
             pc = this.props.address,
@@ -19,8 +12,8 @@ var Instruction = React.createClass({
             if (!o) { break; }
 
             results.push(
-                <div className='row'>
-                    <a className='addr' onClick={this.runTo(pc)}>{pc.toString(16)}</a>
+                <div className='row' key={pc}>
+                    <a className='addr' onClick={this.props.runTo(pc)}>{pc.toString(16)}</a>
                     <span className='hex'>{o.hex}</span>
                     <span className='instruction'>{o.op}</span>
                 </div>

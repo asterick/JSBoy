@@ -148,6 +148,8 @@ canvas {
     border-right: 1px solid black;
     padding: 4px 12px;
     margin: 0;
+    cursor: pointer;
+    cursor: hand;
 }
 
 .debugger .column {
@@ -183,6 +185,8 @@ canvas {
 .debugger .addr {
     display: inline-block;
     width: 7ex;
+    cursor: pointer;
+    cursor: hand;
 }
 
 .debugger .hex {

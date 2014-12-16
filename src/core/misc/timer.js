@@ -1,5 +1,5 @@
-var registers = require("./registers"),
-    consts = require("./consts");
+var registers = require("../registers"),
+    consts = require("../consts");
 
 function Timer(cpu)
 {

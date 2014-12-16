@@ -48,7 +48,6 @@ if (!Object.assign) {
     });
 }
 
-
 // THIS IS CRAP THAT NEEDS TO BE FACTORED OUT
 Array.prototype.chunk = function (stride) {
     var chunks = [];

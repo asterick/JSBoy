@@ -1,7 +1,7 @@
 var React = require("react/addons"),
-    JSBoy = require("../jsboy"),
+    JSBoy = require("../core"),
     Register = require("./register.jsx"),
-    Flag = require("./register.jsx"),
+    Flag = require("./flag.jsx"),
     Disassembler = require("./disassemble.jsx");
 
 var MainView = React.createClass({
@@ -18,22 +18,15 @@ var MainView = React.createClass({
         var ctx = this.refs.display.getDOMNode().getContext('2d');
 
         window.onclose = this.close;
-        this.state.runtime.updateUI = this.update;
         this.state.runtime.setContext(ctx);
     },
 
     componentDidUnmount: function () {
         window.onclose = null;
-        delete this.state.runtime.updateUI;
     },
 
     close: function () {
-        debugger ;
         this.state.runtime.close();
-    },
-
-    update: function () {
-        //this.forceUpdate();
     },
 
     // --- File loading ---
@@ -49,41 +42,38 @@ var MainView = React.createClass({
 
     onDrop: function (e) {
         e.preventDefault();
-        this.setState({ dragging: false });
 
         var file = e.dataTransfer.files[0],
-            reader = new FileReader(),
-            onFile = this.onFile;
+            reader = new FileReader();
 
-        reader.onload = function (e) {
-            onFile(file.name, e.target.result);
-        };
-
-        reader.readAsArrayBuffer(file);
+        reader.onload = this.onFile;
+        this.setState({ dragging: false, rom_name: file.name }, function () {
+            reader.readAsArrayBuffer(file);
+        });
     },
 
-    onFile: function (name, data) {
+    onFile: function (e) {
+        var name = this.state.rom_name,
         name = name.split(".")[0];
 
-        this.state.runtime.reset(name, data);
+        this.state.runtime.reset(name, e.target.result);
         this.state.runtime.running = true;
-
-        this.setState({
-            rom_name: name
-        });
     },
 
     // --- UI operations ---
     toggle: function () {
         this.state.runtime.running = !this.state.runtime.running;
+        this.forceUpdate();
     },
 
     reset: function () {
         this.state.runtime.reset();
+        this.forceUpdate();
     },
 
     step: function () {
         this.state.runtime.singleStep();
+        this.forceUpdate();
     },
 
     stop_predictions: function () {
@@ -94,6 +84,16 @@ var MainView = React.createClass({
         this.setState({
             doubleSize: !this.state.doubleSize
         });
+    },
+
+    runTo: function (addr) {
+        var that = this;
+        return function () {
+            for(var i = 0; i < 125000 && that.state.runtime.cpu.pc !== addr; i++) {
+                that.state.runtime.singleStep();
+            }
+            that.forceUpdate();
+        }
     },
 
     // --- Rendering ---
@@ -142,12 +142,12 @@ var MainView = React.createClass({
                                 <Register name="IE" chip={this.state.runtime.cpu} register="irq_enable" />
                             </div>
                             <div className='column'>
-                                <Flag name="C" chip={this.state.runtime.cpu} register="cf" />
-                                <Flag name="H" chip={this.state.runtime.cpu} register="hf" />
-                                <Flag name="N" chip={this.state.runtime.cpu} register="nf" />
-                                <Flag name="Z" chip={this.state.runtime.cpu} register="zf" />
-                                <Flag name="I" chip={this.state.runtime.cpu} register="irq_master" />
-                                <Flag name="S" chip={this.state.runtime.cpu} register="halted" />
+                                <Flag name="C" chip={this.state.runtime.cpu} flag="cf" />
+                                <Flag name="H" chip={this.state.runtime.cpu} flag="hf" />
+                                <Flag name="N" chip={this.state.runtime.cpu} flag="nf" />
+                                <Flag name="Z" chip={this.state.runtime.cpu} flag="zf" />
+                                <Flag name="I" chip={this.state.runtime.cpu} flag="irq_master" />
+                                <Flag name="S" chip={this.state.runtime.cpu} flag="halted" />
                             </div>
                             <div className='header'>GPU Flags</div>
                             <div className='column'>
@@ -160,24 +160,24 @@ var MainView = React.createClass({
                                 <Register name="WY" chip={this.state.runtime.cpu.gpu} register="irq_enable" />
                             </div>
                             <div className='column'>
-                                <Flag name="LCD" chip={this.state.runtime.cpu.gpu} register="lcd_enable" />
-                                <Flag name="WM" chip={this.state.runtime.cpu.gpu} register="window_map" />
-                                <Flag name="BM" chip={this.state.runtime.cpu.gpu} register="background_map" />
-                                <Flag name="WIN" chip={this.state.runtime.cpu.gpu} register="window_enable" />
-                                <Flag name="BG" chip={this.state.runtime.cpu.gpu} register="bg_display" />
-                                <Flag name="BNK" chip={this.state.runtime.cpu.gpu} register="map_tile_data" />
-                                <Flag name="OBJ" chip={this.state.runtime.cpu.gpu} register="obj_enable" />
-                                <Flag name="SIZ" chip={this.state.runtime.cpu.gpu} register="obj_size" />
+                                <Flag name="LCD" chip={this.state.runtime.cpu.gpu} flag="lcd_enable" />
+                                <Flag name="WM" chip={this.state.runtime.cpu.gpu} flag="window_map" />
+                                <Flag name="BM" chip={this.state.runtime.cpu.gpu} flag="background_map" />
+                                <Flag name="WIN" chip={this.state.runtime.cpu.gpu} flag="window_enable" />
+                                <Flag name="BG" chip={this.state.runtime.cpu.gpu} flag="bg_display" />
+                                <Flag name="BNK" chip={this.state.runtime.cpu.gpu} flag="map_tile_data" />
+                                <Flag name="OBJ" chip={this.state.runtime.cpu.gpu} flag="obj_enable" />
+                                <Flag name="SIZ" chip={this.state.runtime.cpu.gpu} flag="obj_size" />
                             </div>
                             <div className='column'>
-                                <Flag name="LYC" chip={this.state.runtime.cpu.gpu} register="lycIRQ" />
-                                <Flag name="M0" chip={this.state.runtime.cpu.gpu} register="mode0IRQ" />
-                                <Flag name="M1" chip={this.state.runtime.cpu.gpu} register="mode1IRQ" />
-                                <Flag name="M2" chip={this.state.runtime.cpu.gpu} register="mode2IRQ" />
+                                <Flag name="LYC" chip={this.state.runtime.cpu.gpu} flag="lycIRQ" />
+                                <Flag name="M0" chip={this.state.runtime.cpu.gpu} flag="mode0IRQ" />
+                                <Flag name="M1" chip={this.state.runtime.cpu.gpu} flag="mode1IRQ" />
+                                <Flag name="M2" chip={this.state.runtime.cpu.gpu} flag="mode2IRQ" />
                             </div>
                         </div>
 
-                        <Disassembler runtime={this.state.runtime} address={this.state.runtime.cpu.pc} />
+                        <Disassembler runTo={this.runTo} runtime={this.state.runtime} address={this.state.runtime.cpu.pc} />
                     </div>
                 </div>
             </div>

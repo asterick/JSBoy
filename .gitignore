@@ -1,8 +1,5 @@
 # ignore roms folder
 roms
-gamelist
-doc
-favicon.ico
 node_modules
 .sass-cache
 .DS_Store
