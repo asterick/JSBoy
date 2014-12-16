@@ -1,7 +1,7 @@
-var Timer = require("./timer"),
-    WorkRam = require("./workram"),
-    JoyPad = require("./joypad"),
-    BIOS = require("./bios"),
+var Timer = require("./misc/timer"),
+    WorkRam = require("./misc/workram"),
+    JoyPad = require("./misc/joypad"),
+    BIOS = require("./misc/bios"),
     GPU = require("./video/gpu"),
     Audio = require("./audio/audio"),
     registers = require("./registers");

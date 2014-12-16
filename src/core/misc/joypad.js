@@ -1,6 +1,6 @@
-var registers = require("./registers");
-var keyboard = require("../util/keyboard"),
-    consts = require("./consts");
+var registers = require("../registers");
+var keyboard = require("../../util/keyboard"),
+    consts = require("../consts");
 
 function Joypad(cpu)
 {

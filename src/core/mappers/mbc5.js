@@ -6,7 +6,7 @@
  ***/
 
 var flags = require("./flags"),
-    memory = require("../util/memory");
+    memory = require("../../util/memory");
 
 function mapperMBC5( name, cpu, rom, ramSize, flags, description ) {
     this.ram = memory.ramBlock( ramSize, 0x2000, name );

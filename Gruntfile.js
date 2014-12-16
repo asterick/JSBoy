@@ -1,5 +1,3 @@
-var fs = require('fs');
-
 module.exports = function(grunt) {
     grunt.initConfig({
         sass: {
@@ -29,14 +27,12 @@ module.exports = function(grunt) {
         browserify: {
             dev: {
                 files: {
-                    'web/main.js': ['src/main.jsx']
+                    'web/main.js': ['src/util/polyfills.js', 'src/main.js']
                 },
                 options: {
-                    banner: fs.readFileSync('./src/util/polyfills.js', 'utf-8'),
                     transform: [
-                        [ "reactify", {"es6": true} ]
+                        [ "reactify", {es6: true} ]
                     ],
-                    browserifyOptions: { /*debug: true*/ },
                     watch: true
                 }
             }
