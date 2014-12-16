@@ -4,6 +4,7 @@ var PRIORITY      = 0x80,
     SPRITE_FLAG   = 0x20,
     PALETTE       = 0x1C,
     PIXELS        = 0x03,
+    OPACITY       = 0xFF,
     PALETTE_SHIFT = 2,
     COLOR         = PIXELS | WHITEOUT | PALETTE | SPRITE_FLAG;
 
@@ -29,7 +30,7 @@ function LCD(palette) {
         for (b = 0; b < 32; b++) {
             for (g = 0; g < 32; g++) {
                 for (r = 0; r < 32; r++) {
-                    that.colorTable[i++] = 0xFF000000 |
+                    that.colorTable[i++] = (OPACITY << 24) |
                         (washout(r * 13 + g *  2 + b *  1)) |
                         (washout(r *  0 + g * 12 + b *  4) << 8) |
                         (washout(r *  3 + g *  2 + b * 11) << 16);
