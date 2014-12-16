@@ -1,4 +1,4 @@
-define({
+module.exports = {
 // --- Communication port registers
     SB: 0x01,
     SC: 0x02,
@@ -94,4 +94,4 @@ define({
     AUD3WAVERAMD: 0x3D,
     AUD3WAVERAME: 0x3E,
     AUD3WAVERAMF: 0x3F
-});
+};

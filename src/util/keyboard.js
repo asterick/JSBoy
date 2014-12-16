@@ -1,4 +1,4 @@
-define({
+module.exports = {
     BACKSPACE: 8,
     TAB: 9,
     ENTER: 13,
@@ -97,4 +97,4 @@ define({
     BACK_SLASH: 220,
     CLOSE_BRAKET: 221,
     SINGLE_QUOTE: 222
-});
+};

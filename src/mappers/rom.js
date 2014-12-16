@@ -5,35 +5,37 @@
  ***
  ***/
 
-define([], function () {
-    function mapperROM( name, cpu, rom, ramSize, flags, description ) {
-        this.rom = rom;
-        this.ram = ramBlock( ramSize, 0x2000, name );
-        this.cpu = cpu;
-        this.flags = flags;
+var flags = require("./flags"),
+    memory = require("../util/memory");
 
-        if( this.flags & BATTERY )
-            this.ram.load();
+function mapperROM( name, cpu, rom, ramSize, flags, description ) {
+    this.rom = rom;
+    this.ram = memory.ramBlock( ramSize, 0x2000, name );
+    this.cpu = cpu;
+    this.flags = flags;
+
+    if( this.flags & BATTERY ) {
+        this.ram.load();
     }
+}
 
-    mapperROM.prototype.close = function()
-    {
-        if (this.flags & BATTERY) {
-            this.ram.save();
-        }
+mapperROM.prototype.close = function()
+{
+    if (this.flags & BATTERY) {
+        this.ram.save();
     }
+};
 
-    mapperROM.prototype.reset = function()
-    {
-        this.cpu.read.copy (0, this.rom, 0, 0x80);
+mapperROM.prototype.reset = function()
+{
+    this.cpu.read.copy (0, this.rom, 0, 0x80);
 
-        var ramMask = this.ramMask;
+    var ramMask = this.ramMask;
 
-        if (this.ram) {
-            this.cpu.readChunks.copy(0xA0, this.ram.read, 0x20);
-            this.cpu.writeChunks.copy(0xA0, this.ram.write, 0x20);
-        }
+    if (this.ram) {
+        this.cpu.readChunks.copy(0xA0, this.ram.read, 0x20);
+        this.cpu.writeChunks.copy(0xA0, this.ram.write, 0x20);
     }
+};
 
-    return mapperROM;
-});
+module.exports = mapperROM;

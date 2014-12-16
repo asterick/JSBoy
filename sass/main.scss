@@ -9,9 +9,13 @@ body {
     font-family: "Lato", "Helvetica Neue", Helvetica, sans-serif;
 }
 
-.center {    
+.center {
     width: 900px;
     margin: 48px auto 0;
+}
+
+.dragging {
+    background: #EEE;
 }
 
 /* ------ Title ------ */
@@ -40,49 +44,10 @@ body {
     text-shadow: 0 1px black;
 }
 
-.title-bar .loader {
-    position: absolute;
-
-    top: 50%;
-    right: 32px;
-    margin-top: -0.8em;
-
-    height: 1.6em;
-}
-
-.title-bar #filename {
-    height: 1.6em;
-    
-    border-radius: 0.75em;
-    border: 1px solid rgb(32,32,32);
-    padding: 0 8px;
-    width: 60ex;
-}
-
-.title-bar #suggestions {
-    position: absolute;
-    top: 1.3em;
-    right: 0;
-
-    max-height: 15em;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    background: white;
-    border: 1px black solid;
-    border-radius: 4px;
-    padding: 0 4px;
-}
-
-#suggestions li {
-    list-style: none;
-    padding: 2px 8px;
-    white-space: nowrap;
-}
-
 /* ------ Gameboy display objects ------- */
-#display {
+.display {
     display: inline-block;
-    background: url('gameboy.png');
+    background: url('media/gameboy.png');
 
     width: 160px;
     height: 144px;
@@ -90,7 +55,7 @@ body {
     padding: 67px 90px 349px;
 }
 
-#display.double {
+.display.double {
     width: 320px;
     height: 288px;
 

@@ -1,67 +1,71 @@
-define([
-    'chips/cpu',
-    'mappers/mapper'
-], function (CPU, mapper) {
-    function jsboy(context) {
-        // Bios will auto reset when the system initializes
-        this.cpu = new CPU(context);
+var CPU = require("./chips/core"),
+    mapper = require("./mappers/mapper");
 
-        var running = false;
-        Object.defineProperty(jsboy.prototype, 'running', {
-            get: function () {
-                return running;
-            },
-            set: function (state) {
-                if (running === state) { return ; }
+function jsboy() {
+    // Bios will auto reset when the system initializes
+    this.cpu = new CPU();
 
-                var requestAnimationFrame = window.requestAnimationFrame ||
-                                            window.mozRequestAnimationFrame ||
-                                            window.webkitRequestAnimationFrame ||
-                                            window.msRequestAnimationFrame,
-                    lastTime = (new Date()).getTime(),
-                    fraction = 0,
-                    self = this;
+    var running = false;
+    Object.defineProperty(jsboy.prototype, 'running', {
+        get: function () {
+            return running;
+        },
+        set: function (state) {
+            if (running === state) { return ; }
 
-                if (running = state) {
-                     function nextFrame() {
-                        if (!running) { return ; }
+            var lastTime = Date.now(),
+                fraction = 0,
+                self = this;
 
-                        var nextTime = (new Date()).getTime(),
-                            ticks = nextTime - lastTime,
-                            advance = Math.min(300000, ticks * 8388.608 + fraction),
-                            cycles = Math.floor(advance);
+            running = state;
+            if (running) {
+                 var nextFrame = function () {
+                    if (!running) { return ; }
 
-                        fraction = advance - cycles;
-                        lastTime = nextTime;
+                    var nextTime = Date.now(),
+                        ticks = nextTime - lastTime,
+                        advance = Math.min(300000, ticks * 8388.608 + fraction),
+                        cycles = Math.floor(advance);
 
-                        requestAnimationFrame(nextFrame);
-                        self.cpu.step(cycles);
-                    };
+                    fraction = advance - cycles;
+                    lastTime = nextTime;
 
-                    requestAnimationFrame(nextFrame);
-                    this.cpu.audio.play();
-                } else {
-                    this.cpu.audio.mute();
-                }
+                    window.requestAnimationFrame(nextFrame);
+                    self.cpu.step(cycles);
+                    self.updateUI();
+                };
+
+                window.requestAnimationFrame(nextFrame);
+                this.cpu.audio.play();
+            } else {
+                this.cpu.audio.mute();
             }
-        });
-    }
-
-    jsboy.prototype.reset = function( name, data ) {
-        if (data) {
-            this.cpu.insert(mapper(name, this.cpu, data));
-        } else {
-            this.cpu.reset();
         }
-    }
+    });
+}
 
-    jsboy.prototype.close = function () {
+jsboy.prototype.updateUI = function () {};
+
+jsboy.prototype.setContext = function (ctx) {
+    this.cpu.setContext(ctx);
+};
+
+jsboy.prototype.reset = function( name, data ) {
+    if (data) {
         this.cpu.close();
+        this.cpu.insert(mapper(name, this.cpu, data));
+    } else {
+        this.cpu.reset();
     }
+};
 
-    jsboy.prototype.singleStep = function () {
-        this.cpu.singleStep();
-    }
+jsboy.prototype.close = function () {
+    this.cpu.close();
+};
 
-    return jsboy;
-});
+jsboy.prototype.singleStep = function () {
+    this.cpu.singleStep();
+    this.updateUI();
+};
+
+module.exports = jsboy;
