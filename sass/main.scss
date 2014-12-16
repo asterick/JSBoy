@@ -7,11 +7,8 @@
 
 body {
     font-family: "Lato", "Helvetica Neue", Helvetica, sans-serif;
-}
-
-.center {
-    width: 900px;
-    margin: 48px auto 0;
+    font-size: 16px;
+    line-height: 20px;
 }
 
 .dragging {
@@ -21,10 +18,7 @@ body {
 /* ------ Title ------ */
 
 .title-bar {
-    width: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
+    display: block;
 
     background: -moz-linear-gradient(top, rgba(142,198,255,1) 0%, rgba(96,171,248,1) 26%, rgba(64,150,238,1) 100%); /* FF3.6+ */
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(142,198,255,1)), color-stop(26%,rgba(96,171,248,1)), color-stop(100%,rgba(64,150,238,1))); /* Chrome,Safari4+ */
@@ -32,170 +26,159 @@ body {
     background: -o-linear-gradient(top, rgba(142,198,255,1) 0%,rgba(96,171,248,1) 26%,rgba(64,150,238,1) 100%); /* Opera 11.10+ */
     background: -ms-linear-gradient(top, rgba(142,198,255,1) 0%,rgba(96,171,248,1) 26%,rgba(64,150,238,1) 100%); /* IE10+ */
     background: linear-gradient(to bottom, rgba(142,198,255,1) 0%,rgba(96,171,248,1) 26%,rgba(64,150,238,1) 100%); /* W3C */
+
+    h1 {
+        width: 940px;
+        margin: 0 auto;
+        display: block;
+        font-size: 24px;
+        line-height: 32px;
+        color: white;
+    }
 }
 
-.title-bar h1 {
-    display: inline-block;
-    font-size: 20pt;
-    vertical-align: middle;
-    margin: 2px 32px;
-
-    color: white;
-    text-shadow: 0 1px black;
+.emulator {
+    display: block;
+    width: 940px;
+    margin: 0 auto;
+    padding: 10px 0;
 }
 
 /* ------ Gameboy display objects ------- */
 .display {
+    $gameboy-width: 320px;
+    $gameboy-height: 540px;
+    $screen-width: 160px;
+    $screen-height: 144px;
+    $screen-y: 57px;
+
+    position: absolute;
+    padding: ($screen-y) floor(($gameboy-width - $screen-width) / 2) ($gameboy-height - $screen-height - $screen-y);
+
     display: inline-block;
     background: url('media/gameboy.png');
+    background-position: -10px -10px;
 
-    width: 160px;
-    height: 144px;
+    width: $screen-width;
+    height: $screen-height;
 
-    padding: 67px 90px 349px;
-}
+    &.double {
+        width: $screen-width * 2;
+        height: $screen-height * 2;
 
-.display.double {
-    width: 320px;
-    height: 288px;
-
-    padding: 10px 10px 262px;
-}
-
-.debugger .button-group {
-    background: -moz-linear-gradient(top, rgba(125,126,125,1) 0%, rgba(14,14,14,1) 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(125,126,125,1)), color-stop(100%,rgba(14,14,14,1))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top, rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%); /* IE10+ */
-    background: linear-gradient(to bottom, rgba(125,126,125,1) 0%,rgba(14,14,14,1) 100%); /* W3C */
-
-    color: rgb(220, 220, 220);
-    text-shadow: 0 0.1em rgb(100, 100, 100);
-}
-
-canvas {
-    display: inline-block;
-}
-
-.debugger {
-    display: inline-block;
-    vertical-align: top;
-    border: 1px solid black;
-    padding: 0;
-    margin: 0;
-
-    width: 540px;
-}
-
-.debugger .name {
-    display: inline-block;
-    width: 2em;
-    text-align: right;
-}
-
-.debugger .value {
-    display: inline-block;
-    width: 3em;
-
-    background: rgb(200,200,200);
-    text-align: right;
-}
-
-.debugger .registers, .debugger .disassembly {
-    font-family: Courier, monospace;
-}
-
-.debugger .flag-group {
-}
-
-.debugger .flag {
-    display: inline-block;
-    width: 1em;
-    background: rgb(200, 200, 200);
-    color: rgb(24,137,47);
-    text-align: center;
-
-    padding: 0;
-    margin: 0;
-}
-
-.debugger .header {
-    width: 100;
-    text-align: center;
-    font-weight: bold;
-    padding: 4px 0 2px;
-    border-bottom: 1px black solid;
+        padding: 0 floor($gameboy-width / 2 - $screen-width) ($gameboy-height - $screen-height * 2);
+    }
 }
 
 .button-group {
-    padding: 0;
-    margin: 0;
+    padding: 0 0 10px;
+    margin: 0 0 0 340px;
+
+    font-size: 0;
+
+    li {
+        display: inline-block;
+        border-radius: 5px;
+        background: #49E;
+        border-bottom: 2px solid darken(#49E, 20%);
+        color: #fff;
+        padding: 0 10px;
+        margin: 0 5px 0 0;
+        line-height: 20px;
+        font-size: 12px;
+        cursor: pointer;
+        cursor: hand;
+        vertical-align: middle;
+    }
 }
 
-.button-group ul {
-    margin: 0;
-    padding: 0;
-}
+.debugger {
+    $disasm-lines: 25;
 
-.button-group li {
-    display: inline-block;
-}
-
-.button-group .button {
     display: block;
-    height: 100%;
-    border-right: 1px solid black;
-    padding: 4px 12px;
-    margin: 0;
-    cursor: pointer;
-    cursor: hand;
-}
 
-.debugger .column {
-    display: inline-block;
-}
-
-.debugger-body {
-    overflow-y: hidden;
-}
-
-.debugger .registers {
-    display: inline-block;
-    vertical-align: top;
-
+    border: 1px solid #ddd;
+    box-shadow: 0 1px 3px 0 rgba(#000,0.15);
     padding: 0;
+    margin: 0 0 0 340px;
+    border-radius: 5px;
+    overflow: hidden;
 
-    padding-bottom: 10000px;
-    margin-bottom: -10000px;
+    font-family: Courier, monospace;
 
-    background: rgb(237, 237, 237);
-    border-right: 1px solid black;
+    .registers {
+        display: inline-block;
+        vertical-align: top;
+
+        padding: 0;
+
+        min-height: $disasm-lines * 20px;
+        background: #eee;
+
+        .header {
+            font-family: "Lato", "Helvetica Neue", Helvetica, sans-serif;
+            font-size: 14px;
+            display: block;
+            vertical-align: middle;
+            line-height: 24px;
+            text-align: center;
+            background: #D553D5;
+            color: #fff;
+        }
+
+        .column {
+            display: inline-block;
+            padding: 0 4px;
+            text-align: right;
+        }
+
+        .name {
+            display: inline-block;
+            width: 2em;
+        }
+
+        .value, .flag {
+            display: inline-block;
+            background: #DDD;
+        }
+
+        .value {
+            width: 3em;
+        }
+
+        .flag {
+            width: 1em;
+            color: rgb(24,137,47);
+            text-align: center;
+        }
+    }
+
+    .disassembly {
+        display: inline-block;
+        vertical-align: top;
+    }
+
+    .row {
+        width: 100%;
+    }
+
+    .addr {
+        box-sizing: border-box;
+        padding: 0 6px;
+        display: inline-block;
+        width: 7ex;
+        text-align: right;
+        cursor: pointer;
+        cursor: hand;
+    }
+
+    .hex {
+        display: inline-block;
+        width: 12ex;
+        background: #DDD;
+    }
+
+    .instruction {
+        padding-left: 1ex;
+    }
 }
-
-.debugger .disassembly {
-    display: inline-block;
-    vertical-align: top;
-}
-
-.debugger .row {
-    width: 100%;
-}
-
-.debugger .addr {
-    display: inline-block;
-    width: 7ex;
-    cursor: pointer;
-    cursor: hand;
-}
-
-.debugger .hex {
-    display: inline-block;
-    width: 12ex;
-    background: rgb(200,200,200);
-}
-
-.debugger .instruction {
-    padding-left: 1ex;
-}
-

@@ -100,88 +100,88 @@ var MainView = React.createClass({
     render: function () {
         var canvasClass = React.addons.classSet({
                 'display': true,
-                'double': this.state.doubleSize
-            }),
-            mainClass = React.addons.classSet({
-                'center': true,
+                'double': this.state.doubleSize,
                 'dragging': this.state.dragging
             });
 
         return (
-            <div className={mainClass}
-                onDragOver={this.onDragOver}
-                onDragLeave={this.onDragLeave}
-                onDrop={this.onDrop}>
+            <div>
                 <div className='title-bar'>
                     <h1>JSBoy</h1>
                 </div>
 
-                <canvas ref='display' onClick={this.screenClicked} className={canvasClass} width='160' height='144' />
+                <div className='emulator'>
+                    <canvas ref='display' width='160' height='144'
+                        onClick={this.screenClicked}
+                        onDragOver={this.onDragOver}
+                        onDragLeave={this.onDragLeave}
+                        onDrop={this.onDrop}
+                        className={canvasClass}
+                        />
 
-                <div className='debugger'>
                     <ul className='button-group'>
-                        <li>
-                            <a className='button' onClick={this.toggle}>{ this.state.runtime.running ? 'Stop' : 'Run' }</a>
-                        </li>
-                        <li><a className='button' onClick={this.reset}>Reset</a></li>
-                        <li><a className='button' onClick={this.step}>Step</a></li>
-                        <li><a className='button' onClick={this.stop_predictions}>Disable predictions</a></li>
+                        <li onClick={this.toggle}>{ this.state.runtime.running ? 'Stop' : 'Run' }</li>
+                        <li onClick={this.reset}>Reset</li>
+                        <li onClick={this.step}>Step</li>
+                        <li onClick={this.stop_predictions}>Disable predictions</li>
                     </ul>
 
-                    <div className='debugger-body'>
-                        <div className='registers'>
-                            <div className='header'>CPU Flags</div>
-                            <div className='column'>
-                                <Register name="BC" chip={this.state.runtime.cpu} register="bc" />
-                                <Register name="DE" chip={this.state.runtime.cpu} register="de" />
-                                <Register name="HL" chip={this.state.runtime.cpu} register="hl" />
-                                <Register name="A" chip={this.state.runtime.cpu} register="a" />
-                                <Register name="PC" chip={this.state.runtime.cpu} register="pc" />
-                                <Register name="SP" chip={this.state.runtime.cpu} register="sp" />
-                                <Register name="IF" chip={this.state.runtime.cpu} register="irq_request" />
-                                <Register name="IE" chip={this.state.runtime.cpu} register="irq_enable" />
+                    <div className='debugger'>
+                        <div className='debugger-body'>
+                            <div className='registers'>
+                                <div className='header'>CPU Flags</div>
+                                <div className='column'>
+                                    <Register name="BC" chip={this.state.runtime.cpu} register="bc" />
+                                    <Register name="DE" chip={this.state.runtime.cpu} register="de" />
+                                    <Register name="HL" chip={this.state.runtime.cpu} register="hl" />
+                                    <Register name="A" chip={this.state.runtime.cpu} register="a" />
+                                    <Register name="PC" chip={this.state.runtime.cpu} register="pc" />
+                                    <Register name="SP" chip={this.state.runtime.cpu} register="sp" />
+                                    <Register name="IF" chip={this.state.runtime.cpu} register="irq_request" />
+                                    <Register name="IE" chip={this.state.runtime.cpu} register="irq_enable" />
+                                </div>
+                                <div className='column'>
+                                    <Flag name="C" chip={this.state.runtime.cpu} flag="cf" />
+                                    <Flag name="H" chip={this.state.runtime.cpu} flag="hf" />
+                                    <Flag name="N" chip={this.state.runtime.cpu} flag="nf" />
+                                    <Flag name="Z" chip={this.state.runtime.cpu} flag="zf" />
+                                    <Flag name="I" chip={this.state.runtime.cpu} flag="irq_master" />
+                                    <Flag name="S" chip={this.state.runtime.cpu} flag="halted" />
+                                </div>
+                                <div className='header'>GPU Flags</div>
+                                <div className='column'>
+                                    <Register name="VBK" chip={this.state.runtime.cpu.gpu} register="irq_enable" />
+                                    <Register name="LYC" chip={this.state.runtime.cpu.gpu} register="irq_enable" />
+                                    <Register name="CLK" chip={this.state.runtime.cpu.gpu} register="irq_enable" />
+                                    <Register name="SCX" chip={this.state.runtime.cpu.gpu} register="irq_enable" />
+                                    <Register name="SCY" chip={this.state.runtime.cpu.gpu} register="irq_enable" />
+                                    <Register name="WX" chip={this.state.runtime.cpu.gpu} register="irq_enable" />
+                                    <Register name="WY" chip={this.state.runtime.cpu.gpu} register="irq_enable" />
+                                </div>
+                                <div className='column'>
+                                    <Flag name="LCD" chip={this.state.runtime.cpu.gpu} flag="lcd_enable" />
+                                    <Flag name="WM" chip={this.state.runtime.cpu.gpu} flag="window_map" />
+                                    <Flag name="BM" chip={this.state.runtime.cpu.gpu} flag="background_map" />
+                                    <Flag name="WIN" chip={this.state.runtime.cpu.gpu} flag="window_enable" />
+                                    <Flag name="BG" chip={this.state.runtime.cpu.gpu} flag="bg_display" />
+                                    <Flag name="BNK" chip={this.state.runtime.cpu.gpu} flag="map_tile_data" />
+                                    <Flag name="OBJ" chip={this.state.runtime.cpu.gpu} flag="obj_enable" />
+                                    <Flag name="SIZ" chip={this.state.runtime.cpu.gpu} flag="obj_size" />
+                                </div>
+                                <div className='column'>
+                                    <Flag name="LYC" chip={this.state.runtime.cpu.gpu} flag="lycIRQ" />
+                                    <Flag name="M0" chip={this.state.runtime.cpu.gpu} flag="mode0IRQ" />
+                                    <Flag name="M1" chip={this.state.runtime.cpu.gpu} flag="mode1IRQ" />
+                                    <Flag name="M2" chip={this.state.runtime.cpu.gpu} flag="mode2IRQ" />
+                                </div>
                             </div>
-                            <div className='column'>
-                                <Flag name="C" chip={this.state.runtime.cpu} flag="cf" />
-                                <Flag name="H" chip={this.state.runtime.cpu} flag="hf" />
-                                <Flag name="N" chip={this.state.runtime.cpu} flag="nf" />
-                                <Flag name="Z" chip={this.state.runtime.cpu} flag="zf" />
-                                <Flag name="I" chip={this.state.runtime.cpu} flag="irq_master" />
-                                <Flag name="S" chip={this.state.runtime.cpu} flag="halted" />
-                            </div>
-                            <div className='header'>GPU Flags</div>
-                            <div className='column'>
-                                <Register name="VBK" chip={this.state.runtime.cpu.gpu} register="irq_enable" />
-                                <Register name="LYC" chip={this.state.runtime.cpu.gpu} register="irq_enable" />
-                                <Register name="CLK" chip={this.state.runtime.cpu.gpu} register="irq_enable" />
-                                <Register name="SCX" chip={this.state.runtime.cpu.gpu} register="irq_enable" />
-                                <Register name="SCY" chip={this.state.runtime.cpu.gpu} register="irq_enable" />
-                                <Register name="WX" chip={this.state.runtime.cpu.gpu} register="irq_enable" />
-                                <Register name="WY" chip={this.state.runtime.cpu.gpu} register="irq_enable" />
-                            </div>
-                            <div className='column'>
-                                <Flag name="LCD" chip={this.state.runtime.cpu.gpu} flag="lcd_enable" />
-                                <Flag name="WM" chip={this.state.runtime.cpu.gpu} flag="window_map" />
-                                <Flag name="BM" chip={this.state.runtime.cpu.gpu} flag="background_map" />
-                                <Flag name="WIN" chip={this.state.runtime.cpu.gpu} flag="window_enable" />
-                                <Flag name="BG" chip={this.state.runtime.cpu.gpu} flag="bg_display" />
-                                <Flag name="BNK" chip={this.state.runtime.cpu.gpu} flag="map_tile_data" />
-                                <Flag name="OBJ" chip={this.state.runtime.cpu.gpu} flag="obj_enable" />
-                                <Flag name="SIZ" chip={this.state.runtime.cpu.gpu} flag="obj_size" />
-                            </div>
-                            <div className='column'>
-                                <Flag name="LYC" chip={this.state.runtime.cpu.gpu} flag="lycIRQ" />
-                                <Flag name="M0" chip={this.state.runtime.cpu.gpu} flag="mode0IRQ" />
-                                <Flag name="M1" chip={this.state.runtime.cpu.gpu} flag="mode1IRQ" />
-                                <Flag name="M2" chip={this.state.runtime.cpu.gpu} flag="mode2IRQ" />
-                            </div>
-                        </div>
 
-                        <Disassembler runTo={this.runTo} runtime={this.state.runtime} address={this.state.runtime.cpu.pc} />
+                            <Disassembler runTo={this.runTo} runtime={this.state.runtime} address={this.state.runtime.cpu.pc} />
+                        </div>
                     </div>
                 </div>
             </div>
-            );
+        );
     }
 });
 

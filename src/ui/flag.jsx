@@ -9,7 +9,7 @@ var Flag = React.createClass({
 
     render: function () {
         return (
-            <div className='flag-group'>
+            <div>
                 <span className='name'>{this.props.name}</span>
                 <span className='flag'>{this.renderValue()}</span>
             </div>

@@ -13,7 +13,7 @@ var Instruction = React.createClass({
 
             results.push(
                 <div className='row' key={pc}>
-                    <a className='addr' onClick={this.props.runTo(pc)}>{pc.toString(16)}</a>
+                    <a className='addr' onClick={this.props.runTo(pc)}>{pc.toString(16).toUpperCase()}</a>
                     <span className='hex'>{o.hex}</span>
                     <span className='instruction'>{o.op}</span>
                 </div>

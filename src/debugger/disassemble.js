@@ -583,8 +583,8 @@ function disassemble(cpu, pc)
             return { op: template.format.split("%").join(a), hex: bytes, next: pc };
         case RELATIVE_PC:
             a = readPC();
-            a = (a & 0x7F) - (a & 0x80);
             bytes += " " + hex(a,2);
+            a = (a & 0x7F) - (a & 0x80);
 
             a = (pc + a) & 0xFFFF;
 
