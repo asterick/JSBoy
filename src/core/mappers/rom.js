@@ -8,20 +8,20 @@
 var flags = require("./flags"),
     memory = require("../../util/memory");
 
-function mapperROM( name, cpu, rom, ramSize, flags, description ) {
+function mapperROM( name, cpu, rom, ramSize, mapperFlags, description ) {
     this.rom = rom;
     this.ram = memory.ramBlock( ramSize, 0x2000, name );
     this.cpu = cpu;
-    this.flags = flags;
+    this.flags = mapperFlags;
 
-    if( this.flags & BATTERY ) {
+    if( this.flags & flags.BATTERY ) {
         this.ram.load();
     }
 }
 
 mapperROM.prototype.close = function()
 {
-    if (this.flags & BATTERY) {
+    if (this.flags & flags.BATTERY) {
         this.ram.save();
     }
 };
