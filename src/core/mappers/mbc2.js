@@ -8,10 +8,10 @@
 var flags = require("./flags"),
     memory = require("../../util/memory");
 
-function mapperMBC2( name, cpu, rom, ramSize, flags, description ) {
+function mapperMBC2( name, cpu, rom, ramSize, mapperFlags, description ) {
     this.banks = rom.chunk(0x40);
     this.ram = memory.ramBlock(0x200,0x2000,name,0xF);
-    this.flags = flags;
+    this.flags = mapperFlags;
     this.cpu = cpu;
     this.rom = rom;
 
