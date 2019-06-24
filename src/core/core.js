@@ -22,19 +22,19 @@ export default class Core {
     }
 
     get bc () {
-        return this.regBC;
+        return this.regBC();
     }
 
     get de () {
-        return this.regDE;
+        return this.regDE();
     }
 
     get hl () {
-        return this.regHL;
+        return this.regHL();
     }
 
     get f () {
-        return this.regF;
+        return this.regF();
     }
 
     set f (v) {

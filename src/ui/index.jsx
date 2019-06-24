@@ -3,25 +3,14 @@ import React, { Component } from "react";
 import Register from "./register";
 import Flag from "./flag";
 import Disassembler from "./disassemble";
+import Screen from "./screen";
 
 import style from './style';
 
 export default class MainView extends Component {
     // --- Life-cycle operations ---
-    constructor (props) {
-        super(props);
-
-        this._ref = React.createRef();
-
-        this.state = {
-            doubleSize: false,
-            dragging: false
-        };
-    }
-
     componentDidMount () {
         window.onclose = this.close;
-        this.props.runtime.setContext(this._ref.current.getContext('2d'));
     }
 
     componentWillUnmount () {
@@ -30,37 +19,6 @@ export default class MainView extends Component {
 
     close () {
         this.props.runtime.close();
-    }
-
-    // --- File loading ---
-    onDragOver (e) {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = "copy";
-        this.setState({ dragging: true });
-    }
-
-    onDragLeave () {
-        this.setState({ dragging: false });
-    }
-
-    onDrop (e) {
-        e.preventDefault();
-
-        var file = e.dataTransfer.files[0],
-            reader = new FileReader();
-
-        reader.onload = this.onFile;
-        this.setState({ dragging: false, rom_name: file.name }, function () {
-            reader.readAsArrayBuffer(file);
-        });
-    }
-
-    onFile (e) {
-        var name = this.state.rom_name,
-        name = name.split(".")[0];
-
-        this.props.runtime.reset(name, e.target.result);
-        this.props.runtime.running = true;
     }
 
     // --- UI operations ---
@@ -83,12 +41,6 @@ export default class MainView extends Component {
         this.props.runtime.cpu.predictEvent = function () { return 0; };
     }
 
-    screenClicked () {
-        this.setState({
-            doubleSize: !this.state.doubleSize
-        });
-    }
-
     runTo (addr) {
         var that = this;
         return function () {
@@ -101,12 +53,6 @@ export default class MainView extends Component {
 
     // --- Rendering ---
     render () {
-        var canvasClass = [
-                'display',
-                this.state.doubleSize && 'double',
-                this.state.dragging && 'dragging'
-            ].filter((v) => v).join(" ");
-
         return (
             <div>
                 <div className='title-bar'>
@@ -114,13 +60,7 @@ export default class MainView extends Component {
                 </div>
 
                 <div className='emulator'>
-                    <canvas ref={this._ref} width='160' height='144'
-                        onClick={() => this.screenClicked()}
-                        onDragOver={() => this.onDragOver()}
-                        onDragLeave={() => this.onDragLeave()}
-                        onDrop={() => this.onDrop()}
-                        className={canvasClass}
-                        />
+                    <Screen runtime={this.props.runtime} />
 
                     <ul className='button-group'>
                         <li onClick={() => this.toggle()}>{ this.props.runtime.running ? 'Stop' : 'Run' }</li>
