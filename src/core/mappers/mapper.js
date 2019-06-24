@@ -1,5 +1,6 @@
+import * as memory from "../../util/memory";
+
 var flags = require("./flags"),
-    memory = require("../../util/memory"),
     mapperROM = require("./rom"),
     mapperMBC1 = require("./mbc1"),
     mapperMBC2 = require("./mbc2"),

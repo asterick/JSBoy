@@ -1,4 +1,4 @@
-var registers = require("../registers");
+import * as registers from "../registers";
 
 function DMA (gpu, cpu) {
     this.gpu = gpu;

@@ -1,7 +1,8 @@
-var registers = require("../registers"),
-    SquareChannel = require("./square"),
-    WaveformChannel = require("./waveform"),
-    NoiseChannel = require("./noise");
+import * as registers from "../registers";
+
+import SquareChannel from "./square";
+import WaveformChannel from "./waveform";
+import NoiseChannel from "./noise";
 
 var BUFFER_LENGTH = 2048,               // ~91ms buffer
     LONG_BUFFER   = BUFFER_LENGTH * 2,  // Render to a much larger buffer

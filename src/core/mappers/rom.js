@@ -5,8 +5,9 @@
  ***
  ***/
 
-var flags = require("./flags"),
-    memory = require("../../util/memory");
+import * as memory from "../../util/memory";
+
+var flags = require("./flags");
 
 function mapperROM( name, cpu, rom, ramSize, mapperFlags, description ) {
     this.rom = rom;

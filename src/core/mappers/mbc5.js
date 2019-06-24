@@ -5,8 +5,9 @@
  ***
  ***/
 
-var flags = require("./flags"),
-    memory = require("../../util/memory");
+import * as memory from "../../util/memory";
+
+var flags = require("./flags");
 
 function mapperMBC5( name, cpu, rom, ramSize, mapperFlags, description ) {
     this.ram = memory.ramBlock( ramSize, 0x2000, name );

@@ -5,7 +5,7 @@ import BIOS from "./misc/bios";
 import GPU from "./video/gpu";
 import Audio from "./audio/audio";
 
-import registers from "./registers";
+import * as registers from "./registers";
 
 export default class Core {
     constructor () {

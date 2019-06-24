@@ -1,5 +1,6 @@
-var CPU = {},
-    registers = require("../registers");
+import * as registers from "../registers";
+
+var CPU = {};
 
 // --- CPU Level hardware registers (IEQ, Speed and CPU dependant timer)
 CPU.read_IE = function()

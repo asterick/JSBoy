@@ -1,4 +1,4 @@
-class SquareChannel {
+export default class SquareChannel {
     constructor(cpu) {
         this.cpu = cpu;
     }
@@ -181,5 +181,3 @@ class SquareChannel {
         return 0xBF | this.lengthEnable;
     }
 }
-
-module.exports = SquareChannel;
