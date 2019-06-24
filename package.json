@@ -4,21 +4,26 @@
   "description": "JSBoy - The gameboy color emulator for javascript Bryon Vandiver (unicdk@gmail.com) =================================",
   "main": "Gruntfile.js",
   "dependencies": {
-    "grunt": "^0.4.5",
-    "grunt-browserify": "^3.2.1",
-    "grunt-contrib-connect": "^0.9.0",
-    "grunt-contrib-sass": "^0.8.1",
-    "grunt-contrib-watch": "^0.6.1",
+    "@babel/core": "^7.4.5",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.6",
+    "css-loader": "^3.0.0",
+    "node-sass": "^4.12.0",
     "react": "^0.12.1",
     "react-tools": "^0.12.1",
-    "reactify": "^0.17.1"
+    "reactify": "^0.17.1",
+    "sass-loader": "^7.1.0",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.35.0"
   },
-  "devDependencies": {
-    "grunt-contrib-jshint": "^0.10.0",
-    "mocha": "^2.0.1"
+  "babel": {
+    "presets": [
+      "@babel/preset-react"
+    ]
   },
   "scripts": {
-    "test": "mocha"
+    "start": "webpack-dev-server --open --mode development",
+    "build": "webpack --mode production"
   },
   "repository": {
     "type": "git",
@@ -29,5 +34,9 @@
   "bugs": {
     "url": "https://github.com/asterick/JSBoy/issues"
   },
-  "homepage": "https://github.com/asterick/JSBoy"
+  "homepage": "https://github.com/asterick/JSBoy",
+  "devDependencies": {
+    "webpack-cli": "^3.3.5",
+    "webpack-dev-server": "^3.7.2"
+  }
 }

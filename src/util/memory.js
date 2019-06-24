@@ -1,7 +1,7 @@
 /***
  *  JSBoy Memory block helper functions
  */
-function romBlock(data, length) {
+export function romBlock(data, length) {
     var newData = new Array(length || data.length);
 
     newData.copy(0, data);
@@ -18,7 +18,7 @@ for(var i = 0; i < 0x100; i++) {
     romBlock.delegates[i] = new Function("return " + i);
 }
 
-function ramBlock(size, extend, name, mask) {
+export function ramBlock(size, extend, name, mask) {
     if(!size) return null;
 
     var read = new Array(extend);
@@ -89,8 +89,3 @@ function ramBlock(size, extend, name, mask) {
         load: load
     };
 }
-
-module.exports = {
-    romBlock: romBlock,
-    ramBlock: ramBlock
-};

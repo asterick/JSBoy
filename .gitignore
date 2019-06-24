@@ -1,6 +1,4 @@
-# ignore roms folder
-roms
 node_modules
 .sass-cache
 .DS_Store
-web/main.*
+public/main.*
