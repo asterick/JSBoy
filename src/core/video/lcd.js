@@ -1,50 +1,46 @@
 // --- How the scanline buffer is encoded
-var PRIORITY      = 0x80,
-    WHITEOUT      = 0x40,
-    SPRITE_FLAG   = 0x20,
-    PALETTE       = 0x1C,
-    PIXELS        = 0x03,
-    OPACITY       = 0xFF,
-    PALETTE_SHIFT = 2,
-    COLOR         = PIXELS | WHITEOUT | PALETTE | SPRITE_FLAG;
+const PRIORITY      = 0x80;
+const WHITEOUT      = 0x40;
+const SPRITE_FLAG   = 0x20;
+const PALETTE       = 0x1C;
+const PIXELS        = 0x03;
+const OPACITY       = 0xFF;
+const PALETTE_SHIFT = 2;
+const COLOR         = PIXELS | WHITEOUT | PALETTE | SPRITE_FLAG;
 
 const colorTable = new Uint32Array(0x10000);
 const tileDecodeForward = new Array(0x10000);
 const tileDecodeReverse = new Array(0x10000);
 
-{
-    var i, b, g, r;
+function washout(c) {
+    return c * 0xCF / 0x1F0 + 0x20;
+}
 
-    function washout(c) {
-        return c * 0xCF / 0x1F0 + 0x20;
-    }
-
-    // Palette
-    for (i = 0; i < 0x10000;) {
-        for (b = 0; b < 32; b++) {
-            for (g = 0; g < 32; g++) {
-                for (r = 0; r < 32; r++) {
-                    colorTable[i++] = (OPACITY << 24) |
-                        (washout(r * 13 + g *  2 + b *  1)) |
-                        (washout(r *  0 + g * 12 + b *  4) << 8) |
-                        (washout(r *  3 + g *  2 + b * 11) << 16);
-                }
+// Palette
+for (let i = 0; i < 0x10000;) {
+    for (let b = 0; b < 32; b++) {
+        for (let g = 0; g < 32; g++) {
+            for (let r = 0; r < 32; r++) {
+                colorTable[i++] = (OPACITY << 24) |
+                    (washout(r * 13 + g *  2 + b *  1)) |
+                    (washout(r *  0 + g * 12 + b *  4) << 8) |
+                    (washout(r *  3 + g *  2 + b * 11) << 16);
             }
         }
     }
+}
 
-    // Decode table
-    for (i = 0; i < 0x10000; i++) {
-        tileDecodeForward[i] = new Uint8Array(8);
-        tileDecodeReverse[i] = new Uint8Array(8);
+// Decode table
+for (let i = 0; i < 0x10000; i++) {
+    tileDecodeForward[i] = new Uint8Array(8);
+    tileDecodeReverse[i] = new Uint8Array(8);
 
-        var h = (i & 0xFF00) >> 7;
-        var l = i & 0xFF;
+    let h = (i & 0xFF00) >> 7;
+    let l = i & 0xFF;
 
-        for (b = 0; b < 8; b++) {
-            tileDecodeForward[i][7-b] =
-            tileDecodeReverse[i][b] = ((h >> b) & 2) | ((l >> b) & 1);
-        }
+    for (let b = 0; b < 8; b++) {
+        tileDecodeForward[i][7-b] =
+        tileDecodeReverse[i][b] = ((h >> b) & 2) | ((l >> b) & 1);
     }
 }
 

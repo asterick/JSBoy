@@ -2,6 +2,17 @@ import * as registers from "../registers";
 import * as consts from "../consts";
 import * as Keyboard from "../../util/keyboard";
 
+const DEFAULT_MAPPING = {
+    A: Keyboard.X,
+    B: Keyboard.Z,
+    Select: Keyboard.SHIFT,
+    Start: Keyboard.ENTER,
+    Up: Keyboard.UP_ARROW,
+    Down: Keyboard.DOWN_ARROW,
+    Left: Keyboard.LEFT_ARROW,
+    Right: Keyboard.RIGHT_ARROW
+};
+
 export default class Joypad {
     constructor(cpu) {
         // --- Internal data storage
@@ -13,6 +24,8 @@ export default class Joypad {
 
         this.cpu = cpu;
         this.keyboard = [];
+
+        this.mapping = Object.create(DEFAULT_MAPPING);
 
         window.addEventListener( 'keydown', this.keydown.bind(this), false);
         window.addEventListener( 'keyup', this.keyup.bind(this), false);
@@ -109,14 +122,3 @@ export default class Joypad {
     }
 }
 
-// default joystick to keyboard mapping
-Joypad.prototype.mapping = {
-    A: Keyboard.X,
-    B: Keyboard.Z,
-    Select: Keyboard.SHIFT,
-    Start: Keyboard.ENTER,
-    Up: Keyboard.UP_ARROW,
-    Down: Keyboard.DOWN_ARROW,
-    Left: Keyboard.LEFT_ARROW,
-    Right: Keyboard.RIGHT_ARROW
-};

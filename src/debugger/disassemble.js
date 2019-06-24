@@ -1,10 +1,10 @@
-var IMPLIED = 0;
-var WORD = 1;
-var BYTE = 2;
-var SIGNED = 3;
-var RELATIVE_PC = 4;
+const IMPLIED = 0;
+const WORD = 1;
+const BYTE = 2;
+const SIGNED = 3;
+const RELATIVE_PC = 4;
 
-var BASE_INSTRUCTION_SET = [
+const BASE_INSTRUCTION_SET = [
     { format:           'NOP', arg:IMPLIED },
     { format:      'LD BC,$%', arg:WORD },
     { format:     'LD (BC),A', arg:IMPLIED },

@@ -1,6 +1,13 @@
 import * as registers from "../registers";
 import * as consts from "../consts";
 
+const PRESCALARS = [
+    (8 * 1024 * 1024) / 4096,
+    (8 * 1024 * 1024) / 262144,
+    (8 * 1024 * 1024) / 65536,
+    (8 * 1024 * 1024) / 16384
+];
+
 export default class Timer {
     constructor (cpu) {
         this.cpu = cpu;
@@ -24,7 +31,7 @@ export default class Timer {
         if( !this.enabled )
             return ;
 
-        var wrap = this.PRESCALARS[this.scalar];
+        var wrap = PRESCALARS[this.scalar];
 
         this.divider += cycles;
         this.timer += (this.divider / wrap);
@@ -112,14 +119,6 @@ export default class Timer {
         if( !this.enabled )
             return ;
 
-        return this.PRESCALARS[this.scalar] * (0x100 - this.timer) - this.divider;
+        return PRESCALARS[this.scalar] * (0x100 - this.timer) - this.divider;
     }
 }
-
-Timer.prototype.PRESCALARS = [
-        (8 * 1024 * 1024) / 4096,
-        (8 * 1024 * 1024) / 262144,
-        (8 * 1024 * 1024) / 65536,
-        (8 * 1024 * 1024) / 16384
-    ];
-

@@ -1,22 +1,21 @@
+import LCD from "./lcd";
+import DMA from "./dma";
+import Palette from "./palette";
+
 import * as memory from "../../util/memory";
 import * as registers from "../registers";
 import * as consts from "../consts";
 
-var LCD = require("./lcd"),
-    DMA = require("./dma"),
-    Palette = require("./palette");
-
 // These clocks are in GBC machine instruction cycles (Double speed)
 // IE: 4MHZ / 4 * 2
-
-var SCANLINES      = 154,
-    DRAWLINES      = 144,
-    MODE_0_TIME    = 408,
-    MODE_2_TIME    = 160,
-    MODE_3_TIME    = 344,
-    TICKS_PER_LINE = MODE_0_TIME + MODE_2_TIME + MODE_3_TIME,
-    DRAW_PHASE     = DRAWLINES * TICKS_PER_LINE,
-    TICKS_PER_FRAME = SCANLINES * TICKS_PER_LINE;
+const SCANLINES      = 154;
+const DRAWLINES      = 144;
+const MODE_0_TIME    = 408;
+const MODE_2_TIME    = 160;
+const MODE_3_TIME    = 344;
+const TICKS_PER_LINE = MODE_0_TIME + MODE_2_TIME + MODE_3_TIME;
+const DRAW_PHASE     = DRAWLINES * TICKS_PER_LINE;
+const TICKS_PER_FRAME = SCANLINES * TICKS_PER_LINE;
 
 export default class GPU {
     constructor (cpu) {

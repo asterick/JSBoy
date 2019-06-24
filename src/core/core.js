@@ -5,9 +5,12 @@ import BIOS from "./misc/bios";
 import GPU from "./video/gpu";
 import Audio from "./audio/audio";
 
+import OPs from "./ops";
+
 import * as registers from "./registers";
 
-export default class Core {
+
+export default class Core extends OPs {
     constructor () {
         // External hardware
         this.audio = new Audio(this);
@@ -365,9 +368,88 @@ export default class Core {
             return this.read[h][l]();
         };
     }
-}
 
-Object.assign(Core.prototype,
-    require('./ops/base'),
-    require('./ops/control'),
-    require('./ops/shift'));
+    // --- CPU Level hardware registers (IEQ, Speed and CPU dependant timer)
+    read_IE ()
+    {
+        return this.irq_enable;
+    }
+
+    write_IE ( data )
+    {
+        this.catchUp();
+        this.irq_enable = data & 0x1F;
+    }
+
+    read_IF ()
+    {
+        this.catchUp();
+        return this.irq_request;
+    }
+
+    write_IF ( data )
+    {
+        this.catchUp();
+        this.irq_request = data & 0x1F;
+    }
+
+    read_KEY1 ()
+    {
+        return (this.doubleSpeed ? 0x80 : 0) |
+               (this.prepareSpeed ? 0x01 : 0);
+    }
+
+    write_KEY1 (data)
+    {
+        this.prepareSpeed = data & 1;
+    }
+
+    write_LOCK (data)
+    {
+        if( data != 1 )
+            return ;
+
+        // This perminantly locks down all GBC specfic hardware, preventing it from
+        // being inadvertantly accessed by mono gameboy titles
+        // BIOS appears to have priviledged access to the hardware, so until
+        // it locks, don't disable the advanced registers
+
+        var self = this;
+        var lock = this.registers.write[registers.BLCK];
+
+        this.registers.write[registers.BLCK] = function(data)
+        {
+            if( data != 0x11 )
+                return ;
+
+            // --- IR Communication
+            self.alertIllegal(registers.RP);
+
+            // --- Video DMA
+            self.alertIllegal(registers.HDMA1);
+            self.alertIllegal(registers.HDMA2);
+            self.alertIllegal(registers.HDMA3);
+            self.alertIllegal(registers.HDMA4);
+            self.alertIllegal(registers.HDMA5);
+
+            // --- Palette access
+            self.alertIllegal(registers.BCPS);
+            self.alertIllegal(registers.BCPD);
+            self.alertIllegal(registers.OCPS);
+            self.alertIllegal(registers.OCPD);
+
+            // --- Memory banking
+            self.alertIllegal(registers.VBK);
+            self.alertIllegal(registers.SVBK);
+
+            // --- Speed control
+            self.alertIllegal(registers.KEY1);
+
+            // --- Lockout controls
+            self.alertIllegal(registers.LCD_MODE);
+            self.alertIllegal(registers.LOCK);
+
+            lock(0x11);
+        };
+    }
+}

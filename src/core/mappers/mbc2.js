@@ -6,8 +6,7 @@
  ***/
 
 import * as memory from "../../util/memory";
-
-var flags = require("./flags");
+import * as flags from "./flags";
 
 function mapperMBC2( name, cpu, rom, ramSize, mapperFlags, description ) {
     this.banks = rom.chunk(0x40);
