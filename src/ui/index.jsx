@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 
-var JSBoy = require("../core"),
-    Register = require("./register.jsx"),
-    Flag = require("./flag.jsx"),
-    Disassembler = require("./disassemble.jsx");
+import Register from "./register";
+import Flag from "./flag";
+import Disassembler from "./disassemble";
 
 export default class MainView extends Component {
     // --- Life-cycle operations ---
@@ -23,7 +22,7 @@ export default class MainView extends Component {
         this.props.runtime.setContext(this._ref.current.getContext('2d'));
     }
 
-    componentDidUnmount () {
+    componentWillUnmount () {
         window.onclose = null;
     }
 
@@ -100,11 +99,11 @@ export default class MainView extends Component {
 
     // --- Rendering ---
     render () {
-        var canvasClass = React.addons.classSet({
-                'display': true,
-                'double': this.state.doubleSize,
-                'dragging': this.state.dragging
-            });
+        var canvasClass = [
+                'display',
+                this.state.doubleSize && 'double',
+                this.state.dragging && 'dragging'
+            ];
 
         return (
             <div>
@@ -114,18 +113,18 @@ export default class MainView extends Component {
 
                 <div className='emulator'>
                     <canvas ref={this._ref} width='160' height='144'
-                        onClick={this.screenClicked}
-                        onDragOver={this.onDragOver}
-                        onDragLeave={this.onDragLeave}
-                        onDrop={this.onDrop}
+                        onClick={() => this.screenClicked()}
+                        onDragOver={() => this.onDragOver()}
+                        onDragLeave={() => this.onDragLeave()}
+                        onDrop={() => this.onDrop()}
                         className={canvasClass}
                         />
 
                     <ul className='button-group'>
-                        <li onClick={this.toggle}>{ this.props.runtime.running ? 'Stop' : 'Run' }</li>
-                        <li onClick={this.reset}>Reset</li>
-                        <li onClick={this.step}>Step</li>
-                        <li onClick={this.stop_predictions}>Disable predictions</li>
+                        <li onClick={() => this.toggle()}>{ this.props.runtime.running ? 'Stop' : 'Run' }</li>
+                        <li onClick={() => this.reset()}>Reset</li>
+                        <li onClick={() => this.step()}>Step</li>
+                        <li onClick={() => this.stop_predictions()}>Disable predictions</li>
                     </ul>
 
                     <div className='debugger'>

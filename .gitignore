@@ -1,4 +1,5 @@
 node_modules
 .sass-cache
 .DS_Store
-public/main.*
+public/*
+!public/index.html

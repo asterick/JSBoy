@@ -367,7 +367,7 @@ export default class Core {
     }
 }
 
-Object.assign(CPU.prototype,
+Object.assign(Core.prototype,
     require('./ops/base'),
     require('./ops/control'),
     require('./ops/shift'));

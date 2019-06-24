@@ -22,6 +22,15 @@ module.exports = {
     module: {
         rules: [
             {
+                test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+                use: [
+                    {
+                        loader: 'url-loader',
+                        options: { limit: 8196 }
+                    }
+                ]
+            },
+            {
                 test: /\.s?css$/,
                 use: [
                     "style-loader", // creates style nodes from JS strings

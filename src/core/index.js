@@ -1,10 +1,10 @@
-import CPU from "./core";
+import Core from "./core";
 import mapper from "./mappers/mapper";
 
 export default class JSBoy {
     constructor() {
         // Bios will auto reset when the system initializes
-        this.cpu = new CPU();
+        this.cpu = new Core();
         this.running = false;
     }
 

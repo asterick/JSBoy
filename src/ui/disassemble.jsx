@@ -17,7 +17,7 @@ export default class Instruction extends Component {
                     <span className='hex'>{o.hex}</span>
                     <span className='instruction'>{o.op}</span>
                 </div>
-                );
+            )
         }
 
         return results;
@@ -26,6 +26,6 @@ export default class Instruction extends Component {
     render() {
         return (
             <div className='disassembly'>{this.disassemble()}</div>
-        );
+        )
     }
 }

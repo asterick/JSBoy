@@ -56,7 +56,7 @@ body {
     padding: ($screen-y) floor(($gameboy-width - $screen-width) / 2) ($gameboy-height - $screen-height - $screen-y);
 
     display: inline-block;
-    /* background: url('media/gameboy.png'); */
+    background: url('media/gameboy.png');
 
     width: $screen-width;
     height: $screen-height;

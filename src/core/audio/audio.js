@@ -7,7 +7,7 @@ var BUFFER_LENGTH = 2048,               // ~91ms buffer
     LONG_BUFFER   = BUFFER_LENGTH * 2,  // Render to a much larger buffer
     CLOCK_RATE    = 8388608;
 
-class Sound {
+export default class Sound {
     constructor(cpu) {
         this.cpu = cpu;
         this.square1 = new SquareChannel(cpu);
@@ -234,5 +234,3 @@ class Sound {
               (this.noise.active() ? 8 : 0);
     }
 }
-
-module.exports = Sound;
