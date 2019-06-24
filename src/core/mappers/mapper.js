@@ -18,7 +18,7 @@ function byteAlignment(size, base)
     return base;
 }
 
-function mapper( name, cpu, rom )
+export default function mapper( name, cpu, rom )
 {
     rom = new Uint8Array(rom);
 
@@ -80,5 +80,3 @@ function mapper( name, cpu, rom )
 
     return new (setup.call)(name, cpu, rom, description.ramSize, setups[code].flags, description );
 }
-
-module.exports = mapper;
