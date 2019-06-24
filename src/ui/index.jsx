@@ -4,6 +4,8 @@ import Register from "./register";
 import Flag from "./flag";
 import Disassembler from "./disassemble";
 
+import style from './style';
+
 export default class MainView extends Component {
     // --- Life-cycle operations ---
     constructor (props) {
@@ -103,7 +105,7 @@ export default class MainView extends Component {
                 'display',
                 this.state.doubleSize && 'double',
                 this.state.dragging && 'dragging'
-            ];
+            ].filter((v) => v).join(" ");
 
         return (
             <div>
