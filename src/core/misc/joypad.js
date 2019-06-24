@@ -1,6 +1,5 @@
 import * as registers from "../registers";
 import * as consts from "../consts";
-
 import * as Keyboard from "../../util/keyboard";
 
 export default class Joystick {
