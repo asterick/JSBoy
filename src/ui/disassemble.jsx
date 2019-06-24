@@ -1,8 +1,8 @@
-var React = require("react/addons"),
-    Disassembler = require("../debugger/disassemble.js");
+import React, { Component } from "react";
+import Disassembler from "../debugger/disassemble.js";
 
-var Instruction = React.createClass({
-    disassemble: function () {
+export default class Instruction extends Component {
+    disassemble() {
         var results = [],
             pc = this.props.address,
             o;
@@ -21,13 +21,11 @@ var Instruction = React.createClass({
         }
 
         return results;
-    },
+    }
 
-    render: function () {
+    render() {
         return (
             <div className='disassembly'>{this.disassemble()}</div>
         );
     }
-})
-
-module.exports = Instruction;
+}

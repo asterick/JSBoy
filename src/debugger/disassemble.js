@@ -522,7 +522,7 @@ var EXTENDED_INSTRUCTION_SET = [
     { format:    'SET 7, A', arg:IMPLIED }
 ];
 
-function disassemble(cpu, pc)
+export default function disassemble(cpu, pc)
 {
     function hex(v, p) {
         var o = v.toString(16).toUpperCase();
@@ -594,5 +594,3 @@ function disassemble(cpu, pc)
             return { op: template.format, hex: bytes, next: pc };
     }
 }
-
-module.exports = disassemble;

@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 // --- Communication port registers
     SB: 0x01,
     SC: 0x02,

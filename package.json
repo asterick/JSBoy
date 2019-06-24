@@ -10,6 +10,7 @@
     "css-loader": "^3.0.0",
     "node-sass": "^4.12.0",
     "react": "^0.12.1",
+    "react-dom": "^16.8.6",
     "react-tools": "^0.12.1",
     "reactify": "^0.17.1",
     "sass-loader": "^7.1.0",

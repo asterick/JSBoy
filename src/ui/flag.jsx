@@ -1,13 +1,13 @@
-var React = require("react/addons");
+import React, { Component } from "react";
 
-var Flag = React.createClass({
-    renderValue: function () {
+export default class Flag extends Component {
+    renderValue () {
         var v = this.props.chip[this.props.flag];
 
         return (v ? '\u2713' : '\u00A0');
-    },
+    }
 
-    render: function () {
+    render () {
         return (
             <div>
                 <span className='name'>{this.props.name}</span>
@@ -15,6 +15,4 @@ var Flag = React.createClass({
             </div>
         );
     }
-});
-
-module.exports = Flag;
+}
