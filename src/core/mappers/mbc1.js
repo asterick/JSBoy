@@ -8,7 +8,7 @@
 import * as memory from "../../util/memory";
 import * as flags from "./flags";
 
-function mapperMBC1( name, cpu, rom, ramSize, mapperFlags, description ) {
+export default function mapperMBC1( name, cpu, rom, ramSize, mapperFlags, description ) {
     this.ram = memory.ramBlock( ramSize, 0x2000, name );
     this.banks = rom.chunk(0x40);
     this.cpu = cpu;
@@ -99,5 +99,3 @@ mapperMBC1.prototype.upperBankSelectReg = function( data )
     this.upperBank = data & 3;
     this.updateMemoryMap();
 };
-
-module.exports = mapperMBC1;

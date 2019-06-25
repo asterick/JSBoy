@@ -12,6 +12,8 @@ import * as registers from "./registers";
 
 export default class Core extends OPs {
     constructor () {
+        super();
+
         // External hardware
         this.audio = new Audio(this);
         this.gpu = new GPU(this);

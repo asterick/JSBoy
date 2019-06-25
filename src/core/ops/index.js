@@ -1,7 +1,7 @@
-import Shift from "./shift";
+import ShiftedOPs from "./shift";
 
 // --- Instruction map for base block
-export default class OPs {
+export default class OPs extends ShiftedOPs {
     rlca() {
         var n = ((this.a >> 7) | (this.a << 1)) & 0xFF;
         this.cf = (this.a & 0x80);

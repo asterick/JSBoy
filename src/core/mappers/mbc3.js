@@ -8,7 +8,7 @@
 import * as memory from "../../util/memory";
 import * as flags from "./flags";
 
-function mapperMBC3( name, cpu, rom, ramSize, mapperFlags, description ) {
+export default function mapperMBC3( name, cpu, rom, ramSize, mapperFlags, description ) {
     this.ram = memory.ramBlock( ramSize, 0x2000, name );
     this.banks = rom.chunk(0x40);
 
@@ -90,5 +90,3 @@ mapperMBC3.prototype.clockLatchReg = function( data )
 {
     // TODO: DO TIMER
 };
-
-module.exports = mapperMBC3;

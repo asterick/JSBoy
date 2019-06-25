@@ -570,7 +570,7 @@ export default class GPU {
     // --- Bank register
     write_VBK (data) {
         this.vbk = data & 1;
-        bank = this.vbk * 0x20;
+        let bank = this.vbk * 0x20;
 
         this.vbk_cell = this.videoBanks[this.vbk];
 

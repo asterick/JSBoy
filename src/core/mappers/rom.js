@@ -8,7 +8,7 @@
 import * as memory from "../../util/memory";
 import * as flags from "./flags";
 
-function mapperROM( name, cpu, rom, ramSize, mapperFlags, description ) {
+export default function mapperROM( name, cpu, rom, ramSize, mapperFlags, description ) {
     this.rom = rom;
     this.ram = memory.ramBlock( ramSize, 0x2000, name );
     this.cpu = cpu;
@@ -37,5 +37,3 @@ mapperROM.prototype.reset = function()
         this.cpu.writeChunks.copy(0xA0, this.ram.write, 0x20);
     }
 };
-
-module.exports = mapperROM;
