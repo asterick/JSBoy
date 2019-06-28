@@ -218,7 +218,7 @@ export default class GPU {
                 var bank = (attr & 8) ? 0x2000 : 0x0000;
                 var pal = attr & 7;
 
-                tpy = yflip ? (y ^ spriteBound) : (y);
+                var tpy = yflip ? (y ^ spriteBound) : (y);
 
                 var tileAddr = bank | (tpy << 1) | (tile << 4);
 
