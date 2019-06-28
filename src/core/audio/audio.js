@@ -16,7 +16,8 @@ export default class Sound {
         this.waveform = new WaveformChannel(cpu);
         this.noise = new NoiseChannel(cpu);
 
-        this.context = window.webkitAudioContext && (new webkitAudioContext());
+        this.context = new AudioContext();
+        debugger ;
 
         if (this.context) {
             this.node = this.context.createScriptProcessor(BUFFER_LENGTH, 2, 2);
