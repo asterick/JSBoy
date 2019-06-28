@@ -1,6 +1,6 @@
-var memory = require("../../util/memory");
+import * as memory from "../../util/memory";
 
-class WaveformChannel {
+export default class WaveformChannel {
     constructor(cpu) {
         this.cpu = cpu;
         this.wavetable = memory.ramBlock(0x16);
@@ -120,5 +120,3 @@ class WaveformChannel {
         return 0xBF | this.lengthEnable;
     }
 }
-
-module.exports = WaveformChannel;

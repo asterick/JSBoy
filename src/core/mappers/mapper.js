@@ -1,10 +1,11 @@
-var flags = require("./flags"),
-    memory = require("../../util/memory"),
-    mapperROM = require("./rom"),
-    mapperMBC1 = require("./mbc1"),
-    mapperMBC2 = require("./mbc2"),
-    mapperMBC3 = require("./mbc3"),
-    mapperMBC5 = require("./mbc5");
+import * as memory from "../../util/memory";
+import * as flags from "./flags";
+
+import mapperROM from "./rom";
+import mapperMBC1 from "./mbc1";
+import mapperMBC2 from "./mbc2";
+import mapperMBC3 from "./mbc3";
+import mapperMBC5 from "./mbc5";
 
 function byteAlignment(size, base)
 {
@@ -17,7 +18,7 @@ function byteAlignment(size, base)
     return base;
 }
 
-function mapper( name, cpu, rom )
+export default function mapper( name, cpu, rom )
 {
     rom = new Uint8Array(rom);
 
@@ -79,5 +80,3 @@ function mapper( name, cpu, rom )
 
     return new (setup.call)(name, cpu, rom, description.ramSize, setups[code].flags, description );
 }
-
-module.exports = mapper;

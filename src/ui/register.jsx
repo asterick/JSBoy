@@ -1,13 +1,13 @@
-var React = require("react/addons");
+import React, { Component } from "react";
 
-var Register = React.createClass({
-    renderValue: function () {
+export default class Register extends Component {
+    renderValue () {
         var v = this.props.chip[this.props.register] || 0;
 
         return v.toString(16).toUpperCase();
-    },
+    }
 
-    render: function () {
+    render () {
         return (
             <div>
                 <span className='name'>{this.props.name}</span>
@@ -15,6 +15,4 @@ var Register = React.createClass({
             </div>
         );
     }
-});
-
-module.exports = Register;
+}

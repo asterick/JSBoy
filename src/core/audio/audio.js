@@ -1,13 +1,14 @@
-var registers = require("../registers"),
-    SquareChannel = require("./square"),
-    WaveformChannel = require("./waveform"),
-    NoiseChannel = require("./noise");
+import * as registers from "../registers";
+
+import SquareChannel from "./square";
+import WaveformChannel from "./waveform";
+import NoiseChannel from "./noise";
 
 var BUFFER_LENGTH = 2048,               // ~91ms buffer
     LONG_BUFFER   = BUFFER_LENGTH * 2,  // Render to a much larger buffer
     CLOCK_RATE    = 8388608;
 
-class Sound {
+export default class Sound {
     constructor(cpu) {
         this.cpu = cpu;
         this.square1 = new SquareChannel(cpu);
@@ -15,7 +16,7 @@ class Sound {
         this.waveform = new WaveformChannel(cpu);
         this.noise = new NoiseChannel(cpu);
 
-        this.context = window.webkitAudioContext && (new webkitAudioContext());
+        this.context = new AudioContext();
 
         if (this.context) {
             this.node = this.context.createScriptProcessor(BUFFER_LENGTH, 2, 2);
@@ -234,5 +235,3 @@ class Sound {
               (this.noise.active() ? 8 : 0);
     }
 }
-
-module.exports = Sound;

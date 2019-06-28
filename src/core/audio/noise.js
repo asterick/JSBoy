@@ -1,4 +1,4 @@
-class NoiseChannel {
+export default class NoiseChannel {
     constructor (cpu) {
         this.cpu = cpu;
     }
@@ -142,5 +142,3 @@ class NoiseChannel {
         return 0xBF | this.lengthEnable;
     }
 }
-
-module.exports = NoiseChannel;

@@ -1,33 +1,8 @@
-var registers = require("../registers"),
-    memory = require("../../util/memory");
-
-function BIOS (cpu) {
-    this.cpu = cpu;
-}
-
-BIOS.prototype.reset = function () {
-    // Preserve non-overlay memory
-    this.cart = this.cpu.read.slice(0, this.COLOR_BIOS.length);
-
-    // This overlays bios on top of the cart (~2.5k), preserving old cart
-    // This also assumes cart will never change bank 0 during startup
-    this.cpu.read.copy( 0, this.COLOR_BIOS );
-    this.cpu.read[0x01] = this.cart[0x01];
-
-    this.cpu.registers.write[registers.BLCK] = this.write_BLCK.bind(this);
-};
-
-BIOS.prototype.write_BLCK = function (data) {
-    if (data != 0x11) {
-        return ;
-    }
-
-    // De-overlay the bios
-    this.cpu.read.copy( 0, this.cart );
-};
+import * as registers from "../registers";
+import * as memory from "../../util/memory";
 
 // Special thanks to costis for this
-BIOS.prototype.COLOR_BIOS = memory.romBlock([
+const COLOR_BIOS = memory.romBlock([
     0x31, 0xFE, 0xFF, 0x3E, 0x02, 0xC3, 0x7C, 0x00, 0xD3, 0x00, 0x98, 0xA0, 0x12, 0xD3, 0x00, 0x80,
     0x00, 0x40, 0x1E, 0x53, 0xD0, 0x00, 0x1F, 0x42, 0x1C, 0x00, 0x14, 0x2A, 0x4D, 0x19, 0x8C, 0x7E,
     0x00, 0x7C, 0x31, 0x6E, 0x4A, 0x45, 0x52, 0x4A, 0x00, 0x00, 0xFF, 0x53, 0x1F, 0x7C, 0xFF, 0x03,
@@ -174,4 +149,29 @@ BIOS.prototype.COLOR_BIOS = memory.romBlock([
     0x12, 0xB0, 0x79, 0xB8, 0xAD, 0x16, 0x17, 0x07, 0xBA, 0x05, 0x7C, 0x13, 0x00, 0x00, 0x00, 0x00
 ]);
 
-module.exports = BIOS;
+export default class BIOS {
+    constructor (cpu) {
+        this.cpu = cpu;
+    }
+
+    reset () {
+        // Preserve non-overlay memory
+        this.cart = this.cpu.read.slice(0, COLOR_BIOS.length);
+
+        // This overlays bios on top of the cart (~2.5k), preserving old cart
+        // This also assumes cart will never change bank 0 during startup
+        this.cpu.read.copy( 0, COLOR_BIOS );
+        this.cpu.read[0x01] = this.cart[0x01];
+
+        this.cpu.registers.write[registers.BLCK] = this.write_BLCK.bind(this);
+    }
+
+    write_BLCK (data) {
+        if (data != 0x11) {
+            return ;
+        }
+
+        // De-overlay the bios
+        this.cpu.read.copy( 0, this.cart );
+    }
+}

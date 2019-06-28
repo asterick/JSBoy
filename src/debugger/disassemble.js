@@ -1,10 +1,10 @@
-var IMPLIED = 0;
-var WORD = 1;
-var BYTE = 2;
-var SIGNED = 3;
-var RELATIVE_PC = 4;
+const IMPLIED = 0;
+const WORD = 1;
+const BYTE = 2;
+const SIGNED = 3;
+const RELATIVE_PC = 4;
 
-var BASE_INSTRUCTION_SET = [
+const BASE_INSTRUCTION_SET = [
     { format:           'NOP', arg:IMPLIED },
     { format:      'LD BC,$%', arg:WORD },
     { format:     'LD (BC),A', arg:IMPLIED },
@@ -522,7 +522,7 @@ var EXTENDED_INSTRUCTION_SET = [
     { format:    'SET 7, A', arg:IMPLIED }
 ];
 
-function disassemble(cpu, pc)
+export default function disassemble(cpu, pc)
 {
     function hex(v, p) {
         var o = v.toString(16).toUpperCase();
@@ -594,5 +594,3 @@ function disassemble(cpu, pc)
             return { op: template.format, hex: bytes, next: pc };
     }
 }
-
-module.exports = disassemble;

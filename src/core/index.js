@@ -1,10 +1,10 @@
-var CPU = require("./core"),
-    mapper = require("./mappers/mapper");
+import Core from "./core";
+import mapper from "./mappers/mapper";
 
-class JSBoy {
+export default class JSBoy {
     constructor() {
         // Bios will auto reset when the system initializes
-        this.cpu = new CPU();
+        this.cpu = new Core();
         this.running = false;
     }
 
@@ -28,15 +28,12 @@ class JSBoy {
     singleStep () {
         this.cpu.singleStep();
     }
-}
 
-// Not supported by the ES6 transform in react tools
-Object.defineProperty(JSBoy.prototype, 'running', {
-    get: function () {
+    get running () {
         return this._running;
-    },
+    }
 
-    set: function (state) {
+    set running (state) {
         if (this._running === state) { return ; }
 
         var lastTime = Date.now(),
@@ -66,6 +63,4 @@ Object.defineProperty(JSBoy.prototype, 'running', {
             this.cpu.audio.mute();
         }
     }
-});
-
-module.exports = JSBoy;
+}
