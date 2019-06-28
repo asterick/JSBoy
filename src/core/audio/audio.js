@@ -17,7 +17,6 @@ export default class Sound {
         this.noise = new NoiseChannel(cpu);
 
         this.context = new AudioContext();
-        debugger ;
 
         if (this.context) {
             this.node = this.context.createScriptProcessor(BUFFER_LENGTH, 2, 2);

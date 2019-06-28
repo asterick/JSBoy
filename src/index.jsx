@@ -6,4 +6,7 @@ import MainView from "./ui";
 import Polyfills from "./util/polyfills";
 import JSBoy from "./core";
 
-ReactDOM.render(<MainView runtime={new JSBoy()}/>, document.querySelector("#container"));
+
+const runtime = new JSBoy();
+
+ReactDOM.render(<MainView runtime={runtime}/>, document.querySelector("#container"));
