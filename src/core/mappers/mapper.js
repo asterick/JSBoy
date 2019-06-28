@@ -1,11 +1,11 @@
 import * as memory from "../../util/memory";
 import * as flags from "./flags";
 
-var mapperROM = require("./rom"),
-    mapperMBC1 = require("./mbc1"),
-    mapperMBC2 = require("./mbc2"),
-    mapperMBC3 = require("./mbc3"),
-    mapperMBC5 = require("./mbc5");
+import mapperROM from "./rom";
+import mapperMBC1 from "./mbc1";
+import mapperMBC2 from "./mbc2";
+import mapperMBC3 from "./mbc3";
+import mapperMBC5 from "./mbc5";
 
 function byteAlignment(size, base)
 {

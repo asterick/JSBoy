@@ -38,18 +38,17 @@ export default class Screen extends Component {
         var file = e.dataTransfer.files[0],
             reader = new FileReader();
 
-        reader.onload = this.onFile;
+        reader.onload = (e) => {
+            var name = this.state.rom_name,
+            name = name.split(".")[0];
+
+            this.props.runtime.reset(name, e.target.result);
+            this.props.runtime.running = true;
+        };
+
         this.setState({ dragging: false, rom_name: file.name }, function () {
             reader.readAsArrayBuffer(file);
         });
-    }
-
-    onFile (e) {
-        var name = this.state.rom_name,
-        name = name.split(".")[0];
-
-        this.props.runtime.reset(name, e.target.result);
-        this.props.runtime.running = true;
     }
 
     render () {
