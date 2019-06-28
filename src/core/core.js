@@ -39,7 +39,7 @@ export default class Core extends OPs {
     }
 
     get f () {
-        return this.regF();
+        return this.getF();
     }
 
     set f (v) {

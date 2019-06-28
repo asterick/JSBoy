@@ -95,10 +95,10 @@ export default class DMA {
 
         this.cpu.catchUp();
 
-        var src_h = this.sourceAddress >> 8,
-            src_l = this.sourceAddress & 0xF0,
-            dst   = this.destinationAddress & 0x1FF0;
-            size = 0x10;
+        let src_h = this.sourceAddress >> 8;
+        let src_l = this.sourceAddress & 0xF0;
+        let dst   = this.destinationAddress & 0x1FF0;
+        let size = 0x10;
 
         while (size--) {
             this.gpu.vbk_cell[dst++] = this.cpu.read[src_h][src_l++]();
