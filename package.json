@@ -38,7 +38,7 @@
   },
   "homepage": "https://github.com/asterick/JSBoy",
   "devDependencies": {
-    "webpack-cli": "^3.3.5",
+    "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.7.2"
   }
 }
